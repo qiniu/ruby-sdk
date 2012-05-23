@@ -7,7 +7,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["why404@gmail.com"]
   gem.description   = %q{Qiniu Cloud Storage SDK for Ruby. See: http://docs.qiniutek.com/v1/sdk/ruby/}
   gem.summary       = %q{Qiniu Cloud Storage SDK for Ruby}
-  gem.homepage      = "https://github.com/why404/qiniu-rs-sdk-for-ruby"
+  gem.homepage      = "https://github.com/why404/qiniu-rs"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
