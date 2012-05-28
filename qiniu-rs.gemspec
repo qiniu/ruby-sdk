@@ -23,4 +23,5 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "json"
   gem.add_runtime_dependency "rest-client"
   gem.add_runtime_dependency "mime-types"
+  gem.add_runtime_dependency "jruby-openssl" if RUBY_PLATFORM == "java"
 end
