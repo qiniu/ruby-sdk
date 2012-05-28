@@ -20,6 +20,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "fakeweb"
+  gem.add_runtime_dependency "json"
   gem.add_runtime_dependency "rest-client"
   gem.add_runtime_dependency "mime-types"
 end
