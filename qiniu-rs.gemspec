@@ -17,6 +17,7 @@ Gem::Specification.new do |gem|
   gem.version       = Qiniu::RS::VERSION
 
   # specify any dependencies here; for example:
+  gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "fakeweb"
   gem.add_runtime_dependency "rest-client"
