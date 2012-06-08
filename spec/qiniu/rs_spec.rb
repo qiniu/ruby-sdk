@@ -34,7 +34,11 @@ module Qiniu
         put_url.should_not be_false
         put_url.should_not be_empty
         puts put_url.inspect
-        result = Qiniu::RS.upload(put_url, __FILE__, @bucket, @key)
+        result = Qiniu::RS.upload :url => put_url,
+                                  :file =>  __FILE__,
+                                  :bucket => @bucket,
+                                  :key => @key,
+                                  :enable_crc32_check => true
         result.should be_true
       end
     end

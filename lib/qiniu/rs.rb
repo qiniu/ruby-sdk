@@ -31,8 +31,15 @@ module Qiniu
         code == StatusOK ? data["url"] : false
       end
 
-      def upload(url, local_file, bucket = '', key = '', mime_type = '', custom_meta = '', callback_params = {})
-        code, data = IO.put_file(url, local_file, bucket, key, mime_type, custom_meta, callback_params)
+      def upload opts = {}
+        code, data = IO.put_file(opts[:url],
+                                 opts[:file],
+                                 opts[:bucket],
+                                 opts[:key],
+                                 opts[:mime_type],
+                                 opts[:note],
+                                 opts[:callback_params],
+                                 opts[:enable_crc32_check])
         code == StatusOK
       end
 
