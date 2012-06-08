@@ -21,9 +21,9 @@ module Qiniu
           :content_type    => 'application/x-www-form-urlencoded',
           :auth_url        => "https://acc.qbox.me/oauth2/token",
           :rs_host         => "http://rs.qbox.me:10100",
-          :io_host         => "http://io.qbox.me",
-          :client_id       => "<YOUR_APP_CLIENT_ID>",
-          :client_secret   => "<YOUR_APP_CLIENT_SECRET>",
+          :io_host         => "http://iovip.qbox.me",
+          :client_id       => "",
+          :client_secret   => "",
           :auto_reconnect  => true,
           :max_retry_times => 5
         }

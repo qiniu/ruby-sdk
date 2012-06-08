@@ -2,6 +2,7 @@
 
 require 'uri'
 require 'json'
+require 'zlib'
 require 'base64'
 require 'rest_client'
 require 'qiniu/rs/exceptions'
@@ -117,6 +118,10 @@ module Qiniu
         return params if params.is_a?(String)
         total_param = params.map { |key, value| key.to_s+"="+value.to_s }
         URI.escape(total_param.join("&"))
+      end
+
+      def crc32checksum(filepath)
+        File.open(filepath, "rb") { |f| Zlib.crc32 f.read }
       end
 
     end

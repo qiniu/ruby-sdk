@@ -20,17 +20,18 @@ module Qiniu
           Auth.request(url)
         end
 
-        def put_file(url, local_file, bucket = '', key = '', mime_type = '', custom_meta = '', callback_params = '')
+        def put_file(url, local_file, bucket = nil, key = nil, mime_type = nil, custom_meta = nil, callback_params = nil, enable_crc32_check = false)
           raise NoSuchFileError unless File.exist?(local_file)
-          key = Digest::SHA1.hexdigest(local_file + Time.now.to_s) if key.empty?
+          key = Digest::SHA1.hexdigest(local_file + Time.now.to_s) if key.nil?
           entry_uri = bucket + ':' + key
-          if mime_type.empty?
+          if mime_type.nil?
             mime = MIME::Types.type_for local_file
             mime_type = mime.empty? ? 'application/octet-stream' : mime[0].content_type
           end
           action_params = '/rs-put/' + Utils.urlsafe_base64_encode(entry_uri) + '/mimeType/' + Utils.urlsafe_base64_encode(mime_type)
-          action_params += '/meta/' + Utils.urlsafe_base64_encode(custom_meta) unless custom_meta.empty?
-          callback_params = {:bucket => bucket, :key => key, :mime_type => mime_type} if callback_params.empty?
+          action_params += '/meta/' + Utils.urlsafe_base64_encode(custom_meta) unless custom_meta.nil?
+          action_params += '/crc32/' + Utils.crc32checksum(local_file).to_s if enable_crc32_check
+          callback_params = {:bucket => bucket, :key => key, :mime_type => mime_type} if callback_params.nil?
           callback_query_string = Utils.generate_query_string(callback_params)
           Utils.upload_multipart_data(url, local_file, action_params, callback_query_string)
         end
