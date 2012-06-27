@@ -12,12 +12,14 @@ module Qiniu
       @domain = 'cdn.example.com'
     end
 
+=begin
     context ".login!" do
       it "should works" do
         result = Qiniu::RS.login!("test@qbox.net", "test")
         result.should be_true
       end
     end
+=end
 
     context ".put_auth" do
       it "should works" do
@@ -136,7 +138,7 @@ module Qiniu
 
     context ".image_info" do
       it "should works" do
-        data = Qiniu::RS.get("test_images", "test_image.jpg")
+        data = Qiniu::RS.get("test_images", "image_logo_for_test.png")
         data.should_not be_false
         data.should_not be_empty
         puts data.inspect

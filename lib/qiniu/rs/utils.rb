@@ -5,6 +5,7 @@ require 'json'
 require 'zlib'
 require 'base64'
 require 'rest_client'
+require 'hmac-sha1'
 require 'qiniu/rs/exceptions'
 
 module Qiniu
@@ -37,7 +38,12 @@ module Qiniu
           :accept => :json,
           :user_agent => Config.settings[:user_agent]
         }
-        header_options.merge!('Authorization' => "Bearer #{options[:access_token]}") if options[:access_token]
+        if options[:signature_auth] && options[:signature_auth] == true
+          signature_token = generate_qbox_signature(Config.settings[:access_key], Config.settings[:secret_key], url, data)
+          header_options.merge!('Authorization' => "QBox #{signature_token}")
+        elsif options[:access_token]
+          header_options.merge!('Authorization' => "Bearer #{options[:access_token]}")
+        end
         case options[:method]
         when :get
           response = RestClient.get url, header_options
@@ -122,6 +128,22 @@ module Qiniu
 
       def crc32checksum(filepath)
         File.open(filepath, "rb") { |f| Zlib.crc32 f.read }
+      end
+
+      def generate_qbox_signature(access_key, secret_key, url, params)
+        uri = URI.parse(url)
+        signature = uri.path
+        query_string = uri.query
+        signature += '?' + query_string if !query_string.nil? && !query_string.empty?
+        signature += "\n";
+        if params.is_a?(Hash)
+            total_param = params.map { |key, value| key.to_s+"="+value.to_s }
+            signature += total_param.join("&")
+        end
+        hmac = HMAC::SHA1.new(secret_key)
+        hmac.update(signature)
+        encoded_digest = urlsafe_base64_encode(hmac.digest)
+        %Q(#{access_key}:#{encoded_digest})
       end
 
     end

@@ -11,6 +11,7 @@ module Qiniu
     describe RS do
 
       before :all do
+=begin
         code, data = Qiniu::RS::Auth.exchange_by_password!("test@qbox.net", "test")
         code.should == 200
         data.should be_an_instance_of(Hash)
@@ -18,6 +19,7 @@ module Qiniu
         data["refresh_token"].should_not be_empty
         data["refresh_token"].should_not be_empty
         puts data.inspect
+=end
 
         code2, data2 = Qiniu::RS::IO.put_auth()
         code2.should == 200

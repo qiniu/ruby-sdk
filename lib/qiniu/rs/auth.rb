@@ -38,7 +38,7 @@ module Qiniu
           @refresh_token = refresh_token
         end
 
-        def call(url, data, retry_times = 0)
+        def call_with_logged_in(url, data, retry_times = 0)
           raise MissingAccessToken if @access_token.nil?
           code, data = http_request url, data, {:access_token => @access_token}
           if code == 401
@@ -51,16 +51,25 @@ module Qiniu
             if code == 200
               retry_times += 1
               if Config.settings[:auto_reconnect] && retry_times < Config.settings[:max_retry_times]
-                return call(url, data, retry_times)
+                return call_with_logged_in(url, data, retry_times)
               end
             end
           end
           [code, data]
         end
 
+        def call_with_signature(url, data, retry_times = 0)
+          code, data = http_request url, data, {:signature_auth => true}
+          [code, data]
+        end
+
         def request(url, data = nil)
           begin
-            code, data = Auth.call(url, data)
+            if Config.settings[:access_key].empty? || Config.settings[:secret_key].empty?
+              code, data = Auth.call_with_logged_in(url, data)
+            else
+              code, data = Auth.call_with_signature(url, data)
+            end
           rescue [MissingAccessToken, MissingRefreshToken, MissingUsernameOrPassword] => e
             Log.logger.error e
             code, data = 401, {}
