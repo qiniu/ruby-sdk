@@ -21,9 +21,13 @@ module Qiniu
           :content_type    => 'application/x-www-form-urlencoded',
           :auth_url        => "https://acc.qbox.me/oauth2/token",
           :rs_host         => "http://rs.qbox.me:10100",
+          #:rs_host         => "http://localhost:10100",
           :io_host         => "http://iovip.qbox.me",
-          :client_id       => "",
-          :client_secret   => "",
+          #:io_host         => "http://localhost:10200",
+          :client_id       => "a75604760c4da4caaa456c0c5895c061c3065c5a",
+          :client_secret   => "75df554a39f58accb7eb293b550fa59618674b7d",
+          :access_key      => "",
+          :secret_key      => "",
           :auto_reconnect  => true,
           :max_retry_times => 5
         }
