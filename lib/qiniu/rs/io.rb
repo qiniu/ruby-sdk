@@ -21,7 +21,7 @@ module Qiniu
         end
 
         def put_file(url, local_file, bucket = nil, key = nil, mime_type = nil, custom_meta = nil, callback_params = nil, enable_crc32_check = false)
-          raise NoSuchFileError unless File.exist?(local_file)
+          raise NoSuchFileError, local_file unless File.exist?(local_file)
           key = Digest::SHA1.hexdigest(local_file + Time.now.to_s) if key.nil?
           entry_uri = bucket + ':' + key
           if mime_type.nil?
