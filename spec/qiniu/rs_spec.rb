@@ -149,5 +149,13 @@ module Qiniu
       end
     end
 
+    context ".generate_upload_token" do
+      it "should works" do
+        data = Qiniu::RS.generate_upload_token('test_bucket', 3600)
+        data.should_not be_empty
+        puts data.inspect
+      end
+    end
+
   end
 end
