@@ -115,6 +115,10 @@ module Qiniu
         Image.preivew_url(url, spec)
       end
 
+      def generate_upload_token(scope, expires_in, callback_url = nil, return_url = nil)
+        Utils.generate_upload_token(scope, expires_in, callback_url, return_url)
+      end
+
     end
 
   end
