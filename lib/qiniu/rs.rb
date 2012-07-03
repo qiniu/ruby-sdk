@@ -12,6 +12,9 @@ module Qiniu
     autoload :IO, 'qiniu/rs/io'
     autoload :RS, 'qiniu/rs/rs'
     autoload :Image, 'qiniu/rs/image'
+    autoload :AccessToken, 'qiniu/tokens/access_token'
+    autoload :QboxToken, 'qiniu/tokens/qbox_token'
+    autoload :UploadToken, 'qiniu/tokens/upload_token'
 
     class << self
 
@@ -113,6 +116,21 @@ module Qiniu
 
       def image_preview_url(url, spec)
         Image.preivew_url(url, spec)
+      end
+
+      #def generate_upload_token(scope, expires_in, callback_url = nil, return_url = nil)
+      #  Utils.generate_upload_token(scope, expires_in, callback_url, return_url)
+      #end
+
+      def generate_upload_token(opts = {})
+        token_obj = UploadToken.new(opts)
+        token_obj.access_key = Config.settings[:access_key]
+        token_obj.secret_key = Config.settings[:secret_key]
+        #token_obj.scope = opts[:scope]
+        #token_obj.expires_in = opts[:expires_in]
+        #token_obj.callback_url = opts[:callback_url]
+        #token_obj.return_url = opts[:return_url]
+        token_obj.generate_token
       end
 
     end

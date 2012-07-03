@@ -59,7 +59,7 @@ module Qiniu
         end
 
         def call_with_signature(url, data, retry_times = 0)
-          code, data = http_request url, data, {:signature_auth => true}
+          code, data = http_request url, data, {:qbox_signature_token => generate_qbox_signature(url, data)}
           [code, data]
         end
 
