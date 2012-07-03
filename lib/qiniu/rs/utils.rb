@@ -151,6 +151,7 @@ module Qiniu
         %Q(#{access_key}:#{encoded_digest})
       end
 
+=begin
       def generate_upload_token(scope, expires_in, callback_url = nil, return_url = nil)
         access_key = Config.settings[:access_key]
         secret_key = Config.settings[:secret_key]
@@ -163,6 +164,7 @@ module Qiniu
         encoded_digest = urlsafe_base64_encode(hmac.digest)
         %Q(#{access_key}:#{encoded_digest}:#{signature})
       end
+=end
 
     end
   end

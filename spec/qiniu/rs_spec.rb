@@ -151,7 +151,7 @@ module Qiniu
 
     context ".generate_upload_token" do
       it "should works" do
-        data = Qiniu::RS.generate_upload_token('test_bucket', 3600)
+        data = Qiniu::RS.generate_upload_token({:scope => 'test_bucket', :expires_in => 3600})
         data.should_not be_empty
         puts data.inspect
       end
