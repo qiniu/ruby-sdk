@@ -38,12 +38,15 @@ module Qiniu
           :accept => :json,
           :user_agent => Config.settings[:user_agent]
         }
-        if options[:signature_auth] && options[:signature_auth] == true
-          signature_token = generate_qbox_signature(Config.settings[:access_key], Config.settings[:secret_key], url, data)
-          header_options.merge!('Authorization' => "QBox #{signature_token}")
+        auth_token = nil
+        if !options[:qbox_signature_token].nil? && !options[:qbox_signature_token].empty?
+          auth_token = 'QBox ' + options[:qbox_signature_token]
+        #elsif !options[:upload_signature_token].nil? && !options[:upload_signature_token].empty?
+        #  auth_token = 'UpToken ' + options[:upload_signature_token]
         elsif options[:access_token]
-          header_options.merge!('Authorization' => "Bearer #{options[:access_token]}")
+          auth_token = 'Bearer ' + options[:access_token]
         end
+        header_options.merge!('Authorization' => auth_token) unless auth_token.nil?
         case options[:method]
         when :get
           response = RestClient.get url, header_options
@@ -130,7 +133,9 @@ module Qiniu
         File.open(filepath, "rb") { |f| Zlib.crc32 f.read }
       end
 
-      def generate_qbox_signature(access_key, secret_key, url, params)
+      def generate_qbox_signature(url, params)
+        access_key = Config.settings[:access_key]
+        secret_key = Config.settings[:secret_key]
         uri = URI.parse(url)
         signature = uri.path
         query_string = uri.query
@@ -145,6 +150,21 @@ module Qiniu
         encoded_digest = urlsafe_base64_encode(hmac.digest)
         %Q(#{access_key}:#{encoded_digest})
       end
+
+=begin
+      def generate_upload_token(scope, expires_in, callback_url = nil, return_url = nil)
+        access_key = Config.settings[:access_key]
+        secret_key = Config.settings[:secret_key]
+        params = {:scope => scope, :deadline => Time.now.to_i + expires_in}
+        params[:callbackUrl] = callback_url if !callback_url.nil? && !calback_url.empty?
+        params[:returnUrl] = return_url if !return_url.nil? && !return_url.empty?
+        signature = urlsafe_base64_encode(params.to_json)
+        hmac = HMAC::SHA1.new(secret_key)
+        hmac.update(signature)
+        encoded_digest = urlsafe_base64_encode(hmac.digest)
+        %Q(#{access_key}:#{encoded_digest}:#{signature})
+      end
+=end
 
     end
   end
