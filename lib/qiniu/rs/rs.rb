@@ -57,6 +57,18 @@ module Qiniu
           batch("delete", bucket, keys)
         end
 
+        def save_as(bucket, key, source_url, op_params_string)
+          encoded_uri = encode_entry_uri(bucket, key)
+          save_as_string = '/save-as/' + encoded_uri
+          new_url = source_url + '?' + op_params_string + save_as_string
+          Auth.request new_url
+        end
+
+        def image_mogrify_save_as(bucket, key, source_image_url, options)
+          mogrify_params_string = Image.generate_mogrify_params_string(options)
+          save_as(bucket, key, source_image_url, mogrify_params_string)
+        end
+
       end
     end
   end
