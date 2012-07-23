@@ -10,6 +10,9 @@ module Qiniu
       @bucket = 'qiniu_rs_test'
       @key = Digest::SHA1.hexdigest Time.now.to_s
       @domain = 'cdn.example.com'
+
+      @test_image_bucket = 'test_images_12345'
+      @test_image_key = 'image_logo_for_test.png'
     end
 
 =begin
@@ -138,11 +141,37 @@ module Qiniu
 
     context ".image_info" do
       it "should works" do
-        data = Qiniu::RS.get("test_images", "image_logo_for_test.png")
+        data = Qiniu::RS.get(@test_image_bucket, @test_image_key)
         data.should_not be_false
         data.should_not be_empty
         puts data.inspect
         result = Qiniu::RS.image_info(data["url"])
+        result.should_not be_false
+        result.should_not be_empty
+        puts result.inspect
+      end
+    end
+
+    context ".image_mogrify_save_as" do
+      it "should works" do
+        data = Qiniu::RS.get(@test_image_bucket, @test_image_key)
+        data.should_not be_false
+        data.should_not be_empty
+        puts data.inspect
+
+        dest_bucket = "test_thumbnails_bucket"
+        dest_key = "cropped-" + @test_image_key
+        src_img_url = data["url"]
+        mogrify_options = {
+          :thumbnail => "!120x120r",
+          :gravity => "center",
+          :crop => "!120x120a0a0",
+          :quality => 85,
+          :rotate => 45,
+          :format => "jpg",
+          :auto_orient => true
+        }
+        result = Qiniu::RS.image_mogrify_save_as(dest_bucket, dest_key, src_img_url, mogrify_options)
         result.should_not be_false
         result.should_not be_empty
         puts result.inspect

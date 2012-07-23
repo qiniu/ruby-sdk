@@ -118,6 +118,15 @@ module Qiniu
         Image.preivew_url(url, spec)
       end
 
+      def image_mogrify_preview_url(source_image_url, options)
+        Image.mogrify_preview_url(source_image_url, options)
+      end
+
+      def image_mogrify_save_as(bucket, key, source_image_url, options)
+        code, data = RS.image_mogrify_save_as(bucket, key, source_image_url, options)
+        code == StatusOK ? data : false
+      end
+
       #def generate_upload_token(scope, expires_in, callback_url = nil, return_url = nil)
       #  Utils.generate_upload_token(scope, expires_in, callback_url, return_url)
       #end
