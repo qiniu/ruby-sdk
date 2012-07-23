@@ -30,6 +30,8 @@ title: Ruby SDK 使用指南 | 七牛云存储
     - [图像处理](#op-image)
         - [查看图片属性信息](#image_info)
         - [获取指定规格的缩略图预览地址](#image_preview_url)
+        - [高级图像处理（缩略、裁剪、旋转、转化）](#image_mogrify_preview_url)
+        - [高级图像处理（缩略、裁剪、旋转、转化）并持久化](#image_mogrify_save_as)
 
 - [贡献代码](#Contributing)
 - [许可证](#License)
@@ -498,6 +500,114 @@ spec
 **返回值**
 
 返回一个字符串类型的缩略图 URL
+
+
+<a name="image_mogrify_preview_url"></a>
+
+#### 高级图像处理（缩略、裁剪、旋转、转化）
+
+`Qiniu::RS.image_mogrify_preview_url()` 方法支持将一个存储在七牛云存储的图片进行缩略、裁剪、旋转和格式转化处理，该方法返回一个可以直接预览缩略图的URL。
+
+    image_mogrify_preview_url = Qiniu::RS.image_mogrify_preview_url(source_image_url, mogrify_options)
+
+**参数**
+
+source_image_url
+: 必须，字符串类型（string），指定原始图片的下载链接，可以根据 rs.get() 获取到。
+
+mogrify_options
+: 必须，Hash Map 格式的图像处理参数。
+
+`mogrify_options` 对象具体的规格如下：
+
+    mogrify_options = {
+        :thumbnail => <ImageSizeGeometry>,
+        :gravity => <GravityType>, =NorthWest, North, NorthEast, West, Center, East, SouthWest, South, SouthEast
+        :crop => <ImageSizeAndOffsetGeometry>,
+        :quality => <ImageQuality>,
+        :rotate => <RotateDegree>,
+        :format => <DestinationImageFormat>, =jpg, gif, png, tif, etc.
+        :auto_orient => <TrueOrFalse>
+    }
+
+`Qiniu::RS.image_mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](#/v2/api/foimg/#fo-imageMogr)。
+
+**返回值**
+
+返回一个可以预览最终缩略图的URL，String 类型。
+
+
+<a name="image_mogrify_save_as"></a>
+
+#### 高级图像处理（缩略、裁剪、旋转、转化）并持久化存储处理结果
+
+`Qiniu::RS.image_mogrify_save_as()` 方法支持将一个存储在七牛云存储的图片进行缩略、裁剪、旋转和格式转化处理，并且将处理后的缩略图作为一个新文件持久化存储到七牛云存储服务器上，这样就可以供后续直接使用而不用每次都传入参数进行图像处理。
+
+    result = Qiniu::RS.image_mogrify_save_as(target_bucket, target_key, src_img_url, mogrify_options)
+
+**参数**
+
+target_bucket
+: 必须，字符串类型（string），指定最终缩略图要存放的 bucket 。
+
+target_key
+: 必须，字符串类型（string），指定最终缩略图存放在云存储服务端的唯一文件ID。
+
+src_img_url
+: 必须，字符串类型（string），指定原始图片的下载链接，可以根据 rs.get() 获取到。
+
+mogrify_options
+: 必须，Hash Map 格式的图像处理参数。
+
+`mogrify_options` 对象具体的规格如下：
+
+    mogrify_options = {
+        :thumbnail => <ImageSizeGeometry>,
+        :gravity => <GravityType>, =NorthWest, North, NorthEast, West, Center, East, SouthWest, South, SouthEast
+        :crop => <ImageSizeAndOffsetGeometry>,
+        :quality => <ImageQuality>,
+        :rotate => <RotateDegree>,
+        :format => <DestinationImageFormat>, =jpg, gif, png, tif, etc.
+        :auto_orient => <TrueOrFalse>
+    }
+
+`Qiniu::RS::Image.mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](#/v2/api/foimg/#fo-imageMogr)。
+
+**返回值**
+
+如果请求失败，返回 `false`；否则，返回如下一个 `Hash` 类型的结构：
+
+    {"hash" => "FrOXNat8VhBVmcMF3uGrILpTu8Cs"}
+
+示例代码：
+
+    data = Qiniu::RS.get("<test_image_bucket>", "<test_image_key>")
+    src_img_url = data["url"]
+
+    target_bucket = "test_thumbnails_bucket"
+    target_key = "cropped-" + @test_image_key
+
+    mogrify_options = {
+      :thumbnail => "!120x120r",
+      :gravity => "center",
+      :crop => "!120x120a0a0",
+      :quality => 85,
+      :rotate => 45,
+      :format => "jpg",
+      :auto_orient => true
+    }
+
+    result = Qiniu::RS.image_mogrify_save_as(target_bucket, target_key, src_img_url, mogrify_options)
+    if result
+      thumbnail = Qiniu::RS.get(target_bucket, target_key)
+      puts thumbnail["url"]
+
+      # 您可以选择将存放缩略图的 bucket 公开，这样就可以直接以外链的形式访问到缩略图，而不用走API获取下载URL。
+      result = Qiniu::RS.publish("pic.example.com", target_bucket)
+
+      # 然后将 pic.example.com CNAME 到 iovip.qbox.me ，就可以直接以如下方式访问缩略图
+      # [GET] http://pic.example.com/<target_key>
+    end
 
 
 <a name="Contributing"></a>
