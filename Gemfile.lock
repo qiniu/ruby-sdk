@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    qiniu-rs (2.2.0)
+    qiniu-rs (2.2.1)
       json (~> 1.7.3)
       mime-types (~> 1.19)
       rest-client (~> 1.6.7)
