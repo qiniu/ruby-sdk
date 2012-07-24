@@ -14,8 +14,10 @@ title: Ruby SDK 使用指南 | 七牛云存储
 - [使用](#Usage)
     - [应用接入](#establish_connection!)
     - [Ruby On Rails 应用初始化设置](#ror-init)
-    - [获取用于上传文件的临时授权URL](#put_auth)
     - [上传文件](#upload)
+        - [服务端上传流程](#upload-server-side)
+        - [客户端上传流程](#upload-client-side)
+            - [获取用于上传文件的临时授权URL](#put_auth)
     - [查看文件属性信息](#stat)
     - [获取文件下载链接（含文件属性信息）](#get)
     - [只获取文件下载链接](#download)
@@ -30,6 +32,8 @@ title: Ruby SDK 使用指南 | 七牛云存储
     - [图像处理](#op-image)
         - [查看图片属性信息](#image_info)
         - [获取指定规格的缩略图预览地址](#image_preview_url)
+        - [高级图像处理（缩略、裁剪、旋转、转化）](#image_mogrify_preview_url)
+        - [高级图像处理（缩略、裁剪、旋转、转化）并持久化](#image_mogrify_save_as)
 
 - [贡献代码](#Contributing)
 - [许可证](#License)
@@ -86,9 +90,58 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 接下来，我们会逐一介绍此 SDK 提供的其他方法。
 
+<a name="upload"></a>
+
+### 上传文件
+
+<a name="upload-server-side"></a>
+
+#### 服务端上传流程
+
+通过 `Qiniu::RS.put_file()` 方法可在客户方的业务服务器上直接往七牛云存储上传文件。该函数规格如下：
+
+    Qiniu::RS.put_file :file               => file_path,
+                       :key                => record_id,
+                       :bucket             => bucket_name,
+                       :mime_type          => file_mime_type,
+                       :note               => some_notes,
+                       :enable_crc32_check => true
+
+**参数**
+
+:file
+: 必须，字符串类型（String），本地文件可被读取的有效路径
+
+:bucket
+: 必须，字符串类型（String），类似传统数据库里边的表名称，我们暂且将其叫做“资源表”，指定将该数据属性信息存储到具体的资源表中 。
+
+:key
+: 必须，字符串类型（String），类似传统数据库里边某个表的主键ID，给每一个文件一个UUID用于进行标示。
+
+:mime_type
+: 可选，字符串类型（String），文件的 mime-type 值。如若不传入，SDK 会自行计算得出，若计算失败缺省使用 application/octet-stream 代替之。
+
+:note
+: 可选，字符串类型（String），备注信息。
+
+:enable_crc32_check
+: 可选，Boolean 类型，是否启用文件上传 crc32 校验，默认为 false 。
+
+**返回值**
+
+上传成功，返回 `true`，否则返回 `false` 。
+
+**针对 NotFound 处理**
+
+您可以上传一个应对 HTTP 404 出错处理的文件，当您 [创建公开外链](#publish) 后，若公开的外链找不到该文件，即可使用您上传的“自定义404文件”代替之。要这么做，您只须使用 `Qiniu::RS.put_file` 函数上传一个 `key` 为固定字符串类型的值 `errno-404` 即可。
+
+<a name="upload-client-side"></a>
+
+#### 客户端上传流程
+
 <a name="put_auth"></a>
 
-### 获取用于上传文件的临时授权URL
+#### 获取用于上传文件的临时授权URL
 
     Qiniu::RS.put_auth(expires_in = nil, callback_url = nil)
 
@@ -110,56 +163,8 @@ callback_url
 
     remote_upload_url = Qiniu::RS.put_auth(60, 'http://api.example.com/notifications/qiniu-rs')
 
-如果您的网络程序是从云端（服务端程序）到终端（手持设备应用）的架构模型，且终端用户有使用您移动端App上传文件（比如照片或视频）的需求，可以把您服务器得到的此 `remote_upload_url` 返回给手持设备端的App，然后您的移动 App 可以使用 [七牛云存储 Objective-SDK （iOS）](http://docs.qiniutek.com/v2/sdk/objc/) 或 [七牛云存储 Java-SDK（Android）](http://docs.qiniutek.com/v2/sdk/java/) 的相关上传函数或参照 [七牛云存储API之文件上传](http://docs.qiniutek.com/v2/api/io/#rs-PutFile) 往该 `remote_upload_url` 上传文件。这样，您的终端用户即可把数据（比如图片或视频）直接上传到七牛云存储服务器上无须经由您的服务端中转，而且在上传之前，七牛云存储做了智能加速，终端用户上传数据始终是离他物理距离最近的存储节点。当终端用户上传成功后，七牛云存储服务端会向您指定的 `callback_url` 发送回调数据。在此示例程序中，七牛云存储服务端会将一组关于终端用户上传的数据的属性信息通过 HTTP POST 以 application/x-www-form-urlencoded 编码的方式发送到 `http://api.example.com/notifications/qiniu-rs` 这个地址，假设该地址是您业务服务器用于接收处理回调信息的地址。
+如果您的网络程序是从云端（服务端程序）到终端（手持设备应用）的架构模型，且终端用户有使用您移动端App上传文件（比如照片或视频）的需求，可以把您服务器得到的此 `remote_upload_url` 返回给手持设备端的App，然后您的移动 App 可以使用 [七牛云存储 Objective-SDK （iOS）](http://docs.qiniutek.com/v2/sdk/objc/) 或 [七牛云存储 Java-SDK（Android）](http://docs.qiniutek.com/v2/sdk/java/) 的相关上传函数或参照 [七牛云存储API之文件上传](http://docs.qiniutek.com/v2/api/io/#rs-PutFile) 往该 `remote_upload_url` 上传文件。这样，您的终端用户即可把数据（比如图片或视频）直接上传到七牛云存储服务器上无须经由您的服务端中转，而且在上传之前，七牛云存储做了智能加速，终端用户上传数据始终是离他物理距离最近的存储节点。当终端用户上传成功后，七牛云存储服务端会向您指定的 `callback_url` 发送回调数据。在此示例程序中，七牛云存储服务端会将一组关于终端用户上传的数据的属性信息通过 HTTP POST 以 `application/x-www-form-urlencoded` 编码的方式发送到 `http://api.example.com/notifications/qiniu-rs` 这个地址，假设该地址是您业务服务器用于接收处理回调信息的地址。
 
-<a name="upload"></a>
-
-### 上传文件
-
-通过 `Qiniu::RS.put_auth` 函数取得 `remote_upload_url` 之后，即可往该 URL 上传  multipart/form-data 编码格式的数据流。前面讲解了移动 App 拿到 `remote_upload_url` 之后上传数据的流程，如果您的服务端需要上传数据，依然可以使用此 SDK 提供的 `Qiniu::RS.upload` 函数。该函数规格如下：
-
-    Qiniu::RS.upload :url                => remote_upload_url,
-                     :file               => file_path,
-                     :key                => record_id,
-                     :bucket             => bucket_name,
-                     :mime_type          => file_mime_type,
-                     :note               => some_notes,
-                     :callback_params    => {},
-                     :enable_crc32_check => true
-
-**参数**
-
-:url
-: 必须，即通过 `Qiniu::RS.put_auth` 函数取得 `remote_upload_url`
-
-:file
-: 必须，字符串类型（String），本地文件可被读取的有效路径
-
-:bucket
-: 必须，字符串类型（String），类似传统数据库里边的表名称，我们暂且将其叫做“资源表”，指定将该数据属性信息存储到具体的资源表中 。
-
-:key
-: 必须，字符串类型（String），类似传统数据库里边某个表的主键ID，给每一个文件一个UUID用于进行标示。
-
-:mime_type
-: 可选，字符串类型（String），文件的 mime-type 值。如若不传入，SDK 会自行计算得出，若计算失败缺省使用 application/octet-stream 代替之。
-
-:note
-: 可选，字符串类型（String），备注信息。
-
-:callback_params
-: 可选，k/v 对的 Hash 结构，缺省为：`{:bucket => bucket, :key => key, :mime_type => mime_type}`，用于七牛云存储服务端通过 HTTP POST 以 application/x-www-form-urlencoded 编码的方式发送到  `Qiniu::RS.put_auth` 函数指定的 `callback_url` 。
-
-:enable_crc32_check
-: 可选，Boolean 类型，是否启用文件上传 crc32 校验，默认为 false 。
-
-**返回值**
-
-上传成功，返回 `true`，否则返回 `false` 。
-
-**针对 NotFound 处理**
-
-您可以上传一个应对 HTTP 404 出错处理的文件，当您 [创建公开外链](#publish) 后，若公开的外链找不到该文件，即可使用您上传的“自定义404文件”代替之。要这么做，您只须使用 `Qiniu::RS.upload` 函数上传一个 `key` 为固定字符串类型的值 `errno-404` 即可。
 
 <a name="stat"></a>
 
@@ -498,6 +503,114 @@ spec
 **返回值**
 
 返回一个字符串类型的缩略图 URL
+
+
+<a name="image_mogrify_preview_url"></a>
+
+#### 高级图像处理（缩略、裁剪、旋转、转化）
+
+`Qiniu::RS.image_mogrify_preview_url()` 方法支持将一个存储在七牛云存储的图片进行缩略、裁剪、旋转和格式转化处理，该方法返回一个可以直接预览缩略图的URL。
+
+    image_mogrify_preview_url = Qiniu::RS.image_mogrify_preview_url(source_image_url, mogrify_options)
+
+**参数**
+
+source_image_url
+: 必须，字符串类型（string），指定原始图片的下载链接，可以根据 rs.get() 获取到。
+
+mogrify_options
+: 必须，Hash Map 格式的图像处理参数。
+
+`mogrify_options` 对象具体的规格如下：
+
+    mogrify_options = {
+        :thumbnail => <ImageSizeGeometry>,
+        :gravity => <GravityType>, =NorthWest, North, NorthEast, West, Center, East, SouthWest, South, SouthEast
+        :crop => <ImageSizeAndOffsetGeometry>,
+        :quality => <ImageQuality>,
+        :rotate => <RotateDegree>,
+        :format => <DestinationImageFormat>, =jpg, gif, png, tif, etc.
+        :auto_orient => <TrueOrFalse>
+    }
+
+`Qiniu::RS.image_mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](#/v2/api/foimg/#fo-imageMogr)。
+
+**返回值**
+
+返回一个可以预览最终缩略图的URL，String 类型。
+
+
+<a name="image_mogrify_save_as"></a>
+
+#### 高级图像处理（缩略、裁剪、旋转、转化）并持久化存储处理结果
+
+`Qiniu::RS.image_mogrify_save_as()` 方法支持将一个存储在七牛云存储的图片进行缩略、裁剪、旋转和格式转化处理，并且将处理后的缩略图作为一个新文件持久化存储到七牛云存储服务器上，这样就可以供后续直接使用而不用每次都传入参数进行图像处理。
+
+    result = Qiniu::RS.image_mogrify_save_as(target_bucket, target_key, src_img_url, mogrify_options)
+
+**参数**
+
+target_bucket
+: 必须，字符串类型（string），指定最终缩略图要存放的 bucket 。
+
+target_key
+: 必须，字符串类型（string），指定最终缩略图存放在云存储服务端的唯一文件ID。
+
+src_img_url
+: 必须，字符串类型（string），指定原始图片的下载链接，可以根据 rs.get() 获取到。
+
+mogrify_options
+: 必须，Hash Map 格式的图像处理参数。
+
+`mogrify_options` 对象具体的规格如下：
+
+    mogrify_options = {
+        :thumbnail => <ImageSizeGeometry>,
+        :gravity => <GravityType>, =NorthWest, North, NorthEast, West, Center, East, SouthWest, South, SouthEast
+        :crop => <ImageSizeAndOffsetGeometry>,
+        :quality => <ImageQuality>,
+        :rotate => <RotateDegree>,
+        :format => <DestinationImageFormat>, =jpg, gif, png, tif, etc.
+        :auto_orient => <TrueOrFalse>
+    }
+
+`Qiniu::RS::Image.mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](#/v2/api/foimg/#fo-imageMogr)。
+
+**返回值**
+
+如果请求失败，返回 `false`；否则，返回如下一个 `Hash` 类型的结构：
+
+    {"hash" => "FrOXNat8VhBVmcMF3uGrILpTu8Cs"}
+
+示例代码：
+
+    data = Qiniu::RS.get("<test_image_bucket>", "<test_image_key>")
+    src_img_url = data["url"]
+
+    target_bucket = "test_thumbnails_bucket"
+    target_key = "cropped-" + @test_image_key
+
+    mogrify_options = {
+      :thumbnail => "!120x120r",
+      :gravity => "center",
+      :crop => "!120x120a0a0",
+      :quality => 85,
+      :rotate => 45,
+      :format => "jpg",
+      :auto_orient => true
+    }
+
+    result = Qiniu::RS.image_mogrify_save_as(target_bucket, target_key, src_img_url, mogrify_options)
+    if result
+      thumbnail = Qiniu::RS.get(target_bucket, target_key)
+      puts thumbnail["url"]
+
+      # 您可以选择将存放缩略图的 bucket 公开，这样就可以直接以外链的形式访问到缩略图，而不用走API获取下载URL。
+      result = Qiniu::RS.publish("pic.example.com", target_bucket)
+
+      # 然后将 pic.example.com CNAME 到 iovip.qbox.me ，就可以直接以如下方式访问缩略图
+      # [GET] http://pic.example.com/<target_key>
+    end
 
 
 <a name="Contributing"></a>
