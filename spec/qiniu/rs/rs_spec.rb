@@ -33,9 +33,9 @@ module Qiniu
         @domain = 'cdn.example.com'
       end
 
-      context "IO.put_file" do
+      context "IO.upload_file" do
         it "should works" do
-          code, data = Qiniu::RS::IO.put_file(@put_url, __FILE__, @bucket, @key)
+          code, data = Qiniu::RS::IO.upload_file(@put_url, __FILE__, @bucket, @key)
           code.should == 200
           puts data.inspect
         end

@@ -19,21 +19,26 @@ module Qiniu
         data["refresh_token"].should_not be_empty
         puts data.inspect
 =end
-
-        code2, data2 = Qiniu::RS::IO.put_auth()
-        code2.should == 200
-        data2["url"].should_not be_empty
-        data2["expiresIn"].should_not be_zero
-        puts data2.inspect
-
-        @put_url = data2["url"]
         @bucket = "test"
         @key = Digest::SHA1.hexdigest (Time.now.to_i+rand(100)).to_s
       end
 
+      context ".upload_file" do
+        it "should works" do
+          code, data = Qiniu::RS::IO.put_auth()
+          code.should == 200
+          data["url"].should_not be_empty
+          data["expiresIn"].should_not be_zero
+          puts data.inspect
+          code2, data2 = Qiniu::RS::IO.upload_file(data["url"], __FILE__, @bucket, @key)
+          code2.should == 200
+          puts data2.inspect
+        end
+      end
+
       context ".put_file" do
         it "should works" do
-          code, data = Qiniu::RS::IO.put_file(@put_url, __FILE__, @bucket, @key)
+          code, data = Qiniu::RS::IO.put_file(__FILE__, @bucket, @key, 'application/x-ruby', 'customMeta', true)
           code.should == 200
           puts data.inspect
         end
