@@ -43,7 +43,19 @@ module Qiniu
                                   :file =>  __FILE__,
                                   :bucket => @bucket,
                                   :key => @key,
+                                  :mime_type => 'application/x-ruby',
                                   :enable_crc32_check => true
+        result.should be_true
+      end
+    end
+
+    context ".put_file" do
+      it "should works" do
+        result = Qiniu::RS.put_file :file =>  __FILE__,
+                                    :bucket => @bucket,
+                                    :key => @key,
+                                    :mime_type => 'application/x-ruby',
+                                    :enable_crc32_check => true
         result.should be_true
       end
     end
