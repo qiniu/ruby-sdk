@@ -36,7 +36,6 @@ module Qiniu
                                   :file => local_file,
                                   :bucket => @bucket,
                                   :key => @key,
-                                  :mime_type => "image/png",
                                   :enable_crc32_check => true
         result.should be_true
 
@@ -47,7 +46,7 @@ module Qiniu
         @source_image_url = result["url"]
 
         @mogrify_options = {
-            :thumbnail => "!120x120r",
+            :thumbnail => "!120x120>",
             :gravity => "center",
             :crop => "!120x120a0a0",
             :quality => 85,
@@ -61,6 +60,13 @@ module Qiniu
         it "should works" do
           code, data = Qiniu::RS::Image.info(@source_image_url)
           code.should == 200
+          puts data.inspect
+        end
+      end
+
+      context ".exif" do
+        it "should works" do
+          code, data = Qiniu::RS::Image.exif(@source_image_url)
           puts data.inspect
         end
       end

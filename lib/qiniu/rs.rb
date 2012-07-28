@@ -124,6 +124,11 @@ module Qiniu
         code == StatusOK ? data : false
       end
 
+      def image_exif(url)
+        code, data = Image.exif(url)
+        code == StatusOK ? data : false
+      end
+
       def image_preview_url(url, spec)
         Image.preivew_url(url, spec)
       end
