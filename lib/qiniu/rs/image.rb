@@ -10,6 +10,10 @@ module Qiniu
           Utils.http_request url + '/imageInfo', nil, {:method => :get}
         end
 
+        def exif(url)
+          Utils.http_request url + '?exif', nil, {:method => :get}
+        end
+
         def preivew_url(url, spec)
           url + '/imagePreview/' + spec.to_s
         end
@@ -29,7 +33,7 @@ module Qiniu
             params_string += %Q(/#{key}/#{opts[key]}) unless opts[key].nil?
           end
           params_string += '/auto-orient' unless opts["auto_orient"].nil?
-          'imageMogr' + params_string
+          'imageMogr' + URI.escape(params_string)
         end
 
       end

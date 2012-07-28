@@ -59,7 +59,7 @@ module Qiniu
         end
 
         def call_with_signature(url, data, retry_times = 0, options = {})
-          code, data = http_request url, data, options.merge!({:qbox_signature_token => generate_qbox_signature(url, data)})
+          code, data = http_request url, data, options.merge({:qbox_signature_token => generate_qbox_signature(url, data)})
           [code, data]
         end
 
@@ -68,7 +68,7 @@ module Qiniu
             if Config.settings[:access_key].empty? || Config.settings[:secret_key].empty?
               code, data = Auth.call_with_logged_in(url, data)
             else
-              code, data = Auth.call_with_signature(url, data, options)
+              code, data = Auth.call_with_signature(url, data, 0, options)
             end
           rescue [MissingAccessToken, MissingRefreshToken, MissingUsernameOrPassword] => e
             Log.logger.error e
