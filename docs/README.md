@@ -31,6 +31,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
     - [取消公开外链](#unpublish)
     - [图像处理](#op-image)
         - [查看图片属性信息](#image_info)
+        - [查看图片EXIF信息](#image_exif)
         - [获取指定规格的缩略图预览地址](#image_preview_url)
         - [高级图像处理（缩略、裁剪、旋转、转化）](#image_mogrify_preview_url)
         - [高级图像处理（缩略、裁剪、旋转、转化）并持久化](#image_mogrify_save_as)
@@ -484,6 +485,24 @@ height
 colorModel
 : 原始图片着色模式
 
+<a name="image_exif"></a>
+
+#### 查看图片EXIF信息
+
+    Qiniu::RS.image_exif(url)
+
+使用 SDK 提供的 `Qiniu::RS.image_exif` 方法，可以基于一张存储于七牛云存储服务器上的原始图片图片，取到该图片的  EXIF 信息。
+
+**参数**
+
+url
+: 必须，字符串类型（String），原图的下载链接，需是 `Qiniu::RS.get`（或`Qiniu::RS.batch_get`）函数返回值中 `url` 字段的值，或者是 `Qiniu::RS.download`（或`Qiniu::RS.batch_download`）函数返回的下载链接。且文件本身必须是图片。
+
+**返回值**
+
+如果参数 `url` 所代表的图片没有 EXIF 信息，返回 `false`。否则，返回一个包含 EXIF 信息的 Hash 结构。
+
+
 <a name="image_preview_url"></a>
 
 #### 获取指定规格的缩略图预览地址
@@ -503,6 +522,7 @@ spec
 **返回值**
 
 返回一个字符串类型的缩略图 URL
+
 
 
 <a name="image_mogrify_preview_url"></a>
@@ -533,7 +553,7 @@ mogrify_options
         :auto_orient => <TrueOrFalse>
     }
 
-`Qiniu::RS.image_mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](#/v2/api/foimg/#fo-imageMogr)。
+`Qiniu::RS.image_mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v2/api/foimg/#fo-imageMogr)。
 
 **返回值**
 
@@ -574,7 +594,7 @@ mogrify_options
         :auto_orient => <TrueOrFalse>
     }
 
-`Qiniu::RS::Image.mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](#/v2/api/foimg/#fo-imageMogr)。
+`Qiniu::RS::Image.mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v2/api/foimg/#fo-imageMogr)。
 
 **返回值**
 

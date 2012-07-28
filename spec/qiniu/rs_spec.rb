@@ -164,6 +164,17 @@ module Qiniu
       end
     end
 
+    context ".image_exif" do
+      it "should works" do
+        data = Qiniu::RS.get(@test_image_bucket, @test_image_key)
+        data.should_not be_false
+        data.should_not be_empty
+        puts data.inspect
+        result = Qiniu::RS.image_exif(data["url"])
+        puts result.inspect
+      end
+    end
+
     context ".image_mogrify_save_as" do
       it "should works" do
         data = Qiniu::RS.get(@test_image_bucket, @test_image_key)
@@ -175,7 +186,7 @@ module Qiniu
         dest_key = "cropped-" + @test_image_key
         src_img_url = data["url"]
         mogrify_options = {
-          :thumbnail => "!120x120r",
+          :thumbnail => "!120x120>",
           :gravity => "center",
           :crop => "!120x120a0a0",
           :quality => 85,
