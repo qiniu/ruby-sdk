@@ -91,49 +91,14 @@ module Qiniu
         end
       end
 
-      def send_multipart_request(url, post_data, options = {})
-        code, data = 0, {}
-        begin
-          header_options = {
-            :accept => :json,
-            :user_agent => Config.settings[:user_agent]
-          }
-          auth_token = nil
-          if !options[:qbox_signature_token].nil? && !options[:qbox_signature_token].empty?
-            auth_token = 'QBox ' + options[:qbox_signature_token]
-          #elsif !options[:upload_signature_token].nil? && !options[:upload_signature_token].empty?
-            #auth_token = 'UpToken ' + options[:upload_signature_token]
-          elsif options[:access_token]
-            auth_token = 'Bearer ' + options[:access_token]
-          end
-          header_options.merge!('Authorization' => auth_token) unless auth_token.nil?
-          response = RestClient.post url, post_data, header_options
-          body = response.respond_to?(:body) ? response.body : ""
-          data = safe_json_parse(body) unless body.empty?
-          code = response.code.to_i if response.respond_to?(:code)
-        rescue Errno::ECONNRESET => err
-          Log.logger.error err
-        rescue => e
-          Log.logger.warn "#{e.message} => Utils.http_request('#{url}')"
-          res = e.response
-          if e.respond_to? :response
-            res = e.response
-            code = res.code.to_i if res.respond_to? :code
-            body = res.respond_to?(:body) ? res.body : ""
-            data = safe_json_parse(body) unless body.empty?
-          end
-        end
-        [code, data]
-      end
-
       def upload_multipart_data(url, filepath, action_string, callback_query_string = '')
           post_data = {
-            :file => File.new(filepath, 'rb'),
             :params => callback_query_string,
             :action => action_string,
+            :file => File.new(filepath, 'rb'),
             :multipart => true
           }
-          send_multipart_request(url, post_data)
+          http_request url, post_data
       end
 
       def generate_query_string(params)
