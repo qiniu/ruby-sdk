@@ -30,9 +30,8 @@ module Qiniu
         def put_file(local_file, bucket, key = nil, mime_type = nil, custom_meta = nil, enable_crc32_check = false)
           action_params = _generate_action_params(local_file, bucket, key, mime_type, custom_meta, enable_crc32_check)
           url = Config.settings[:io_host] + action_params
-          post_data = {:file => File.new(local_file, 'rb'), :multipart => true}
-          options = {:qbox_signature_token => Utils.generate_qbox_signature(url, nil)}
-          Utils.send_multipart_request url, post_data, options
+          options = {:content_type => 'application/octet-stream'}
+          Auth.request url, ::IO.read(local_file), options
         end
 
         private
