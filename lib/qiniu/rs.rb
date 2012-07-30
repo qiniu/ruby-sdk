@@ -29,6 +29,16 @@ module Qiniu
         code == StatusOK
       end
 
+      def buckets
+        code, data = RS.buckets
+        code == StatusOK ? data : false
+      end
+
+      def mkbucket(bucket_name)
+        code, data = RS.mkbuckets(bucket_name)
+        code == StatusOK
+      end
+
       def put_auth(expires_in = nil, callback_url = nil)
         code, data = IO.put_auth(expires_in, callback_url)
         code == StatusOK ? data["url"] : false

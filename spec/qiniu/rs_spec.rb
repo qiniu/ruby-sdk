@@ -13,6 +13,9 @@ module Qiniu
 
       @test_image_bucket = 'test_images_12345'
       @test_image_key = 'image_logo_for_test.png'
+
+      result = Qiniu::RS.mkbucket(@bucket)
+      result.should_not be_false
     end
 
 =begin
@@ -23,6 +26,14 @@ module Qiniu
       end
     end
 =end
+
+    context ".buckets" do
+      it "should works" do
+        result = Qiniu::RS.buckets
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
 
     context ".put_auth" do
       it "should works" do

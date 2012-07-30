@@ -26,16 +26,28 @@ module Qiniu
         data2["url"].should_not be_empty
         data2["expiresIn"].should_not be_zero
         puts data2.inspect
-
         @put_url = data2["url"]
+
         @bucket = "test"
         @key = Digest::SHA1.hexdigest (Time.now.to_i+rand(100)).to_s
-        @domain = 'cdn.example.com'
+        @domain = 'iovip.qbox.me/test'
+
+        code3, data3 = Qiniu::RS::RS.mkbucket(@bucket)
+        code3.should == 200
+        puts data3.inspect
       end
 
       context "IO.upload_file" do
         it "should works" do
           code, data = Qiniu::RS::IO.upload_file(@put_url, __FILE__, @bucket, @key)
+          code.should == 200
+          puts data.inspect
+        end
+      end
+
+      context ".buckets" do
+        it "should works" do
+          code, data = Qiniu::RS::RS.buckets
           code.should == 200
           puts data.inspect
         end
