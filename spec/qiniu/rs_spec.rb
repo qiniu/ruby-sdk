@@ -35,6 +35,38 @@ module Qiniu
       end
     end
 
+    context ".set_protected" do
+      it "should works" do
+        result = Qiniu::RS.set_protected(@bucket, 1)
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
+
+    context ".set_separator" do
+      it "should works" do
+        result = Qiniu::RS::Pub.set_separator(@bucket, "-")
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
+
+    context ".set_style" do
+      it "should works" do
+        result = Qiniu::RS::Pub.set_style(@bucket, "small.jpg", "imageMogr/auto-orient/thumbnail/!120x120r/gravity/center/crop/!120x120/quality/80")
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
+
+    context ".unstyle" do
+      it "should works" do
+        result = Qiniu::RS::Pub.unstyle(@bucket, "small.jpg")
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
+
     context ".put_auth" do
       it "should works" do
         result = Qiniu::RS.put_auth(10)

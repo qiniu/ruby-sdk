@@ -11,6 +11,7 @@ module Qiniu
     autoload :Auth, 'qiniu/rs/auth'
     autoload :IO, 'qiniu/rs/io'
     autoload :RS, 'qiniu/rs/rs'
+    autoload :Pub, 'qiniu/rs/pub'
     autoload :Image, 'qiniu/rs/image'
     autoload :AccessToken, 'qiniu/tokens/access_token'
     autoload :QboxToken, 'qiniu/tokens/qbox_token'
@@ -29,13 +30,33 @@ module Qiniu
         code == StatusOK
       end
 
+      def mkbucket(bucket_name)
+        code, data = RS.mkbuckets(bucket_name)
+        code == StatusOK
+      end
+
       def buckets
         code, data = RS.buckets
         code == StatusOK ? data : false
       end
 
-      def mkbucket(bucket_name)
-        code, data = RS.mkbuckets(bucket_name)
+      def set_protected(bucket, protected_mode)
+        code, data = Pub.set_protected(bucket, protected_mode)
+        code == StatusOK
+      end
+
+      def set_separator(bucket, separator)
+        code, data = Pub.set_separator(bucket, separator)
+        code == StatusOK
+      end
+
+      def set_style(bucket, name, style)
+        code, data = Pub.set_style(bucket, name, style)
+        code == StatusOK
+      end
+
+      def unstyle(bucket, name)
+        code, data = Pub.unstyle(bucket, name)
         code == StatusOK
       end
 

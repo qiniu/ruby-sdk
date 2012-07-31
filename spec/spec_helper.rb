@@ -14,6 +14,7 @@ RSpec.configure do |config|
                                     :auth_url   => "http://m1.qbox.me:13001/oauth2/token",
                                     :rs_host    => "http://m1.qbox.me:13003",
                                     :io_host    => "http://m1.qbox.me:13004",
-                                    :up_host    => "http://m1.qbox.me:13019"
+                                    :up_host    => "http://m1.qbox.me:13019",
+                                    :pub_host   => "http://m1.qbox.me:13012"
   end
 end
