@@ -66,6 +66,18 @@ module Qiniu
         code == StatusOK
       end
 
+      def upload_with_token opts = {}
+        code, data = IO.upload_with_token(opts[:uptoken],
+                                          opts[:file],
+                                          opts[:bucket],
+                                          opts[:key],
+                                          opts[:mime_type],
+                                          opts[:note],
+                                          opts[:callback_params],
+                                          opts[:enable_crc32_check])
+        code == StatusOK ? data : false
+      end
+
       def stat(bucket, key)
         code, data = RS.stat(bucket, key)
         code == StatusOK ? data : false
@@ -151,10 +163,6 @@ module Qiniu
         code, data = RS.image_mogrify_save_as(bucket, key, source_image_url, options)
         code == StatusOK ? data : false
       end
-
-      #def generate_upload_token(scope, expires_in, callback_url = nil, return_url = nil)
-      #  Utils.generate_upload_token(scope, expires_in, callback_url, return_url)
-      #end
 
       def generate_upload_token(opts = {})
         token_obj = UploadToken.new(opts)

@@ -71,6 +71,22 @@ module Qiniu
       end
     end
 
+    context ".upload_with_token" do
+      it "should works" do
+        uptoken_opts = {:scope => @bucket, :expires_in => 3600, :callback_url => "http://localhost:4567"}
+        upload_opts = {
+          :uptoken => Qiniu::RS.generate_upload_token(uptoken_opts),
+          :file => __FILE__,
+          :bucket => @bucket,
+          :key => @key,
+          :enable_crc32_check => true
+        }
+        result = Qiniu::RS.upload_with_token(upload_opts)
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
+
     context ".stat" do
       it "should works" do
         result = Qiniu::RS.stat(@bucket, @key)

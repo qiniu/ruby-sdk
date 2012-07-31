@@ -91,13 +91,14 @@ module Qiniu
         end
       end
 
-      def upload_multipart_data(url, filepath, action_string, callback_query_string = '')
+      def upload_multipart_data(url, filepath, action_string, callback_query_string = '', uptoken = nil)
           post_data = {
             :params => callback_query_string,
             :action => action_string,
             :file => File.new(filepath, 'rb'),
             :multipart => true
           }
+          post_data[:auth] = uptoken unless uptoken.nil?
           http_request url, post_data
       end
 
@@ -128,21 +129,6 @@ module Qiniu
         encoded_digest = urlsafe_base64_encode(hmac.digest)
         %Q(#{access_key}:#{encoded_digest})
       end
-
-=begin
-      def generate_upload_token(scope, expires_in, callback_url = nil, return_url = nil)
-        access_key = Config.settings[:access_key]
-        secret_key = Config.settings[:secret_key]
-        params = {:scope => scope, :deadline => Time.now.to_i + expires_in}
-        params[:callbackUrl] = callback_url if !callback_url.nil? && !calback_url.empty?
-        params[:returnUrl] = return_url if !return_url.nil? && !return_url.empty?
-        signature = urlsafe_base64_encode(params.to_json)
-        hmac = HMAC::SHA1.new(secret_key)
-        hmac.update(signature)
-        encoded_digest = urlsafe_base64_encode(hmac.digest)
-        %Q(#{access_key}:#{encoded_digest}:#{signature})
-      end
-=end
 
     end
   end

@@ -44,6 +44,16 @@ module Qiniu
         end
       end
 
+      context ".upload_with_token" do
+        it "should works" do
+          upopts = {:scope => @bucket, :expires_in => 3600, :callback_url => "http://localhost:4567"}
+          uptoken = Qiniu::Auth.generate_upload_token(upopts)
+          code, data = Qiniu::RS::IO.upload_with_token(uptoken, __FILE__, @bucket, @key, nil, nil, nil, true)
+          code.should == 200
+          puts data.inspect
+        end
+      end
+
     end
   end
 end
