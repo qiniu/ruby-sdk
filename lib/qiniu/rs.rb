@@ -11,6 +11,7 @@ module Qiniu
     autoload :Auth, 'qiniu/rs/auth'
     autoload :IO, 'qiniu/rs/io'
     autoload :RS, 'qiniu/rs/rs'
+    autoload :EU, 'qiniu/rs/eu'
     autoload :Pub, 'qiniu/rs/pub'
     autoload :Image, 'qiniu/rs/image'
     autoload :AccessToken, 'qiniu/tokens/access_token'
@@ -58,6 +59,16 @@ module Qiniu
       def unstyle(bucket, name)
         code, data = Pub.unstyle(bucket, name)
         code == StatusOK
+      end
+
+      def set_watermark(customer_id, options = {})
+        code, data = EU.set_watermark(customer_id, options)
+        code == StatusOK
+      end
+
+      def get_watermark(customer_id)
+        code, data = EU.get_watermark(customer_id)
+        code == StatusOK ? data : false
       end
 
       def put_auth(expires_in = nil, callback_url = nil)

@@ -15,6 +15,7 @@ RSpec.configure do |config|
                                     :rs_host    => "http://m1.qbox.me:13003",
                                     :io_host    => "http://m1.qbox.me:13004",
                                     :up_host    => "http://m1.qbox.me:13019",
-                                    :pub_host   => "http://m1.qbox.me:13012"
+                                    :pub_host   => "http://m1.qbox.me:13012",
+                                    :eu_host    => "http://m1.qbox.me:15000",
   end
 end

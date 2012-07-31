@@ -24,6 +24,7 @@ module Qiniu
           :io_host         => "http://iovip.qbox.me",
           :up_host         => "http://m1.qbox.me:13019",
           :pub_host        => "http://m1.qbox.me:13012",
+          :eu_host         => "http://m1.qbox.me:15000",
           :client_id       => "a75604760c4da4caaa456c0c5895c061c3065c5a",
           :client_secret   => "75df554a39f58accb7eb293b550fa59618674b7d",
           :access_key      => "",
