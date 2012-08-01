@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'qiniu/rs/auth'
+require 'qiniu/rs/rs'
 require 'qiniu/rs/pub'
 
 module Qiniu
@@ -9,11 +10,21 @@ module Qiniu
     describe Pub do
 
       before :all do
-        @bucket = "test_bucket_123"
-
-        result = Qiniu::RS.mkbucket(@bucket)
-        result.should_not be_false
+        @bucket = "test123"
+        code, data = Qiniu::RS::RS.mkbucket(@bucket)
+        code.should == 200
+        puts data.inspect
       end
+
+=begin
+      context ".mkbucket" do
+        it "should works" do
+          code, data = Qiniu::RS::RS.mkbucket(@bucket)
+          code.should == 200
+          puts data.inspect
+        end
+      end
+=end
 
       after :all do
         result = Qiniu::RS.drop(@bucket)

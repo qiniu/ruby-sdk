@@ -32,7 +32,7 @@ module Qiniu
       end
 
       def mkbucket(bucket_name)
-        code, data = RS.mkbuckets(bucket_name)
+        code, data = RS.mkbucket(bucket_name)
         code == StatusOK
       end
 

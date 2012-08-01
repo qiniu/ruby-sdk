@@ -11,37 +11,28 @@ module Qiniu
     describe RS do
 
       before :all do
-=begin
-        code, data = Qiniu::RS::Auth.exchange_by_password!("test@qbox.net", "test")
-        code.should == 200
-        data.should be_an_instance_of(Hash)
-        data["access_token"].should_not be_empty
-        data["refresh_token"].should_not be_empty
-        data["refresh_token"].should_not be_empty
-        puts data.inspect
-=end
 
-        code2, data2 = Qiniu::RS::IO.put_auth()
-        code2.should == 200
-        data2["url"].should_not be_empty
-        data2["expiresIn"].should_not be_zero
-        puts data2.inspect
-        @put_url = data2["url"]
-
-        @bucket = "test"
+        @bucket = "test_bucket_1234"
         @key = Digest::SHA1.hexdigest (Time.now.to_i+rand(100)).to_s
         @domain = 'iovip.qbox.me/test'
 
-        code3, data3 = Qiniu::RS::RS.mkbucket(@bucket)
-        code3.should == 200
-        puts data3.inspect
+        code, data = Qiniu::RS::RS.mkbucket(@bucket)
+        code.should == 200
+        puts data.inspect
       end
 
       context "IO.upload_file" do
         it "should works" do
-          code, data = Qiniu::RS::IO.upload_file(@put_url, __FILE__, @bucket, @key)
+          code, data = Qiniu::RS::IO.put_auth()
           code.should == 200
+          data["url"].should_not be_empty
+          data["expiresIn"].should_not be_zero
           puts data.inspect
+          @put_url = data["url"]
+
+          code2, data2 = Qiniu::RS::IO.upload_file(@put_url, __FILE__, @bucket, @key)
+          code2.should == 200
+          puts data2.inspect
         end
       end
 

@@ -21,7 +21,7 @@ module Qiniu
 
         def generate_signature
           params = {:scope => @scope, :deadline => Time.now.to_i + @expires_in}
-          params[:callbackUrl] = @callback_url if !@callback_url.nil? && !@calback_url.empty?
+          params[:callbackUrl] = @callback_url if !@callback_url.nil? && !@callback_url.empty?
           params[:returnUrl] = @return_url if !@return_url.nil? && !@return_url.empty?
           urlsafe_base64_encode(params.to_json)
         end

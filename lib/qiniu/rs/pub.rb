@@ -13,20 +13,20 @@ module Qiniu
 
         def set_separator(bucket, separator)
           host = Config.settings[:pub_host]
-          encoded_separator = encode_entry_uri(separator)
+          encoded_separator = Utils.urlsafe_base64_encode(separator)
           Auth.request %Q(#{host}/separator/#{bucket}/sep/#{encoded_separator})
         end
 
         def set_style(bucket, name, style)
           host = Config.settings[:pub_host]
-          encoded_name = encode_entry_uri(name)
-          encoded_style = encode_entry_uri(style)
+          encoded_name = Utils.urlsafe_base64_encode(name)
+          encoded_style = Utils.urlsafe_base64_encode(style)
           Auth.request %Q(#{host}/style/#{bucket}/name/#{encoded_name}/style/#{encoded_style})
         end
 
         def unstyle(bucket, name)
           host = Config.settings[:pub_host]
-          encoded_name = encode_entry_uri(name)
+          encoded_name = Utils.urlsafe_base64_encode(name)
           Auth.request %Q(#{host}/unstyle/#{bucket}/name/#{encoded_name})
         end
 
