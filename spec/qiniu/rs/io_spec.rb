@@ -46,7 +46,7 @@ module Qiniu
 
       context ".upload_with_token" do
         it "should works" do
-          upopts = {:scope => @bucket, :expires_in => 3600}
+          upopts = {:scope => @bucket, :expires_in => 3600, :customer => 1}
           uptoken = Qiniu::RS.generate_upload_token(upopts)
           code, data = Qiniu::RS::IO.upload_with_token(uptoken, __FILE__, @bucket, @key, nil, nil, nil, true)
           code.should == 200
