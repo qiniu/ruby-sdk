@@ -124,7 +124,7 @@ module Qiniu
 
     context ".upload_with_token" do
       it "should works" do
-        uptoken_opts = {:scope => @bucket, :expires_in => 3600, :callback_url => "http://localhost:4567"}
+        uptoken_opts = {:scope => @bucket, :expires_in => 3600}
         upload_opts = {
           :uptoken => Qiniu::RS.generate_upload_token(uptoken_opts),
           :file => __FILE__,
