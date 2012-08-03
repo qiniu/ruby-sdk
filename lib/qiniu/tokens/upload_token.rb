@@ -10,20 +10,20 @@ module Qiniu
 
         include Utils
 
-        attr_accessor :scope, :expires_in, :callback_url, :callback_body_type, :customer
+        attr_accessor :scope, :expires_in, :callback_url, :callback_body, :customer
 
         def initialize(opts = {})
           @scope = opts[:scope]
           @expires_in = opts[:expires_in]
           @callback_url = opts[:callback_url]
-          @callback_body_type = opts[:callback_body_type]
+          @callback_body = opts[:callback_body]
           @customer = opts[:customer]
         end
 
         def generate_signature
           params = {:scope => @scope, :deadline => Time.now.to_i + @expires_in}
           params[:callbackUrl] = @callback_url if !@callback_url.nil? && !@callback_url.empty?
-          params[:callbackBodyType] = @callback_body_type if !@callback_body_type.nil? && !@callback_body_type.empty?
+          params[:callbackBodyType] = @callback_body if !@callback_body.nil? && !@callback_body.empty?
           params[:customer] = @customer if !@customer.nil? && !@customer.empty?
           urlsafe_base64_encode(params.to_json)
         end
