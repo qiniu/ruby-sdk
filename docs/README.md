@@ -15,6 +15,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
     - [应用接入](#establish_connection!)
     - [Ruby On Rails 应用初始化设置](#ror-init)
     - [上传文件](#upload)
+        - [获取用于上传文件的临时授权凭证](#generate-upload-token)
         - [服务端上传流程](#upload-server-side)
         - [客户端上传流程](#upload-client-side)
             - [获取用于上传文件的临时授权URL](#put_auth)
@@ -94,6 +95,16 @@ title: Ruby SDK 使用指南 | 七牛云存储
 <a name="upload"></a>
 
 ### 上传文件
+
+<a name="generate-upload-token"></a>
+
+#### 获取用于上传文件的临时授权凭证
+
+    Qiniu::RS.generate_upload_token :scope              => target_bucket,
+                                    :expires_in         => expires_in_seconds,
+                                    :callback_url       => callback_url,
+                                    :callback_body_type => callback_body_type,
+                                    :customer           => customer_uid
 
 <a name="upload-server-side"></a>
 
