@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 require 'uri'
+require 'cgi'
 require 'json'
 require 'zlib'
 require 'base64'
@@ -104,8 +105,8 @@ module Qiniu
 
       def generate_query_string(params)
         return params if params.is_a?(String)
-        total_param = params.map { |key, value| key.to_s+"="+value.to_s }
-        URI.escape(total_param.join("&"))
+        total_param = params.map { |key, value| %Q(#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s).gsub('+', '%20')}) }
+        total_param.join("&")
       end
 
       def crc32checksum(filepath)
@@ -119,10 +120,10 @@ module Qiniu
         signature = uri.path
         query_string = uri.query
         signature += '?' + query_string if !query_string.nil? && !query_string.empty?
-        signature += "\n";
+        signature += "\n"
         if params.is_a?(Hash)
-            total_param = params.map { |key, value| key.to_s+"="+value.to_s }
-            signature += total_param.join("&")
+            params_string = generate_query_string(params)
+            signature += params_string
         end
         hmac = HMAC::SHA1.new(secret_key)
         hmac.update(signature)
