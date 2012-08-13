@@ -203,7 +203,7 @@ module Qiniu
         #token_obj.scope = opts[:scope]
         #token_obj.expires_in = opts[:expires_in]
         #token_obj.callback_url = opts[:callback_url]
-        #token_obj.callback_body_type = opts[:callback_body_type]
+        #token_obj.callback_body = opts[:callback_body]
         #token_obj.customer = opts[:customer]
         token_obj.generate_token
       end
