@@ -13,6 +13,9 @@ module Qiniu
 
       @test_image_bucket = 'test_images_12345'
       @test_image_key = 'image_logo_for_test.png'
+
+      result = Qiniu::RS.mkbucket(@bucket)
+      result.should_not be_false
     end
 
 =begin
@@ -23,6 +26,65 @@ module Qiniu
       end
     end
 =end
+
+    context ".buckets" do
+      it "should works" do
+        result = Qiniu::RS.buckets
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
+
+    context ".set_protected" do
+      it "should works" do
+        result = Qiniu::RS.set_protected(@bucket, 1)
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
+
+    context ".set_separator" do
+      it "should works" do
+        result = Qiniu::RS.set_separator(@bucket, "-")
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
+
+    context ".set_style" do
+      it "should works" do
+        result = Qiniu::RS.set_style(@bucket, "small.jpg", "imageMogr/auto-orient/thumbnail/!120x120r/gravity/center/crop/!120x120/quality/80")
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
+
+    context ".unstyle" do
+      it "should works" do
+        result = Qiniu::RS.unstyle(@bucket, "small.jpg")
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
+
+    context ".set_watermark" do
+      it "should works" do
+        options = {
+          :text => "Powered by QiniuRS"
+        }
+        result = Qiniu::RS.set_watermark(1, options)
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
+
+    context ".get_watermark" do
+      it "should works" do
+        result = Qiniu::RS.get_watermark(1)
+        result.should_not be_false
+        puts result.inspect
+      end
+    end
 
     context ".put_auth" do
       it "should works" do
@@ -57,6 +119,22 @@ module Qiniu
                                     :mime_type => 'application/x-ruby',
                                     :enable_crc32_check => true
         result.should be_true
+      end
+    end
+
+    context ".upload_file" do
+      it "should works" do
+        uptoken_opts = {:scope => @bucket, :expires_in => 3600}
+        upload_opts = {
+          :uptoken => Qiniu::RS.generate_upload_token(uptoken_opts),
+          :file => __FILE__,
+          :bucket => @bucket,
+          :key => @key,
+          :enable_crc32_check => true
+        }
+        result = Qiniu::RS.upload_file(upload_opts)
+        result.should_not be_false
+        puts result.inspect
       end
     end
 

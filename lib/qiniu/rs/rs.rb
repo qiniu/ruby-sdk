@@ -6,6 +6,14 @@ module Qiniu
       class << self
         include Utils
 
+        def buckets
+          Auth.request Config.settings[:rs_host] + '/buckets'
+        end
+
+        def mkbucket(bucket_name)
+          Auth.request Config.settings[:rs_host] + '/mkbucket/' + bucket_name
+        end
+
         def stat(bucket, key)
           Auth.request Config.settings[:rs_host] + '/stat/' + encode_entry_uri(bucket, key)
         end
