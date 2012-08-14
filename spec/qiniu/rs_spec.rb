@@ -45,7 +45,7 @@ module Qiniu
 
     context ".set_separator" do
       it "should works" do
-        result = Qiniu::RS::Pub.set_separator(@bucket, "-")
+        result = Qiniu::RS.set_separator(@bucket, "-")
         result.should_not be_false
         puts result.inspect
       end
@@ -53,7 +53,7 @@ module Qiniu
 
     context ".set_style" do
       it "should works" do
-        result = Qiniu::RS::Pub.set_style(@bucket, "small.jpg", "imageMogr/auto-orient/thumbnail/!120x120r/gravity/center/crop/!120x120/quality/80")
+        result = Qiniu::RS.set_style(@bucket, "small.jpg", "imageMogr/auto-orient/thumbnail/!120x120r/gravity/center/crop/!120x120/quality/80")
         result.should_not be_false
         puts result.inspect
       end
@@ -61,7 +61,7 @@ module Qiniu
 
     context ".unstyle" do
       it "should works" do
-        result = Qiniu::RS::Pub.unstyle(@bucket, "small.jpg")
+        result = Qiniu::RS.unstyle(@bucket, "small.jpg")
         result.should_not be_false
         puts result.inspect
       end
@@ -122,7 +122,7 @@ module Qiniu
       end
     end
 
-    context ".upload_with_token" do
+    context ".upload_file" do
       it "should works" do
         uptoken_opts = {:scope => @bucket, :expires_in => 3600}
         upload_opts = {
@@ -132,7 +132,7 @@ module Qiniu
           :key => @key,
           :enable_crc32_check => true
         }
-        result = Qiniu::RS.upload_with_token(upload_opts)
+        result = Qiniu::RS.upload_file(upload_opts)
         result.should_not be_false
         puts result.inspect
       end

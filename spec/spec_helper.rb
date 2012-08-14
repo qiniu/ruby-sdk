@@ -6,11 +6,11 @@ require 'rspec'
 
 RSpec.configure do |config|
   config.before :all do
-=begin
+#=begin
     Qiniu::RS.establish_connection! :access_key => "3fPHl_SLkPXdioqI_A8_NGngPWVJhlDk2ktRjogH",
                                     :secret_key => "bXTPMDJrVYRJUiSDRFtFYwycVD_mjXxYWrCYlDHy"
-=end
-#=begin
+#=end
+=begin
     Qiniu::RS.establish_connection! :access_key => "bE21M6FW9V7zAFrBY5psgKOKJQLiBj12qMWTpc57",
                                     :secret_key => "uMo7Nyq_eDK_CuQ8_FYCxoTHQZqjiaPh-cbiKO7L",
                                     :auth_url   => "http://m1.qbox.me:13001/oauth2/token",
@@ -19,7 +19,7 @@ RSpec.configure do |config|
                                     :up_host    => "http://m1.qbox.me:13019",
                                     :pub_host   => "http://m1.qbox.me:13012",
                                     :eu_host    => "http://m1.qbox.me:13050"
-#=end
+=end
 =begin
     Qiniu::RS.establish_connection! :access_key => "k6N9zXGKUs7UFmJtPXLWOF4idSAgPL4xA6BApBd-",
                                     :secret_key => "p77h4hLERjGPi1Aw4P_G5qHGMKcz1MeSz3CqnYMV",
