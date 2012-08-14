@@ -16,26 +16,30 @@ title: Ruby SDK 使用指南 | 七牛云存储
     - [Ruby On Rails 应用初始化设置](#ror-init)
     - [上传文件](#upload)
         - [获取用于上传文件的临时授权凭证](#generate-upload-token)
-        - [服务端上传流程](#upload-server-side)
-        - [客户端上传流程](#upload-client-side)
-            - [获取用于上传文件的临时授权URL](#put_auth)
+        - [服务端上传文件](#upload-server-side)
+        - [客户端直传文件](#upload-client-side)
     - [查看文件属性信息](#stat)
     - [获取文件下载链接（含文件属性信息）](#get)
     - [只获取文件下载链接](#download)
     - [删除指定文件](#delete)
-    - [删除所有文件（单个“表”）](#drop)
+    - [删除所有文件（单个 bucket）](#drop)
     - [批量操作](#batch)
         - [批量获取文件属性信息（含下载链接）](#batch_get)
         - [批量获取文件下载链接](#batch_download)
         - [批量删除文件](#batch_delete)
     - [创建公开外链](#publish)
     - [取消公开外链](#unpublish)
+    - [bucket 管理](#buckets)
+        - [创建 bucket](#mkbucket)
+        - [列出所有 bucket](#list-all-buckets)
+        - [访问控制](#set-protected)
     - [图像处理](#op-image)
         - [查看图片属性信息](#image_info)
         - [查看图片EXIF信息](#image_exif)
         - [获取指定规格的缩略图预览地址](#image_preview_url)
         - [高级图像处理（缩略、裁剪、旋转、转化）](#image_mogrify_preview_url)
         - [高级图像处理（缩略、裁剪、旋转、转化）并持久化](#image_mogrify_save_as)
+        - [高级图像处理（水印）](#image-watermarking)
 
 - [贡献代码](#Contributing)
 - [许可证](#License)
@@ -100,44 +104,77 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 #### 获取用于上传文件的临时授权凭证
 
+要上传一个文件，首先需要调用 SDK 提供的 `Qiniu::RS.generate_upload_token` 函数来获取一个经过授权用于临时匿名上传的 `upload_token`——经过数字签名的一组数据信息，该 `upload_token` 作为文件上传流中 `multipart/form-data` 的一部分进行传输。
+
+`Qiniu::RS.generate_upload_token` 函数原型如下：
+
     Qiniu::RS.generate_upload_token :scope              => target_bucket,
                                     :expires_in         => expires_in_seconds,
                                     :callback_url       => callback_url,
                                     :callback_body_type => callback_body_type,
-                                    :customer           => customer_uid
-
-<a name="upload-server-side"></a>
-
-#### 服务端上传流程
-
-通过 `Qiniu::RS.put_file()` 方法可在客户方的业务服务器上直接往七牛云存储上传文件。该函数规格如下：
-
-    Qiniu::RS.put_file :file               => file_path,
-                       :key                => record_id,
-                       :bucket             => bucket_name,
-                       :mime_type          => file_mime_type,
-                       :note               => some_notes,
-                       :enable_crc32_check => true
+                                    :customer           => end_user_id
 
 **参数**
 
-:file
+scope
+: 必须，字符串类型（String），设定文件要上传到的目标 `bucket`
+
+expires_in
+: 可选，数字类型，用于设置上传 URL 的有效期，单位：秒，缺省为 3600 秒，即 1 小时后该上传链接不再有效（但该上传URL在其生成之后的59分59秒都是可用的）。
+
+callback_url
+: 可选，字符串类型（String），用于设置文件上传成功后，七牛云存储服务端要回调客户方的业务服务器地址。
+
+callback_body_type
+: 可选，字符串类型（String），用于设置文件上传成功后，七牛云存储服务端向客户方的业务服务器发送回调请求的 `Content-Type`。
+
+customer
+: 可选，字符串类型（String），
+
+**返回值**
+
+返回一个字符串类型（String）的用于上传文件用的临时授权 `upload_token`。
+
+<a name="upload-server-side"></a>
+
+#### 服务端上传文件
+
+通过 `Qiniu::RS.upload_with_token()` 方法可在客户方的业务服务器上直接往七牛云存储上传文件。该函数规格如下：
+
+    Qiniu::RS.upload_with_token :uptoken            => upload_token,
+                                :file               => file_path,
+                                :bucket             => bucket_name,
+                                :key                => record_id,
+                                :mime_type          => file_mime_type,
+                                :note               => some_notes,
+                                :callback_params    => callback_params,
+                                :enable_crc32_check => false
+
+**参数**
+
+uptoken
+: 必须，字符串类型（String），调用 `Qiniu::RS.generate_upload_token` 生成的 [用于上传文件的临时授权凭证](#generate-upload-token)
+
+file
 : 必须，字符串类型（String），本地文件可被读取的有效路径
 
-:bucket
+bucket
 : 必须，字符串类型（String），类似传统数据库里边的表名称，我们暂且将其叫做“资源表”，指定将该数据属性信息存储到具体的资源表中 。
 
-:key
+key
 : 必须，字符串类型（String），类似传统数据库里边某个表的主键ID，给每一个文件一个UUID用于进行标示。
 
-:mime_type
+mime_type
 : 可选，字符串类型（String），文件的 mime-type 值。如若不传入，SDK 会自行计算得出，若计算失败缺省使用 application/octet-stream 代替之。
 
-:note
-: 可选，字符串类型（String），备注信息。
+note
+: 可选，字符串类型（String），为文件添加备注信息。
 
-:enable_crc32_check
-: 可选，Boolean 类型，是否启用文件上传 crc32 校验，默认为 false 。
+callback_params
+: 可选，String 或者 Hash 类型，文件上传成功后，七牛云存储向客户方业务服务器发送的回调参数。
+
+enable_crc32_check
+: 可选，Boolean 类型，是否启用文件上传 crc32 校验，缺省为 false 。
 
 **返回值**
 
@@ -149,33 +186,16 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 <a name="upload-client-side"></a>
 
-#### 客户端上传流程
+#### 客户端直传文件
 
-<a name="put_auth"></a>
+客户端上传流程和服务端上传类似，差别在于：客户端直传文件所需的 `upload_token` 可以选择在客户方的业务服务器端生成，也可以选择在客户方的客户端程序里边生成。选择前者，可以和客户方的业务揉合得更紧密和安全些，比如防伪造请求。
 
-#### 获取用于上传文件的临时授权URL
+简单来讲，客户端上传流程也分为两步：
 
-    Qiniu::RS.put_auth(expires_in = nil, callback_url = nil)
+1. 获取 `upload_token`（[用于上传文件的临时授权凭证](#generate-upload-token)）
+2. 将该 `upload_token` 作为文件上传流 `multipart/form-data` 中的一部分实现上传操作
 
-要上传一个文件，首先需要调用 SDK 提供的 `Qiniu::RS.put_auth` 函数来获取一个经过授权用于临时匿名上传的 URL 。 “临时” 一词表示该 URL 有一定的时效性，即过一段时间后会过期，有效期由传入的参数 `expires_in` 决定，缺省情况下 `expires_in` 的值是 3600 秒，即 1 小时后该上传链接不再有效（但该上传URL在其生成之后的59分59秒都是可用的）。
-
-**参数**
-
-expires_in
-: 可选，整型，用于设置上传 URL 的有效期，单位：秒，缺省为 3600 秒
-
-callback_url
-: 可选，字符串类型（String），用于设置文件往这个 URL 上传成功后，七牛云存储服务端要回调客户方的业务服务器地址。
-
-**返回值**
-
-如果请求成功，返回一个字符串类型（String）的用于上传文件的已授权的临时有效 URL ，否则返回 `false` 。
-
-**示例**
-
-    remote_upload_url = Qiniu::RS.put_auth(60, 'http://api.example.com/notifications/qiniu-rs')
-
-如果您的网络程序是从云端（服务端程序）到终端（手持设备应用）的架构模型，且终端用户有使用您移动端App上传文件（比如照片或视频）的需求，可以把您服务器得到的此 `remote_upload_url` 返回给手持设备端的App，然后您的移动 App 可以使用 [七牛云存储 Objective-SDK （iOS）](http://docs.qiniutek.com/v2/sdk/objc/) 或 [七牛云存储 Java-SDK（Android）](http://docs.qiniutek.com/v2/sdk/java/) 的相关上传函数或参照 [七牛云存储API之文件上传](http://docs.qiniutek.com/v2/api/io/#rs-PutFile) 往该 `remote_upload_url` 上传文件。这样，您的终端用户即可把数据（比如图片或视频）直接上传到七牛云存储服务器上无须经由您的服务端中转，而且在上传之前，七牛云存储做了智能加速，终端用户上传数据始终是离他物理距离最近的存储节点。当终端用户上传成功后，七牛云存储服务端会向您指定的 `callback_url` 发送回调数据。在此示例程序中，七牛云存储服务端会将一组关于终端用户上传的数据的属性信息通过 HTTP POST 以 `application/x-www-form-urlencoded` 编码的方式发送到 `http://api.example.com/notifications/qiniu-rs` 这个地址，假设该地址是您业务服务器用于接收处理回调信息的地址。
+如果您的网络程序是从云端（服务端程序）到终端（手持设备应用）的架构模型，且终端用户有使用您移动端App上传文件（比如照片或视频）的需求，可以把您服务器得到的此 `upload_token` 返回给手持设备端的App，然后您的移动 App 可以使用 [七牛云存储 Objective-SDK （iOS）](http://docs.qiniutek.com/v2/sdk/objc/) 或 [七牛云存储 Android-SDK](http://docs.qiniutek.com/v2/sdk/android/) 的相关上传函数或参照 [七牛云存储API之文件上传](http://docs.qiniutek.com/v2/api/io/#upload) 直传文件。这样，您的终端用户即可把数据（比如图片或视频）直接上传到七牛云存储服务器上无须经由您的服务端中转，而且在上传之前，七牛云存储做了智能加速，终端用户上传数据始终是离他物理距离最近的存储节点。当终端用户上传成功后，七牛云存储服务端会向您指定的 `callback_url` 发送回调数据。如果 `callback_url` 所在的服务处理完毕后输出 `JSON` 格式的数据，七牛云存储服务端会将该回调请求所得的响应信息原封不动地返回给终端应用程序。
 
 
 <a name="stat"></a>
@@ -299,7 +319,7 @@ key
 
 <a name="drop"></a>
 
-### 删除所有文件（单个“表”）
+### 删除所有文件（单个 bucket）
 
     Qiniu::RS.drop(bucket)
 
@@ -423,7 +443,7 @@ keys
 
 调用 `Qiniu::RS.publish` 函数可以将您在七牛云存储中的资源表 `bucket` 发布到某个 `domain` 下，`domain` 需要在 DNS 管理里边 CNAME 到 `iovip.qbox.me` 。
 
-这样，用户就可以通过 `http://<domain>/<key>` 来访问资源表 `bucket` 中的文件。键值为 `foo/bar/file` 的文件对应访问 URL 为 `http://<domain>/foo/bar/file`。 另外，`domain` 可以是一个真实的域名，比如 `www.example.com`，也可以是七牛云存储的二级路径，比如 `io.qbox.me/example` 。
+这样，用户就可以通过 `http://<domain>/<key>` 来访问资源表 `bucket` 中的文件。键值为 `foo/bar/file` 的文件对应访问 URL 为 `http://<domain>/foo/bar/file`。 另外，`domain` 可以是一个真实的域名，比如 `www.example.com`，也可以是七牛云存储的二级路径，比如 `iovip.qbox.me/example` 。
 
 例如：执行 `Qiniu::RS.publish("cdn.example.com", "EXAMPLE_BUCKET")` 后，那么键名为 `foo/bar/file` 的文件可以通过 `http://cdn.example.com/foo/bar/file` 访问。
 
@@ -455,6 +475,23 @@ domain
 **返回值**
 
 如果撤销成功，返回 `true`，否则返回 `false` 。
+
+<a name="buckets"></a>
+
+### bucket 管理
+
+<a name="mkbucket"></a>
+
+#### 创建 bucket
+
+<a name="list-all-buckets"></a>
+
+#### 列出所有 bucket
+
+<a name="set-protected"></a>
+
+#### 访问控制
+        
 
 <a name="op-image"></a>
 
