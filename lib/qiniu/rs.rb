@@ -66,7 +66,7 @@ module Qiniu
         code == StatusOK
       end
 
-      def get_watermark(customer_id)
+      def get_watermark(customer_id = nil)
         code, data = EU.get_watermark(customer_id)
         code == StatusOK ? data : false
       end
@@ -98,7 +98,7 @@ module Qiniu
         code == StatusOK
       end
 
-      def upload_with_token opts = {}
+      def upload_file opts = {}
         code, data = IO.upload_with_token(opts[:uptoken],
                                           opts[:file],
                                           opts[:bucket],

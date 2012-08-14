@@ -122,7 +122,7 @@ module Qiniu
       end
     end
 
-    context ".upload_with_token" do
+    context ".upload_file" do
       it "should works" do
         uptoken_opts = {:scope => @bucket, :expires_in => 3600}
         upload_opts = {
@@ -132,7 +132,7 @@ module Qiniu
           :key => @key,
           :enable_crc32_check => true
         }
-        result = Qiniu::RS.upload_with_token(upload_opts)
+        result = Qiniu::RS.upload_file(upload_opts)
         result.should_not be_false
         puts result.inspect
       end
