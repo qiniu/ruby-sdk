@@ -504,7 +504,7 @@ domain
 #### 创建 Bucket
 
     Qiniu::RS.mkbucket(bucket_name)
-    
+
 可以通过 SDK 提供的 `Qiniu::RS.mkbucket` 函数创建一个 bucket（资源表）。
 
 **参数**
@@ -521,7 +521,7 @@ bucket_name
 #### 列出所有 Bucket
 
     Qiniu::RS.buckets
-    
+
 可以通过 SDK 提供的 `Qiniu::RS.buckets` 函数列出当前登录客户的所有 buckets（资源表）。
 
 **返回值**
@@ -535,7 +535,7 @@ bucket_name
 #### 访问控制
 
     Qiniu::RS.set_protected(bucket_name, protected_mode)
-    
+
 可以通过 SDK 提供的 `Qiniu::RS.set_protected` 函数来设置指定 bucket 的访问属性，一般在水印处理时作原图保护用。
 
 **参数**
@@ -777,7 +777,7 @@ mogrify_options
 设置水印后，其原图属性为私有，不能再通过这种形式访问。但是用户可以在原图的 `<Key>` 后面加上“分隔符”，以及相应的水印风格样式来访问打水印后的图片。例如，假设您为用户设定的访问水印图的分隔符为中划线 “-”，那么用户可以通过这种形式来访问打水印后的图片：
 
     http://<Domain>/<Key>-/imageView/<Mode>/w/<Width>/h/<Height>/q/<Quality>/format/<Format>/sharpen/<Sharpen>/watermark/<HasWatermark>
-    
+
 其中，`HasWatermark` 参数为 `0` （或者没有）表示不打水印，为 `1` 表示给图片打水印。
 
 通过 SDK 提供的 `Qiniu::RS.set_separator` 函数可以设置水印预览图URL分隔符：
@@ -804,15 +804,15 @@ separator
 <a name="watermarking-set-style"></a>
 
 #### 3. 设置水印预览图规格别名
-		
+
 通过步骤2中所描述的水印预览图 URL 来访问打水印后的图片毕竟较为繁琐，因此可以通过为该水印预览图规格设置“别名”的形式来访问。如：
-    
+
 别名（Name） | 规格（Style） | 说明
 ----------- | ------------ | -------
 small.jpg   | imageView/0/w/120/h/90 | 大小为 120x90，不打水印
 middle.jpg  | imageView/0/w/440/h/330/watermark/1 | 大小为 440x330，打水印
 large.jpg   | imageView/0/w/1280/h/760/watermark/1 | 大小为 1280x760，打水印
-    
+
 
 SDK 提供了 `Qiniu::RS.set_style` 函数可以定义预览图规格别名，该函数原型如下：
 
@@ -839,15 +839,23 @@ style
     qboxrsctl style <Bucket> <Name> <Style>
 
 无论是通过 SDK 提供的方法还是命令行辅助工具操作，在设置完成后，即可通过通过以下方式来访问设定规格后的图片：
-	
+
 	// 其中 “-” 为分隔符，“small.jpg” 为预览图规格别名
 	[GET] http://<Domain>/<Key>-small.jpg
-	
+
 	// 其中 “!” 为分隔符，“middle.jpg” 为预览图规格别名
 	[GET] http://<Domain>/<Key>!middle.jpg
-	
-	// 其中 “@” 为分隔符，“large.jpg” 为预览图规格别名	[GET] http://<Domain>/<Key>@large.jpg以上这些设置水印模板前的准备只需操作一次，即可对后续设置的所有水印模板生效。由于是一次性操作，建议使用 qboxrsctl 命令行辅助工具进行相关设置。**取消水印预览图规格设置**您也可以为某个水印预览图规格取消“别名”设置，SDK 提供了相应的方法：
-    Qiniu::RS.unstyle(bucket, name)
+
+	// 其中 “@” 为分隔符，“large.jpg” 为预览图规格别名
+    [GET] http://<Domain>/<Key>@large.jpg
+
+以上这些设置水印模板前的准备只需操作一次，即可对后续设置的所有水印模板生效。由于是一次性操作，建议使用 qboxrsctl 命令行辅助工具进行相关设置。
+
+**取消水印预览图规格设置**
+
+您也可以为某个水印预览图规格取消“别名”设置，SDK 提供了相应的方法：
+
+    Qiniu::RS.unset_style(bucket, name)
 
 **参数**
 

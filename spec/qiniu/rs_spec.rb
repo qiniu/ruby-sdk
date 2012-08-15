@@ -59,9 +59,9 @@ module Qiniu
       end
     end
 
-    context ".unstyle" do
+    context ".unset_style" do
       it "should works" do
-        result = Qiniu::RS.unstyle(@bucket, "small.jpg")
+        result = Qiniu::RS.unset_style(@bucket, "small.jpg")
         result.should_not be_false
         puts result.inspect
       end
@@ -261,6 +261,9 @@ module Qiniu
         puts data.inspect
 
         dest_bucket = "test_thumbnails_bucket"
+        result = Qiniu::RS.mkbucket(dest_bucket)
+        result.should_not be_false
+
         dest_key = "cropped-" + @test_image_key
         src_img_url = data["url"]
         mogrify_options = {
@@ -272,10 +275,10 @@ module Qiniu
           :format => "jpg",
           :auto_orient => true
         }
-        result = Qiniu::RS.image_mogrify_save_as(dest_bucket, dest_key, src_img_url, mogrify_options)
-        result.should_not be_false
-        result.should_not be_empty
-        puts result.inspect
+        result2 = Qiniu::RS.image_mogrify_save_as(dest_bucket, dest_key, src_img_url, mogrify_options)
+        result2.should_not be_false
+        result2.should_not be_empty
+        puts result2.inspect
       end
     end
 
