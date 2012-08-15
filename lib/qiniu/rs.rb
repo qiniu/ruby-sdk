@@ -11,6 +11,8 @@ module Qiniu
     autoload :Auth, 'qiniu/rs/auth'
     autoload :IO, 'qiniu/rs/io'
     autoload :RS, 'qiniu/rs/rs'
+    autoload :EU, 'qiniu/rs/eu'
+    autoload :Pub, 'qiniu/rs/pub'
     autoload :Image, 'qiniu/rs/image'
     autoload :AccessToken, 'qiniu/tokens/access_token'
     autoload :QboxToken, 'qiniu/tokens/qbox_token'
@@ -27,6 +29,46 @@ module Qiniu
       def login!(user, pwd)
         code, data = Auth.exchange_by_password!(user, pwd)
         code == StatusOK
+      end
+
+      def mkbucket(bucket_name)
+        code, data = RS.mkbucket(bucket_name)
+        code == StatusOK
+      end
+
+      def buckets
+        code, data = RS.buckets
+        code == StatusOK ? data : false
+      end
+
+      def set_protected(bucket, protected_mode)
+        code, data = Pub.set_protected(bucket, protected_mode)
+        code == StatusOK
+      end
+
+      def set_separator(bucket, separator)
+        code, data = Pub.set_separator(bucket, separator)
+        code == StatusOK
+      end
+
+      def set_style(bucket, name, style)
+        code, data = Pub.set_style(bucket, name, style)
+        code == StatusOK
+      end
+
+      def unset_style(bucket, name)
+        code, data = Pub.unset_style(bucket, name)
+        code == StatusOK
+      end
+
+      def set_watermark(customer_id, options = {})
+        code, data = EU.set_watermark(customer_id, options)
+        code == StatusOK
+      end
+
+      def get_watermark(customer_id = nil)
+        code, data = EU.get_watermark(customer_id)
+        code == StatusOK ? data : false
       end
 
       def put_auth(expires_in = nil, callback_url = nil)
@@ -54,6 +96,18 @@ module Qiniu
                                  opts[:note],
                                  opts[:enable_crc32_check])
         code == StatusOK
+      end
+
+      def upload_file opts = {}
+        code, data = IO.upload_with_token(opts[:uptoken],
+                                          opts[:file],
+                                          opts[:bucket],
+                                          opts[:key],
+                                          opts[:mime_type],
+                                          opts[:note],
+                                          opts[:callback_params],
+                                          opts[:enable_crc32_check])
+        code == StatusOK ? data : false
       end
 
       def stat(bucket, key)
@@ -142,10 +196,6 @@ module Qiniu
         code == StatusOK ? data : false
       end
 
-      #def generate_upload_token(scope, expires_in, callback_url = nil, return_url = nil)
-      #  Utils.generate_upload_token(scope, expires_in, callback_url, return_url)
-      #end
-
       def generate_upload_token(opts = {})
         token_obj = UploadToken.new(opts)
         token_obj.access_key = Config.settings[:access_key]
@@ -153,7 +203,8 @@ module Qiniu
         #token_obj.scope = opts[:scope]
         #token_obj.expires_in = opts[:expires_in]
         #token_obj.callback_url = opts[:callback_url]
-        #token_obj.return_url = opts[:return_url]
+        #token_obj.callback_body_type = opts[:callback_body_type]
+        #token_obj.customer = opts[:customer]
         token_obj.generate_token
       end
 

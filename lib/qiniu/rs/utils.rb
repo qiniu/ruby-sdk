@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 require 'uri'
+require 'cgi'
 require 'json'
 require 'zlib'
 require 'base64'
@@ -91,20 +92,21 @@ module Qiniu
         end
       end
 
-      def upload_multipart_data(url, filepath, action_string, callback_query_string = '')
+      def upload_multipart_data(url, filepath, action_string, callback_query_string = '', uptoken = nil)
           post_data = {
             :params => callback_query_string,
             :action => action_string,
             :file => File.new(filepath, 'rb'),
             :multipart => true
           }
+          post_data[:auth] = uptoken unless uptoken.nil?
           http_request url, post_data
       end
 
       def generate_query_string(params)
         return params if params.is_a?(String)
-        total_param = params.map { |key, value| key.to_s+"="+value.to_s }
-        URI.escape(total_param.join("&"))
+        total_param = params.map { |key, value| %Q(#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s).gsub('+', '%20')}) }
+        total_param.join("&")
       end
 
       def crc32checksum(filepath)
@@ -118,31 +120,16 @@ module Qiniu
         signature = uri.path
         query_string = uri.query
         signature += '?' + query_string if !query_string.nil? && !query_string.empty?
-        signature += "\n";
+        signature += "\n"
         if params.is_a?(Hash)
-            total_param = params.map { |key, value| key.to_s+"="+value.to_s }
-            signature += total_param.join("&")
+            params_string = generate_query_string(params)
+            signature += params_string
         end
         hmac = HMAC::SHA1.new(secret_key)
         hmac.update(signature)
         encoded_digest = urlsafe_base64_encode(hmac.digest)
         %Q(#{access_key}:#{encoded_digest})
       end
-
-=begin
-      def generate_upload_token(scope, expires_in, callback_url = nil, return_url = nil)
-        access_key = Config.settings[:access_key]
-        secret_key = Config.settings[:secret_key]
-        params = {:scope => scope, :deadline => Time.now.to_i + expires_in}
-        params[:callbackUrl] = callback_url if !callback_url.nil? && !calback_url.empty?
-        params[:returnUrl] = return_url if !return_url.nil? && !return_url.empty?
-        signature = urlsafe_base64_encode(params.to_json)
-        hmac = HMAC::SHA1.new(secret_key)
-        hmac.update(signature)
-        encoded_digest = urlsafe_base64_encode(hmac.digest)
-        %Q(#{access_key}:#{encoded_digest}:#{signature})
-      end
-=end
 
     end
   end

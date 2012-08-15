@@ -4,7 +4,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 # Ruby SDK 使用指南
 
-此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](/v2/api/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
+此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](/v3/api/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
 七牛云存储 Ruby SDK 源码地址：[https://github.com/qiniu/ruby-sdk](https://github.com/qiniu/ruby-sdk)
 
@@ -15,26 +15,38 @@ title: Ruby SDK 使用指南 | 七牛云存储
     - [应用接入](#establish_connection!)
     - [Ruby On Rails 应用初始化设置](#ror-init)
     - [上传文件](#upload)
-        - [服务端上传流程](#upload-server-side)
-        - [客户端上传流程](#upload-client-side)
-            - [获取用于上传文件的临时授权URL](#put_auth)
+        - [获取用于上传文件的临时授权凭证](#generate-upload-token)
+        - [服务端上传文件](#upload-server-side)
+            - [针对 NotFound 场景处理](#upload-file-for-not-found)
+        - [客户端直传文件](#upload-client-side)
     - [查看文件属性信息](#stat)
     - [获取文件下载链接（含文件属性信息）](#get)
     - [只获取文件下载链接](#download)
     - [删除指定文件](#delete)
-    - [删除所有文件（单个“表”）](#drop)
+    - [删除所有文件（单个 bucket）](#drop)
     - [批量操作](#batch)
         - [批量获取文件属性信息（含下载链接）](#batch_get)
         - [批量获取文件下载链接](#batch_download)
         - [批量删除文件](#batch_delete)
     - [创建公开外链](#publish)
     - [取消公开外链](#unpublish)
+    - [Bucket（资源表）管理](#buckets)
+        - [创建 Bucket](#mkbucket)
+        - [列出所有 Bucket](#list-all-buckets)
+        - [访问控制](#set-protected)
     - [图像处理](#op-image)
         - [查看图片属性信息](#image_info)
         - [查看图片EXIF信息](#image_exif)
         - [获取指定规格的缩略图预览地址](#image_preview_url)
         - [高级图像处理（缩略、裁剪、旋转、转化）](#image_mogrify_preview_url)
         - [高级图像处理（缩略、裁剪、旋转、转化）并持久化](#image_mogrify_save_as)
+        - [高级图像处理（水印）](#image-watermarking)
+            - [水印准备工作](#watermarking-pre-work)
+                - [设置原图保护](#watermarking-set-protected)
+                - [设置水印预览图URL分隔符](#watermarking-set-sep)
+                - [设置水印预览图规格别名](#watermarking-set-style)
+            - [设置水印模板](#watermarking-set-template)
+            - [获取水印模板](#watermarking-get-template)
 
 - [贡献代码](#Contributing)
 - [许可证](#License)
@@ -95,20 +107,60 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 ### 上传文件
 
-<a name="upload-server-side"></a>
+<a name="generate-upload-token"></a>
 
-#### 服务端上传流程
+#### 获取用于上传文件的临时授权凭证
 
-通过 `Qiniu::RS.put_file()` 方法可在客户方的业务服务器上直接往七牛云存储上传文件。该函数规格如下：
+要上传一个文件，首先需要调用 SDK 提供的 `Qiniu::RS.generate_upload_token` 函数来获取一个经过授权用于临时匿名上传的 `upload_token`——经过数字签名的一组数据信息，该 `upload_token` 作为文件上传流中 `multipart/form-data` 的一部分进行传输。
 
-    Qiniu::RS.put_file :file               => file_path,
-                       :key                => record_id,
-                       :bucket             => bucket_name,
-                       :mime_type          => file_mime_type,
-                       :note               => some_notes,
-                       :enable_crc32_check => true
+`Qiniu::RS.generate_upload_token` 函数原型如下：
+
+    Qiniu::RS.generate_upload_token :scope              => target_bucket,
+                                    :expires_in         => expires_in_seconds,
+                                    :callback_url       => callback_url,
+                                    :callback_body_type => callback_body_type,
+                                    :customer           => end_user_id
 
 **参数**
+
+:scope
+: 必须，字符串类型（String），设定文件要上传到的目标 `bucket`
+
+:expires_in
+: 可选，数字类型，用于设置上传 URL 的有效期，单位：秒，缺省为 3600 秒，即 1 小时后该上传链接不再有效（但该上传URL在其生成之后的59分59秒都是可用的）。
+
+:callback_url
+: 可选，字符串类型（String），用于设置文件上传成功后，七牛云存储服务端要回调客户方的业务服务器地址。
+
+:callback_body_type
+: 可选，字符串类型（String），用于设置文件上传成功后，七牛云存储服务端向客户方的业务服务器发送回调请求的 `Content-Type`。
+
+:customer
+: 可选，字符串类型（String），客户方终端用户（End User）的ID，该字段可以用来标示一个文件的属主，这在一些特殊场景下（比如给终端用户上传的图片打上名字水印）非常有用。
+
+**返回值**
+
+返回一个字符串类型（String）的用于上传文件用的临时授权 `upload_token`。
+
+<a name="upload-server-side"></a>
+
+#### 服务端上传文件
+
+通过 `Qiniu::RS.upload_file()` 方法可在客户方的业务服务器上直接往七牛云存储上传文件。该函数规格如下：
+
+    Qiniu::RS.upload_file :uptoken            => upload_token,
+                          :file               => file_path,
+                          :bucket             => bucket_name,
+                          :key                => record_id,
+                          :mime_type          => file_mime_type,
+                          :note               => some_notes,
+                          :callback_params    => callback_params,
+                          :enable_crc32_check => false
+
+**参数**
+
+:uptoken
+: 必须，字符串类型（String），调用 `Qiniu::RS.generate_upload_token` 生成的 [用于上传文件的临时授权凭证](#generate-upload-token)
 
 :file
 : 必须，字符串类型（String），本地文件可被读取的有效路径
@@ -123,48 +175,46 @@ title: Ruby SDK 使用指南 | 七牛云存储
 : 可选，字符串类型（String），文件的 mime-type 值。如若不传入，SDK 会自行计算得出，若计算失败缺省使用 application/octet-stream 代替之。
 
 :note
-: 可选，字符串类型（String），备注信息。
+: 可选，字符串类型（String），为文件添加备注信息。
+
+:callback_params
+: 可选，String 或者 Hash 类型，文件上传成功后，七牛云存储向客户方业务服务器发送的回调参数。
 
 :enable_crc32_check
-: 可选，Boolean 类型，是否启用文件上传 crc32 校验，默认为 false 。
+: 可选，Boolean 类型，是否启用文件上传 crc32 校验，缺省为 false 。
 
 **返回值**
 
-上传成功，返回 `true`，否则返回 `false` 。
+上传成功，返回如下一个 Hash，否则返回 `false`：
 
-**针对 NotFound 处理**
+    {"hash"=>"FgHk-_iqpnZji6PsNr4ghsK5qEwR"}
 
-您可以上传一个应对 HTTP 404 出错处理的文件，当您 [创建公开外链](#publish) 后，若公开的外链找不到该文件，即可使用您上传的“自定义404文件”代替之。要这么做，您只须使用 `Qiniu::RS.put_file` 函数上传一个 `key` 为固定字符串类型的值 `errno-404` 即可。
+<a name="upload-file-for-not-found"></a>
+
+##### 针对 NotFound 场景处理
+
+您可以上传一个应对 HTTP 404 出错处理的文件，当您 [创建公开外链](#publish) 后，若公开的外链找不到该文件，即可使用您上传的“自定义404文件”代替之。要这么做，您只须使用 `Qiniu::RS.upload_file` 函数上传一个 `key` 为固定字符串类型的值 `errno-404` 即可。
+
+除了使用 SDK 提供的方法，同样也可以借助七牛云存储提供的命令行辅助工具 [qboxrsctl](https://github.com/qiniu/devtools/tags) 达到同样的目的：
+
+    qboxrsctl put <Bucket> <Key> <LocalFile>
+
+将其中的 `<Key>` 换作  `errno-404` 即可。
+
+注意，每个 `<Bucket>` 里边有且只有一个 `errno-404` 文件，上传多个，最后的那一个会覆盖前面所有的。
 
 <a name="upload-client-side"></a>
 
-#### 客户端上传流程
+#### 客户端直传文件
 
-<a name="put_auth"></a>
+客户端上传流程和服务端上传类似，差别在于：客户端直传文件所需的 `upload_token` 可以选择在客户方的业务服务器端生成，也可以选择在客户方的客户端程序里边生成。选择前者，可以和客户方的业务揉合得更紧密和安全些，比如防伪造请求。
 
-#### 获取用于上传文件的临时授权URL
+简单来讲，客户端上传流程也分为两步：
 
-    Qiniu::RS.put_auth(expires_in = nil, callback_url = nil)
+1. 获取 `upload_token`（[用于上传文件的临时授权凭证](#generate-upload-token)）
+2. 将该 `upload_token` 作为文件上传流 `multipart/form-data` 中的一部分实现上传操作
 
-要上传一个文件，首先需要调用 SDK 提供的 `Qiniu::RS.put_auth` 函数来获取一个经过授权用于临时匿名上传的 URL 。 “临时” 一词表示该 URL 有一定的时效性，即过一段时间后会过期，有效期由传入的参数 `expires_in` 决定，缺省情况下 `expires_in` 的值是 3600 秒，即 1 小时后该上传链接不再有效（但该上传URL在其生成之后的59分59秒都是可用的）。
-
-**参数**
-
-expires_in
-: 可选，整型，用于设置上传 URL 的有效期，单位：秒，缺省为 3600 秒
-
-callback_url
-: 可选，字符串类型（String），用于设置文件往这个 URL 上传成功后，七牛云存储服务端要回调客户方的业务服务器地址。
-
-**返回值**
-
-如果请求成功，返回一个字符串类型（String）的用于上传文件的已授权的临时有效 URL ，否则返回 `false` 。
-
-**示例**
-
-    remote_upload_url = Qiniu::RS.put_auth(60, 'http://api.example.com/notifications/qiniu-rs')
-
-如果您的网络程序是从云端（服务端程序）到终端（手持设备应用）的架构模型，且终端用户有使用您移动端App上传文件（比如照片或视频）的需求，可以把您服务器得到的此 `remote_upload_url` 返回给手持设备端的App，然后您的移动 App 可以使用 [七牛云存储 Objective-SDK （iOS）](http://docs.qiniutek.com/v2/sdk/objc/) 或 [七牛云存储 Java-SDK（Android）](http://docs.qiniutek.com/v2/sdk/java/) 的相关上传函数或参照 [七牛云存储API之文件上传](http://docs.qiniutek.com/v2/api/io/#rs-PutFile) 往该 `remote_upload_url` 上传文件。这样，您的终端用户即可把数据（比如图片或视频）直接上传到七牛云存储服务器上无须经由您的服务端中转，而且在上传之前，七牛云存储做了智能加速，终端用户上传数据始终是离他物理距离最近的存储节点。当终端用户上传成功后，七牛云存储服务端会向您指定的 `callback_url` 发送回调数据。在此示例程序中，七牛云存储服务端会将一组关于终端用户上传的数据的属性信息通过 HTTP POST 以 `application/x-www-form-urlencoded` 编码的方式发送到 `http://api.example.com/notifications/qiniu-rs` 这个地址，假设该地址是您业务服务器用于接收处理回调信息的地址。
+如果您的网络程序是从云端（服务端程序）到终端（手持设备应用）的架构模型，且终端用户有使用您移动端App上传文件（比如照片或视频）的需求，可以把您服务器得到的此 `upload_token` 返回给手持设备端的App，然后您的移动 App 可以使用 [七牛云存储 Objective-SDK （iOS）](http://docs.qiniutek.com/v3/sdk/objc/) 或 [七牛云存储 Android-SDK](http://docs.qiniutek.com/v3/sdk/android/) 的相关上传函数或参照 [七牛云存储API之文件上传](http://docs.qiniutek.com/v3/api/io/#upload) 直传文件。这样，您的终端用户即可把数据（比如图片或视频）直接上传到七牛云存储服务器上无须经由您的服务端中转，而且在上传之前，七牛云存储做了智能加速，终端用户上传数据始终是离他物理距离最近的存储节点。当终端用户上传成功后，七牛云存储服务端会向您指定的 `callback_url` 发送回调数据。如果 `callback_url` 所在的服务处理完毕后输出 `JSON` 格式的数据，七牛云存储服务端会将该回调请求所得的响应信息原封不动地返回给终端应用程序。
 
 
 <a name="stat"></a>
@@ -288,7 +338,7 @@ key
 
 <a name="drop"></a>
 
-### 删除所有文件（单个“表”）
+### 删除所有文件（单个 bucket）
 
     Qiniu::RS.drop(bucket)
 
@@ -412,7 +462,7 @@ keys
 
 调用 `Qiniu::RS.publish` 函数可以将您在七牛云存储中的资源表 `bucket` 发布到某个 `domain` 下，`domain` 需要在 DNS 管理里边 CNAME 到 `iovip.qbox.me` 。
 
-这样，用户就可以通过 `http://<domain>/<key>` 来访问资源表 `bucket` 中的文件。键值为 `foo/bar/file` 的文件对应访问 URL 为 `http://<domain>/foo/bar/file`。 另外，`domain` 可以是一个真实的域名，比如 `www.example.com`，也可以是七牛云存储的二级路径，比如 `io.qbox.me/example` 。
+这样，用户就可以通过 `http://<domain>/<key>` 来访问资源表 `bucket` 中的文件。键值为 `foo/bar/file` 的文件对应访问 URL 为 `http://<domain>/foo/bar/file`。 另外，`domain` 可以是一个真实的域名，比如 `www.example.com`，也可以是七牛云存储的二级路径，比如 `iovip.qbox.me/example` 。
 
 例如：执行 `Qiniu::RS.publish("cdn.example.com", "EXAMPLE_BUCKET")` 后，那么键名为 `foo/bar/file` 的文件可以通过 `http://cdn.example.com/foo/bar/file` 访问。
 
@@ -444,6 +494,64 @@ domain
 **返回值**
 
 如果撤销成功，返回 `true`，否则返回 `false` 。
+
+<a name="buckets"></a>
+
+### Bucket（资源表）管理
+
+<a name="mkbucket"></a>
+
+#### 创建 Bucket
+
+    Qiniu::RS.mkbucket(bucket_name)
+
+可以通过 SDK 提供的 `Qiniu::RS.mkbucket` 函数创建一个 bucket（资源表）。
+
+**参数**
+
+bucket_name
+: 必须，字符串类型（String），资源表 bucket 的名称。
+
+**返回值**
+
+如果指定 bucket 创建成功，返回 `true`，否则返回 `false` 。
+
+<a name="list-all-buckets"></a>
+
+#### 列出所有 Bucket
+
+    Qiniu::RS.buckets
+
+可以通过 SDK 提供的 `Qiniu::RS.buckets` 函数列出当前登录客户的所有 buckets（资源表）。
+
+**返回值**
+
+如果请求成功，返回一个 buckets 的列表（Array），否则返回 `false` 。
+
+    ["Bucket1", "Bucket2", …, "BucketN"]
+
+<a name="set-protected"></a>
+
+#### 访问控制
+
+    Qiniu::RS.set_protected(bucket_name, protected_mode)
+
+可以通过 SDK 提供的 `Qiniu::RS.set_protected` 函数来设置指定 bucket 的访问属性，一般在水印处理时作原图保护用。
+
+**参数**
+
+bucket_name
+: 必须，字符串类型（String），指定资源表 bucket 的名称。
+
+protected_mode
+: 必须，整型，值为 1 或者 0，值为 1 表示启用保护模式，反之亦然。
+
+该函数不常用，一般在特殊场景下会用到。比如给图片打水印时，首先要设置原图保护，禁用公开的图像处理操作，采用水印的特殊图像处理，而保护原图就可以通过该函数操作实现。
+
+**返回值**
+
+如果设置成功，返回 `true`，否则返回 `false` 。
+
 
 <a name="op-image"></a>
 
@@ -517,7 +625,7 @@ url
 : 必须，字符串类型（String），图片的下载链接，需是 `Qiniu::RS.get`（或`Qiniu::RS.batch_get`）函数返回值中 `url` 字段的值，或者是 `Qiniu::RS.download`（或`Qiniu::RS.batch_download`）函数返回的下载链接。且文件本身必须是图片。
 
 spec
-: 可选，字符串或整型的枚举值，指定缩略图的具体规格，参考 [七牛云存储API之缩略图预览](/v2/api/foimg/#fo-imagePreview) 和 [自定义缩略图规格](/v2/api/foimg/#fo-imagePreviewEx) 。该值缺省为 0 （即输出宽800px高600px图片质量为85的缩略图）
+: 可选，字符串或整型的枚举值，指定缩略图的具体规格，参考 [七牛云存储API之缩略图预览](/v3/api/foimg/#fo-imagePreview) 和 [自定义缩略图规格](/v3/api/foimg/#fo-imagePreviewEx) 。该值缺省为 0 （即输出宽800px高600px图片质量为85的缩略图）
 
 **返回值**
 
@@ -553,7 +661,7 @@ mogrify_options
         :auto_orient => <TrueOrFalse>
     }
 
-`Qiniu::RS.image_mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v2/api/foimg/#fo-imageMogr)。
+`Qiniu::RS.image_mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v3/api/foimg/#fo-imageMogr)。
 
 **返回值**
 
@@ -594,7 +702,7 @@ mogrify_options
         :auto_orient => <TrueOrFalse>
     }
 
-`Qiniu::RS::Image.mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v2/api/foimg/#fo-imageMogr)。
+`Qiniu::RS::Image.mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v3/api/foimg/#fo-imageMogr)。
 
 **返回值**
 
@@ -631,6 +739,227 @@ mogrify_options
       # 然后将 pic.example.com CNAME 到 iovip.qbox.me ，就可以直接以如下方式访问缩略图
       # [GET] http://pic.example.com/<target_key>
     end
+
+
+<a name="image-watermarking"></a>
+
+## 高级图像处理（水印）
+
+<a name="watermarking-pre-work"></a>
+
+### 水印准备工作
+
+为了保护用户原图和方便用户访问打过水印之后的图片，在经水印作用之前，需进行以下一些设置：
+
+1. [设置原图保护](#watermarking-set-protected)
+2. [设置水印预览图URL分隔符](#watermarking-set-sep)
+3. [设置水印预览图规格别名](#watermarking-set-style)
+
+<a name="watermarking-set-protected"></a>
+
+#### 1. 设置原图保护
+
+用户的图片打上水印后，其原图不可见。通过给原图所在的 Bucket（资源表）设置访问控制，可以达到保护原图的目的，详情请参考 [Bucket（资源表）管理之访问控制](set-protected)。
+
+设置原图保护也可以借助七牛云存储提供的命令行辅助工具 [qboxrsctl](https://github.com/qiniu/devtools/tags) 来实现：
+
+    // 为<Bucket>下面的所有图片设置原图保护
+    qboxrsctl protected <Bucket> <Protected>
+
+<a name="watermarking-set-sep"></a>
+
+#### 2. 设置水印预览图URL分隔符
+
+没有设置水印前，用户可以通过如下公开链接的形式访问原图（[创建公开外链后的情况下](/v3/api/io/#rs-Publish)）：
+
+    http://<Domain>/<Key>
+
+设置水印后，其原图属性为私有，不能再通过这种形式访问。但是用户可以在原图的 `<Key>` 后面加上“分隔符”，以及相应的水印风格样式来访问打水印后的图片。例如，假设您为用户设定的访问水印图的分隔符为中划线 “-”，那么用户可以通过这种形式来访问打水印后的图片：
+
+    http://<Domain>/<Key>-/imageView/<Mode>/w/<Width>/h/<Height>/q/<Quality>/format/<Format>/sharpen/<Sharpen>/watermark/<HasWatermark>
+
+其中，`HasWatermark` 参数为 `0` （或者没有）表示不打水印，为 `1` 表示给图片打水印。
+
+通过 SDK 提供的 `Qiniu::RS.set_separator` 函数可以设置水印预览图URL分隔符：
+
+    Qiniu::RS.set_separator(bucket_name, separator)
+
+**参数**
+
+bucket_name
+: 必须，字符串类型（String），图片所在的 Bucket（资源表） 名称
+
+separator
+: 必须，字符串类型（String），源图片与预览图规格之间的分割符
+
+**返回值**
+
+操作成功返回 `true`，否则返回 `false`。
+
+除了使用 SDK 提供的方法，同样可以借助七牛云存储提供的命令行辅助工具 [qboxrsctl](https://github.com/qiniu/devtools/tags) 达到同样的目的：
+
+    // 设置预览图分隔符
+    qboxrsctl separator <Bucket> <Sep>
+
+<a name="watermarking-set-style"></a>
+
+#### 3. 设置水印预览图规格别名
+
+通过步骤2中所描述的水印预览图 URL 来访问打水印后的图片毕竟较为繁琐，因此可以通过为该水印预览图规格设置“别名”的形式来访问。如：
+
+别名（Name） | 规格（Style） | 说明
+----------- | ------------ | -------
+small.jpg   | imageView/0/w/120/h/90 | 大小为 120x90，不打水印
+middle.jpg  | imageView/0/w/440/h/330/watermark/1 | 大小为 440x330，打水印
+large.jpg   | imageView/0/w/1280/h/760/watermark/1 | 大小为 1280x760，打水印
+
+
+SDK 提供了 `Qiniu::RS.set_style` 函数可以定义预览图规格别名，该函数原型如下：
+
+    Qiniu::RS.set_style(bucket, name, style)
+
+**参数**
+
+bucket
+: 必须，字符串类型（String），图片所在的 Bucket（资源表） 名称
+
+name
+: 必须，字符串类型（String），预览图规格名称（别名）
+
+style
+: 必须，字符串类型（String），具体的规格样式
+
+**返回值**
+
+操作成功返回 `true`，否则返回 `false` 。
+
+除了使用 SDK 提供的方法，同样也可以借助七牛云存储提供的命令行辅助工具 [qboxrsctl](https://github.com/qiniu/devtools/tags) 达到同样的目的：
+
+    // 为 <Buecket> 下面的所有图片设置名为 <Name> 的 <Style>
+    qboxrsctl style <Bucket> <Name> <Style>
+
+无论是通过 SDK 提供的方法还是命令行辅助工具操作，在设置完成后，即可通过通过以下方式来访问设定规格后的图片：
+
+	// 其中 “-” 为分隔符，“small.jpg” 为预览图规格别名
+	[GET] http://<Domain>/<Key>-small.jpg
+
+	// 其中 “!” 为分隔符，“middle.jpg” 为预览图规格别名
+	[GET] http://<Domain>/<Key>!middle.jpg
+
+	// 其中 “@” 为分隔符，“large.jpg” 为预览图规格别名
+    [GET] http://<Domain>/<Key>@large.jpg
+
+以上这些设置水印模板前的准备只需操作一次，即可对后续设置的所有水印模板生效。由于是一次性操作，建议使用 qboxrsctl 命令行辅助工具进行相关设置。
+
+**取消水印预览图规格设置**
+
+您也可以为某个水印预览图规格取消“别名”设置，SDK 提供了相应的方法：
+
+    Qiniu::RS.unset_style(bucket, name)
+
+**参数**
+
+bucket
+: 必须，字符串类型（String），图片所在的 Bucket（资源表） 名称
+
+name
+: 必须，字符串类型（String），预览图规格名称（别名）
+
+**返回值**
+
+操作成功返回 `true`，否则返回 `false` 。
+
+除了使用 SDK 提供的方法，同样也可以借助七牛云存储提供的命令行辅助工具 [qboxrsctl](https://github.com/qiniu/devtools/tags) 达到同样的目的：
+    // 取消预览图规格别名为 <Name> 的 Style    qboxrsctl unstyle <Bucket> <Name>
+
+
+<a name="watermarking-set-template"></a>
+
+### 设置水印模板
+
+给图片加水印，SDK 提供了设置水印模板的函数：`Qiniu::RS.set_watermark` ，通过该函数操作，客户方可以设置通用的水印模板，也可以为客户方的每一个终端用户分别设置一个水印模板。
+
+`Qiniu::RS.set_watermark` 函数原型如下：
+
+    Qiniu::RS.set_watermark(customer_id, {
+        :font     => <FontName>,
+        :fontsize => <FontSize>,
+        :fill     => <FillColor>,
+        :text     => <WatermarkText>,
+        :bucket   => <LogoBucket>,
+        :dissolve => <Dissolve>,
+        :gravity  => <Gravity>,
+        :dx       => <DistanceX>,
+        :dy       => <DistanceY>
+    })
+
+**参数**：
+
+1. `customer_id = <EndUserID>`
+: 客户方终端用户标识。如果`customer_id`为 `nil`，则表示设置默认水印模板。作为面向终端用户的服务提供商，您可以为不同的用户设置不同的水印模板，只需在设置水印模板的时候传入`customer_id`参数。如果该参数未设置，则表示为终端用户设置一个默认模板。举例：假如您为终端用户提供的是一个手机拍照软件，用户拍照后图片存储于七牛云存储服务器。为了给每个用户所上传的图片打上标有该用户用户名的水印，您可以为该用户设置一个水印模板，其水印文字可以是该终端用户的用户名。但如果您未给该终端用户设置模板，那么水印上的所有设置都是默认的（其文字部分可能是你们自己设置的企业标识）。该 `customer_id` 和 [Qiniu::RS.generate_upload_token](#generate-upload-token) 中的 `customer` 参数含义一致，结合这点，您很容易想明白为什么 `Qiniu::RS.generate_upload_token` 函数中会有 `customer` 这个可选参数还有 `Qiniu::RS.set_watermark` 函数中会有 `customer_id` 参考以及两者间的关系。
+
+2. `:font => <FontName>`
+: 为水印上的文字设置一个默认的字体名，可选。
+
+3. `:fontsize => <FontSize>`
+: 字体大小，可选，0表示默认，单位: 缇，等于 1/20 磅。
+
+4. `:fill => <FillColor>`
+: 字体颜色，可选。
+
+5. `:text => <WatermarkText>`
+: 水印文字，必须，图片用 \0 - \9 占位。
+
+6. `:bucket => <ImageFromBucket>`
+: 如果水印中有图片，需要指定图片所在的 `RS Bucket` 名称，可选。
+
+7. `:dissolve => <Dissolve>`
+: 透明度，可选，字符串，如50%。
+
+8. `:gravity => <Gravity>`
+: 位置，可选，字符串，默认为右下角（SouthEast）。可选的值包括：NorthWest、North、NorthEast、West、Center、East、SouthWest、South和SouthEast。
+
+9. `:dx => <DistanceX>`
+: 横向边距，可选，默认值为10，单位px。
+
+10. `:dy => <DistanceY>`
+: 纵向边距，可选，默认值为10，单位px。
+
+**返回值**
+
+操作成功返回 `true`，否则返回 `false` 。
+
+
+<a name="watermarking-get-template"></a>
+
+### 获取水印模板
+
+SDK 提供了 `Qiniu::RS.get_watermark` 函数获取指定终端用户或者缺省的水印模板。该函数原型如下：
+
+    Qiniu::RS.get_watermark(customer_id = nil)
+
+**参数**
+
+customer_id
+: 客户方终端用户标识，可选，字符串类型，含义同 [Qiniu::RS.set_watermark](#watermarking-set-template) 函数中的 `customer_id` 参数。该值缺省为 `nil`，如果该值为 `nil`，则表示取默认的通用水印模板。
+
+**返回值**
+
+如果请求成功，返回如下一段 Hash 结构的数据；否则返回 `false`。
+
+    {
+    	font: <FontName>
+    	fontsize: <FontSize>
+    	fill: <FillColor>
+    	text: <WatermarkText>
+    	bucket: <LogoBucket>
+    	dissolve: <Dissolve>
+    	gravity: <Gravity>
+    	dx: <DistanceX>
+    	dy: <DistanceY>
+    }
+
+请求成功后返回数据的含义同 [设置水印模板](#watermarking-set-template) 时传入的参数一致。
 
 
 <a name="Contributing"></a>

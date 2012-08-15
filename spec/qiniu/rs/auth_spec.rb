@@ -8,8 +8,8 @@ module Qiniu
     describe Auth do
 
       before :all do
-        @username = "test@qbox.net"
-        @password = "test"
+        @username = "qboxtest"
+        @password = "qboxtest123"
 
         code, data = Qiniu::RS::Auth.exchange_by_password!(@username, @password)
         code.should == 200
