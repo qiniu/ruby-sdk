@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# Utils.-*- encoding: utf-8 -*-
 
 require 'spec_helper'
 require 'qiniu/rs/auth'
@@ -39,6 +39,16 @@ module Qiniu
       context ".put_file" do
         it "should works" do
           code, data = Qiniu::RS::IO.put_file(__FILE__, @bucket, @key, 'application/x-ruby', 'customMeta', true)
+          code.should == 200
+          puts data.inspect
+        end
+      end
+
+      context ".upload_with_token" do
+        it "should works" do
+          upopts = {:scope => @bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com"}
+          uptoken = Qiniu::RS.generate_upload_token(upopts)
+          code, data = Qiniu::RS::IO.upload_with_token(uptoken, __FILE__, @bucket, @key, nil, nil, nil, true)
           code.should == 200
           puts data.inspect
         end

@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+require 'cgi'
 require 'json'
 require 'qiniu/tokens/access_token'
 
@@ -21,7 +22,7 @@ module Qiniu
           signature += '?' + query_string if !query_string.nil? && !query_string.empty?
           signature += "\n";
           if @params.is_a?(Hash)
-            total_param = @params.map { |key, value| key.to_s+"="+value.to_s }
+            total_param = @params.map { |key, value| %Q(#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s).gsub('+', '%20')}) }
             signature += total_param.join("&")
           end
           signature

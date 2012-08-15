@@ -2,6 +2,6 @@
 
 module Qiniu
   module RS
-    VERSION = "2.3.3"
+    VERSION = "3.0.1"
   end
 end

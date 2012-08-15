@@ -34,6 +34,14 @@ module Qiniu
           Auth.request url, ::IO.read(local_file), options
         end
 
+        def upload_with_token(uptoken, local_file, bucket, key = nil, mime_type = nil, custom_meta = nil, callback_params = nil, enable_crc32_check = false)
+          action_params = _generate_action_params(local_file, bucket, key, mime_type, custom_meta, enable_crc32_check)
+          callback_params = {:bucket => bucket, :key => key, :mime_type => mime_type} if callback_params.nil?
+          callback_query_string = Utils.generate_query_string(callback_params)
+          url = Config.settings[:up_host] + '/upload'
+          Utils.upload_multipart_data(url, local_file, action_params, callback_query_string, uptoken)
+        end
+
         private
         def _generate_action_params(local_file, bucket, key = nil, mime_type = nil, custom_meta = nil, enable_crc32_check = false)
           raise NoSuchFileError, local_file unless File.exist?(local_file)
