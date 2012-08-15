@@ -4,7 +4,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 # Ruby SDK 使用指南
 
-此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](/v2/api/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
+此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](/v3/api/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
 七牛云存储 Ruby SDK 源码地址：[https://github.com/qiniu/ruby-sdk](https://github.com/qiniu/ruby-sdk)
 
@@ -214,7 +214,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
 1. 获取 `upload_token`（[用于上传文件的临时授权凭证](#generate-upload-token)）
 2. 将该 `upload_token` 作为文件上传流 `multipart/form-data` 中的一部分实现上传操作
 
-如果您的网络程序是从云端（服务端程序）到终端（手持设备应用）的架构模型，且终端用户有使用您移动端App上传文件（比如照片或视频）的需求，可以把您服务器得到的此 `upload_token` 返回给手持设备端的App，然后您的移动 App 可以使用 [七牛云存储 Objective-SDK （iOS）](http://docs.qiniutek.com/v2/sdk/objc/) 或 [七牛云存储 Android-SDK](http://docs.qiniutek.com/v2/sdk/android/) 的相关上传函数或参照 [七牛云存储API之文件上传](http://docs.qiniutek.com/v2/api/io/#upload) 直传文件。这样，您的终端用户即可把数据（比如图片或视频）直接上传到七牛云存储服务器上无须经由您的服务端中转，而且在上传之前，七牛云存储做了智能加速，终端用户上传数据始终是离他物理距离最近的存储节点。当终端用户上传成功后，七牛云存储服务端会向您指定的 `callback_url` 发送回调数据。如果 `callback_url` 所在的服务处理完毕后输出 `JSON` 格式的数据，七牛云存储服务端会将该回调请求所得的响应信息原封不动地返回给终端应用程序。
+如果您的网络程序是从云端（服务端程序）到终端（手持设备应用）的架构模型，且终端用户有使用您移动端App上传文件（比如照片或视频）的需求，可以把您服务器得到的此 `upload_token` 返回给手持设备端的App，然后您的移动 App 可以使用 [七牛云存储 Objective-SDK （iOS）](http://docs.qiniutek.com/v3/sdk/objc/) 或 [七牛云存储 Android-SDK](http://docs.qiniutek.com/v3/sdk/android/) 的相关上传函数或参照 [七牛云存储API之文件上传](http://docs.qiniutek.com/v3/api/io/#upload) 直传文件。这样，您的终端用户即可把数据（比如图片或视频）直接上传到七牛云存储服务器上无须经由您的服务端中转，而且在上传之前，七牛云存储做了智能加速，终端用户上传数据始终是离他物理距离最近的存储节点。当终端用户上传成功后，七牛云存储服务端会向您指定的 `callback_url` 发送回调数据。如果 `callback_url` 所在的服务处理完毕后输出 `JSON` 格式的数据，七牛云存储服务端会将该回调请求所得的响应信息原封不动地返回给终端应用程序。
 
 
 <a name="stat"></a>
@@ -625,7 +625,7 @@ url
 : 必须，字符串类型（String），图片的下载链接，需是 `Qiniu::RS.get`（或`Qiniu::RS.batch_get`）函数返回值中 `url` 字段的值，或者是 `Qiniu::RS.download`（或`Qiniu::RS.batch_download`）函数返回的下载链接。且文件本身必须是图片。
 
 spec
-: 可选，字符串或整型的枚举值，指定缩略图的具体规格，参考 [七牛云存储API之缩略图预览](/v2/api/foimg/#fo-imagePreview) 和 [自定义缩略图规格](/v2/api/foimg/#fo-imagePreviewEx) 。该值缺省为 0 （即输出宽800px高600px图片质量为85的缩略图）
+: 可选，字符串或整型的枚举值，指定缩略图的具体规格，参考 [七牛云存储API之缩略图预览](/v3/api/foimg/#fo-imagePreview) 和 [自定义缩略图规格](/v3/api/foimg/#fo-imagePreviewEx) 。该值缺省为 0 （即输出宽800px高600px图片质量为85的缩略图）
 
 **返回值**
 
@@ -661,7 +661,7 @@ mogrify_options
         :auto_orient => <TrueOrFalse>
     }
 
-`Qiniu::RS.image_mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v2/api/foimg/#fo-imageMogr)。
+`Qiniu::RS.image_mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v3/api/foimg/#fo-imageMogr)。
 
 **返回值**
 
@@ -702,7 +702,7 @@ mogrify_options
         :auto_orient => <TrueOrFalse>
     }
 
-`Qiniu::RS::Image.mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v2/api/foimg/#fo-imageMogr)。
+`Qiniu::RS::Image.mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v3/api/foimg/#fo-imageMogr)。
 
 **返回值**
 
