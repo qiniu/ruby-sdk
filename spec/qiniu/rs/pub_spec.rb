@@ -55,9 +55,9 @@ module Qiniu
         end
       end
 
-      context ".unstyle" do
+      context ".unset_style" do
         it "should works" do
-          code, data = Qiniu::RS::Pub.unstyle(@bucket, "small.jpg")
+          code, data = Qiniu::RS::Pub.unset_style(@bucket, "small.jpg")
           code.should == 200
           puts data.inspect
         end

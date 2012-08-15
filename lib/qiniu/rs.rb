@@ -56,8 +56,8 @@ module Qiniu
         code == StatusOK
       end
 
-      def unstyle(bucket, name)
-        code, data = Pub.unstyle(bucket, name)
+      def unset_style(bucket, name)
+        code, data = Pub.unset_style(bucket, name)
         code == StatusOK
       end
 

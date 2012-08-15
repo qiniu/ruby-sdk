@@ -24,7 +24,7 @@ module Qiniu
           Auth.request %Q(#{host}/style/#{bucket}/name/#{encoded_name}/style/#{encoded_style})
         end
 
-        def unstyle(bucket, name)
+        def unset_style(bucket, name)
           host = Config.settings[:pub_host]
           encoded_name = Utils.urlsafe_base64_encode(name)
           Auth.request %Q(#{host}/unstyle/#{bucket}/name/#{encoded_name})
