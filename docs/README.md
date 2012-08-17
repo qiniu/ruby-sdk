@@ -870,7 +870,9 @@ name
 操作成功返回 `true`，否则返回 `false` 。
 
 除了使用 SDK 提供的方法，同样也可以借助七牛云存储提供的命令行辅助工具 [qboxrsctl](https://github.com/qiniu/devtools/tags) 达到同样的目的：
-    // 取消预览图规格别名为 <Name> 的 Style    qboxrsctl unstyle <Bucket> <Name>
+
+    // 取消预览图规格别名为 <Name> 的 Style
+    qboxrsctl unstyle <Bucket> <Name>
 
 
 <a name="watermarking-set-template"></a>

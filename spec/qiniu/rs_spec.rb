@@ -18,15 +18,6 @@ module Qiniu
       result.should_not be_false
     end
 
-=begin
-    context ".login!" do
-      it "should works" do
-        result = Qiniu::RS.login!("test@qbox.net", "test")
-        result.should be_true
-      end
-    end
-=end
-
     context ".buckets" do
       it "should works" do
         result = Qiniu::RS.buckets
