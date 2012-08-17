@@ -9,7 +9,6 @@ RSpec.configure do |config|
 #=begin
     Qiniu::RS.establish_connection! :access_key => "3fPHl_SLkPXdioqI_A8_NGngPWVJhlDk2ktRjogH",
                                     :secret_key => "bXTPMDJrVYRJUiSDRFtFYwycVD_mjXxYWrCYlDHy",
-                                    :pub_host   => "http://183.136.128.84:10202"
 #=end
 =begin
     Qiniu::RS.establish_connection! :access_key => "bE21M6FW9V7zAFrBY5psgKOKJQLiBj12qMWTpc57",
