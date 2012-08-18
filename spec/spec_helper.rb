@@ -8,7 +8,7 @@ RSpec.configure do |config|
   config.before :all do
 #=begin
     Qiniu::RS.establish_connection! :access_key => "3fPHl_SLkPXdioqI_A8_NGngPWVJhlDk2ktRjogH",
-                                    :secret_key => "bXTPMDJrVYRJUiSDRFtFYwycVD_mjXxYWrCYlDHy",
+                                    :secret_key => "bXTPMDJrVYRJUiSDRFtFYwycVD_mjXxYWrCYlDHy"
 #=end
 =begin
     Qiniu::RS.establish_connection! :access_key => "bE21M6FW9V7zAFrBY5psgKOKJQLiBj12qMWTpc57",
