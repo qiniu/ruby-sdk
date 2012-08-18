@@ -115,7 +115,7 @@ module Qiniu
 
     context ".upload_file" do
       it "should works" do
-        uptoken_opts = {:scope => @bucket, :expires_in => 3600}
+        uptoken_opts = {:scope => @bucket}
         upload_opts = {
           :uptoken => Qiniu::RS.generate_upload_token(uptoken_opts),
           :file => __FILE__,
