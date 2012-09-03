@@ -70,7 +70,13 @@ module Qiniu
             else
               code, data = Auth.call_with_signature(url, data, 0, options)
             end
-          rescue [MissingAccessToken, MissingRefreshToken, MissingUsernameOrPassword] => e
+          rescue MissingAccessToken => e
+            Log.logger.error e
+            code, data = 401, {}
+          rescue MissingRefreshToken => e
+            Log.logger.error e
+            code, data = 401, {}
+          rescue MissingUsernameOrPassword => e
             Log.logger.error e
             code, data = 401, {}
           end
