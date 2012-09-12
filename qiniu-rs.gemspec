@@ -19,10 +19,10 @@ Gem::Specification.new do |gem|
   # specify any dependencies here; for example:
   gem.add_development_dependency "rake", "~> 0.9"
   gem.add_development_dependency "rspec", "~> 2.11"
-  gem.add_development_dependency "fakeweb", "~> 1.3.0"
-  gem.add_runtime_dependency "json", "~> 1.7.5"
-  gem.add_runtime_dependency "rest-client", "~> 1.6.7"
+  gem.add_development_dependency "fakeweb", "~> 1.3"
+  gem.add_runtime_dependency "json", "~> 1.7"
+  gem.add_runtime_dependency "rest-client", "~> 1.6"
   gem.add_runtime_dependency "mime-types", "~> 1.19"
-  gem.add_runtime_dependency "ruby-hmac", "~> 0.4.0"
-  gem.add_runtime_dependency "jruby-openssl", "~> 0.7.7" if RUBY_PLATFORM == "java"
+  gem.add_runtime_dependency "ruby-hmac", "~> 0.4"
+  gem.add_runtime_dependency "jruby-openssl", "~> 0.7" if RUBY_PLATFORM == "java"
 end
