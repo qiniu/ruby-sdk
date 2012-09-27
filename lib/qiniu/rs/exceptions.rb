@@ -40,6 +40,16 @@ module Qiniu
       end
     end
 
+    class UploadFailedError < ResponseError
+      def message
+        "Uploading Failed. HTTP Status Code #{http_code}"
+      end
+
+      def to_s
+        message
+      end
+    end
+
     class MissingArgsError < Exception
       def initialize(missing_keys)
         key_list = missing_keys.map {|key| key.to_s}.join(' and the ')
