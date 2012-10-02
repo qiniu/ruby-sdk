@@ -50,6 +50,24 @@ module Qiniu
       end
     end
 
+    class ResumablePutBlockError < ResponseError
+      def initialize(message)
+        super(message)
+      end
+    end
+
+    class ResumablePutError < ResponseError
+      def initialize(message)
+        super(message)
+      end
+    end
+
+    class FileSeekReadError < ResponseError
+      def initialize(seek_pos, read_length, result_length)
+        super %Q(Expected seek_pos:#{seek_pos} and read_length:#{read_length}, but got result_length: #{result_length})
+      end
+    end
+
     class MissingArgsError < Exception
       def initialize(missing_keys)
         key_list = missing_keys.map {|key| key.to_s}.join(' and the ')

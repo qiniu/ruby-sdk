@@ -8,7 +8,7 @@
 # Qbox::Config.load "path/to/your_project/config/qiniu.yml"
 #
 
-require "qiniu/rs/version"
+require 'tmpdir'
 
 module Qiniu
   module RS
@@ -16,11 +16,11 @@ module Qiniu
       class << self
 
         DEFAULT_OPTIONS = {
-          :user_agent      => 'Qiniu-RS-Ruby-SDK-' + VERSION + '()',
+          :user_agent      => 'Qiniu-RS-Ruby-SDK-' + Version.to_s + '()',
           :method          => :post,
           :content_type    => 'application/x-www-form-urlencoded',
           :auth_url        => "https://acc.qbox.me/oauth2/token",
-          :rs_host         => "http://rs.qbox.me:10100",
+          :rs_host         => "http://rs.qbox.me",
           :io_host         => "http://iovip.qbox.me",
           :up_host         => "http://up.qbox.me",
           :pub_host        => "http://pu.qbox.me:10200",
@@ -30,10 +30,13 @@ module Qiniu
           :access_key      => "",
           :secret_key      => "",
           :auto_reconnect  => true,
-          :max_retry_times => 5
+          :max_retry_times => 3,
+          :block_size      => 1024*1024*4,
+          :chunk_size      => 1024*256,
+          :tmpdir          => Dir.tmpdir + File::SEPARATOR + 'Qiniu-RS-Ruby-SDK'
         }
 
-        REQUIRED_OPTION_KEYS = [:client_id, :client_secret, :auth_url, :rs_host, :io_host]
+        REQUIRED_OPTION_KEYS = [:access_key, :secret_key]
 
         attr_reader :settings, :default_params
 

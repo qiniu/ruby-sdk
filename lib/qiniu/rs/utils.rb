@@ -32,6 +32,14 @@ module Qiniu
         {}
       end
 
+      def is_response_ok?(status_code)
+          status_code/100 == 2
+      end
+
+      def response_error(status_code, errmsg)
+          [status_code, {"error" => errmsg}]
+      end
+
       def send_request_with url, data = nil, options = {}
         options[:method] = Config.settings[:method] unless options[:method]
         options[:content_type] = Config.settings[:content_type] unless options[:content_type]
@@ -42,8 +50,8 @@ module Qiniu
         auth_token = nil
         if !options[:qbox_signature_token].nil? && !options[:qbox_signature_token].empty?
           auth_token = 'QBox ' + options[:qbox_signature_token]
-        #elsif !options[:upload_signature_token].nil? && !options[:upload_signature_token].empty?
-        #  auth_token = 'UpToken ' + options[:upload_signature_token]
+        elsif !options[:upload_signature_token].nil? && !options[:upload_signature_token].empty?
+          auth_token = 'UpToken ' + options[:upload_signature_token]
         elsif options[:access_token]
           auth_token = 'Bearer ' + options[:access_token]
         end
@@ -56,7 +64,7 @@ module Qiniu
           response = RestClient.post(url, data, header_options)
         end
         code = response.respond_to?(:code) ? response.code.to_i : 0
-        if code != 200
+        unless is_response_ok?(code)
           raise RequestFailed.new(response)
         else
           data = {}

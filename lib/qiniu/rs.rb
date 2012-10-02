@@ -1,9 +1,8 @@
 # -*- encoding: utf-8 -*-
 
-require 'qiniu/rs/version'
-
 module Qiniu
   module RS
+    autoload :Version, 'qiniu/rs/version'
     autoload :Config, 'qiniu/rs/config'
     autoload :Log, 'qiniu/rs/log'
     autoload :Exception, 'qiniu/rs/exceptions'
@@ -17,6 +16,7 @@ module Qiniu
     autoload :AccessToken, 'qiniu/tokens/access_token'
     autoload :QboxToken, 'qiniu/tokens/qbox_token'
     autoload :UploadToken, 'qiniu/tokens/upload_token'
+    autoload :Abstract, 'qiniu/rs/abstract'
 
     class << self
 
