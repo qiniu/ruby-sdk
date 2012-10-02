@@ -7,6 +7,7 @@ require 'mime/types'
 require 'digest/sha1'
 require 'qiniu/rs/abstract'
 require 'qiniu/rs/exceptions'
+require 'qiniu/rs/io'
 
 module Qiniu
   module RS
@@ -53,42 +54,31 @@ module Qiniu
       class << self
         include Utils
 
-        def upload(uptoken,
-                   local_file,
-                   bucket,
-                   key = nil,
-                   mime_type = nil,
-                   custom_meta = nil,
-                   customer = nil,
-                   callback_params = nil)
+        def upload_with_token(uptoken,
+                              local_file,
+                              bucket,
+                              key = nil,
+                              mime_type = nil,
+                              custom_meta = nil,
+                              customer = nil,
+                              callback_params = nil)
           raise NoSuchFileError, local_file unless File.exist?(local_file)
           begin
-              ifile = File.open(local_file, 'rb')
-              fh = FileData.new(ifile)
-              key = Digest::SHA1.hexdigest(local_file + fh.mtime.to_s) if key.nil?
-              entry_uri = bucket + ':' + key
-              if mime_type.nil? || mime_type.empty?
-                mime = MIME::Types.type_for local_file
-                mime_type = mime.empty? ? 'application/octet-stream' : mime[0].content_type
-              end
-              fsize = fh.data_size
-              block_count = _block_count(fsize)
-              progress_data = ProgressData.new(key)
-              checksums = progress_data.get_checksums
-              progresses = progress_data.get_progresses
-              block_count.times{checksums << ''} if checksums.empty?
-              block_count.times{progresses << _new_block_put_progress_data} if progresses.empty?
-              chunk_notifier = ChunkProgressNotifier.new(key)
-              block_notifier = BlockProgressNotifier.new(key)
-              code, data = _resumable_put(uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
-              if Utils.is_response_ok?(code)
-                  code, data = _mkfile(uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params)
-              end
-              if Utils.is_response_ok?(code)
-                  Log.logger.info "File #{local_file} successfully uploaded."
-              #    progress_data.sweep!
-              end
-              [code, data]
+            ifile = File.open(local_file, 'rb')
+            fh = FileData.new(ifile)
+            fsize = fh.data_size
+            key = Digest::SHA1.hexdigest(local_file + fh.mtime.to_s) if key.nil?
+            entry_uri = bucket + ':' + key
+            if mime_type.nil? || mime_type.empty?
+              mime = MIME::Types.type_for local_file
+              mime_type = mime.empty? ? 'application/octet-stream' : mime[0].content_type
+            end
+            if fsize > Config.settings[:block_size]
+              code, data = _resumable_upload(uptoken, fh, fsize, entry_uri, mime_type, custom_meta, customer, callback_params)
+            else
+              code, data = IO.upload_with_token(uptoken, local_file, bucket, key, mime_type, custom_meta, callback_params, true)
+            end
+            [code, data]
           ensure
             ifile.close unless ifile.nil?
           end
@@ -108,6 +98,7 @@ module Qiniu
                 @fh.seek(offset)
                 @fh.read(length)
             end
+            delegate :path, :to => :fh
             delegate :mtime, :to => :fh
         end
 
@@ -181,6 +172,7 @@ module Qiniu
 
         def _resumable_put_block(uptoken, fh, block_index, block_size, chunk_size, progress, retry_times = 1, notifier)
             code, data = 0, {}
+            fpath = fh.path
             # this block has never been uploaded.
             if progress[:ctx] == nil || progress[:ctx].empty?
                 progress[:offset] = 0
@@ -192,7 +184,7 @@ module Qiniu
                     body = fh.get_data(seek_pos, body_length)
                     result_length = body.length
                     if result_length != body_length
-                        raise FileSeekReadError.new(seek_pos, body_length, result_length)
+                        raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length)
                     end
                     code, data = _mkblock(uptoken, block_size, body)
                     body_crc32 = Zlib.crc32(body)
@@ -210,7 +202,7 @@ module Qiniu
                     end
                 end
             elsif progress[:offset] + progress[:restsize] != block_size
-                raise ResumablePutBlockError.new("Invalid arg. File length does not match.")
+                raise BlockSizeNotMathchError.new(fpath, block_index, progress[:offset], progress[:restsize], block_size)
             end
             # loop uploading other chunks except the first one
             while progress[:restsize].to_i > 0 && progress[:restsize] < block_size
@@ -221,7 +213,7 @@ module Qiniu
                     body = fh.get_data(seek_pos, body_length)
                     result_length = body.length
                     if result_length != body_length
-                        raise FileSeekReadError.new(seek_pos, body_length, result_length)
+                        raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length)
                     end
                     code, data = _putblock(uptoken, progress[:ctx], progress[:offset], body)
                     body_crc32 = Zlib.crc32(body)
@@ -250,8 +242,10 @@ module Qiniu
         def _resumable_put(uptoken, fh, checksums, progresses, block_notifier = nil, chunk_notifier = nil)
             code, data = 0, {}
             block_count = _block_count(fh.data_size)
-            if checksums.length != block_count || progresses.length != block_count
-                raise ResumablePutError.new("Invalid arg. Unexpected block count.")
+            checksum_count = checksums.length
+            progress_count = progresses.length
+            if checksum_count != block_count || progress_count != block_count
+                raise BlockCountNotMathchError.new(fh.path, block_count, checksum_count, progress_count)
             end
             0.upto(block_count-1).each do |block_index|
                 if checksums[block_index].nil? || checksums[block_index].empty?
@@ -279,13 +273,34 @@ module Qiniu
           path += '/mimeType/' + Utils.urlsafe_base64_encode(mime_type) if !mime_type.nil? && !mime_type.empty?
           path += '/meta/' + Utils.urlsafe_base64_encode(custom_meta) if !custom_meta.nil? && !custom_meta.empty?
           path += '/customer/' + customer if !customer.nil? && !customer.empty?
-          path += '/params/' + Utils.urlsafe_base64_encode(callback_params) if !callback_params.nil? && !callback_params.empty?
+          callback_query_string = Utils.generate_query_string(callback_params) if !callback_params.nil? && !callback_params.empty?
+          path += '/params/' + Utils.urlsafe_base64_encode(callback_query_string) if !callback_query_string.nil? && !callback_query_string.empty?
           url = Config.settings[:up_host] + path
           body = ''
           checksums.each do |checksum|
               body += Utils.urlsafe_base64_decode(checksum)
           end
           _call_binary_with_token(uptoken, url, body)
+        end
+
+        def _resumable_upload(uptoken, fh, fsize, entry_uri, mime_type = nil, custom_meta = nil, customer = nil, callback_params = nil)
+          block_count = _block_count(fsize)
+          progress_data = ProgressData.new(key)
+          checksums = progress_data.get_checksums
+          progresses = progress_data.get_progresses
+          block_count.times{checksums << ''} if checksums.empty?
+          block_count.times{progresses << _new_block_put_progress_data} if progresses.empty?
+          chunk_notifier = ChunkProgressNotifier.new(key)
+          block_notifier = BlockProgressNotifier.new(key)
+          code, data = _resumable_put(uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
+          if Utils.is_response_ok?(code)
+            code, data = _mkfile(uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params)
+          end
+          if Utils.is_response_ok?(code)
+            Log.logger.info "File #{local_file} successfully uploaded."
+            # progress_data.sweep!
+          end
+          [code, data]
         end
 
       end

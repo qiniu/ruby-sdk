@@ -32,7 +32,7 @@ module Qiniu
 
     class RequestFailed < ResponseError
       def message
-        "HTTP status code #{http_code}"
+        "HTTP status code: #{http_code}. Response body: #{http_body}"
       end
 
       def to_s
@@ -40,31 +40,40 @@ module Qiniu
       end
     end
 
-    class UploadFailedError < ResponseError
-      def message
-        "Uploading Failed. HTTP Status Code #{http_code}"
-      end
-
-      def to_s
-        message
+    class UploadFailedError < Exception
+      def initialize(status_code, response_data)
+        data_string = response_data.map { |key, value| %Q(:#{key.to_s} => #{value.to_s}) }
+        msg = %Q(Uploading Failed. HTTP Status Code: #{status_code}. HTTP response body: #{data_string.join(', ')}.)
+        super(msg)
       end
     end
 
-    class ResumablePutBlockError < ResponseError
-      def initialize(message)
-        super(message)
+    class FileSeekReadError < Exception
+      def initialize(fpath, block_index, seek_pos, read_length, result_length)
+        msg = "Reading file: #{fpath}, "
+            + "at block index: #{block_index}. "
+            + "Expected seek_pos:#{seek_pos} and read_length:#{read_length}, "
+            + "but got result_length: #{result_length}."
+        super(msg)
       end
     end
 
-    class ResumablePutError < ResponseError
-      def initialize(message)
-        super(message)
+    class BlockSizeNotMathchError < Exception
+      def initialize(fpath, block_index, offset, restsize, block_size)
+        msg = "Reading file: #{fpath}, "
+            + "at block index: #{block_index}. "
+            + "Expected offset: #{offset}, restsize: #{restsize} and block_size: #{block_size}, "
+            + "but got offset+restsize=#{offset+restsize}."
+        super(msg)
       end
     end
 
-    class FileSeekReadError < ResponseError
-      def initialize(seek_pos, read_length, result_length)
-        super %Q(Expected seek_pos:#{seek_pos} and read_length:#{read_length}, but got result_length: #{result_length})
+    class BlockCountNotMathchError < Exception
+      def initialize(fpath, block_count, checksum_count, progress_count)
+        msg = "Reading file: #{fpath}, "
+            + "Expected block_count, checksum_count, progress_count is: #{block_count}, "
+            + "but got checksum_count: #{checksum_count}, progress_count: #{progress_count}."
+        super(msg)
       end
     end
 

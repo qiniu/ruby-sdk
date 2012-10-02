@@ -65,7 +65,7 @@ module Qiniu
         end
         code = response.respond_to?(:code) ? response.code.to_i : 0
         unless is_response_ok?(code)
-          raise RequestFailed.new(response)
+          raise RequestFailed.new("Request Failed", response)
         else
           data = {}
           body = response.respond_to?(:body) ? response.body : {}

@@ -99,15 +99,32 @@ module Qiniu
       end
 
       def upload_file opts = {}
-        code, data = IO.upload_with_token(opts[:uptoken],
-                                          opts[:file],
-                                          opts[:bucket],
-                                          opts[:key],
-                                          opts[:mime_type],
-                                          opts[:note],
-                                          opts[:callback_params],
-                                          opts[:enable_crc32_check])
-        code == StatusOK ? data : false
+        [:uptoken, :file, :bucket, :key].each do |opt|
+          raise MissingArgsError, [opt] unless opts.has_key?(opt)
+        end
+        source_file = opts[:file]
+        raise NoSuchFileError, source_file unless File.exist?(source_file)
+        if opts[:enable_resumable_upload] && File::size(source_file) > Config.settings[:block_size]
+          code, data = UP.upload_with_token(opts[:uptoken],
+                                            opts[:file],
+                                            opts[:bucket],
+                                            opts[:key],
+                                            opts[:mime_type],
+                                            opts[:note],
+                                            opts[:customer],
+                                            opts[:callback_params])
+        else
+          code, data = IO.upload_with_token(opts[:uptoken],
+                                            opts[:file],
+                                            opts[:bucket],
+                                            opts[:key],
+                                            opts[:mime_type],
+                                            opts[:note],
+                                            opts[:callback_params],
+                                            opts[:enable_crc32_check])
+        end
+        raise UploadFailedError.new(code, data) if code != StatusOK
+        return data
       end
 
       def stat(bucket, key)
