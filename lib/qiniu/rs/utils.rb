@@ -40,6 +40,12 @@ module Qiniu
           [status_code, {"error" => errmsg}]
       end
 
+      def debug(msg)
+          if Config.settings[:enable_debug]
+              Log.logger.debug(msg)
+          end
+      end
+
       def send_request_with url, data = nil, options = {}
         options[:method] = Config.settings[:method] unless options[:method]
         options[:content_type] = Config.settings[:content_type] unless options[:content_type]

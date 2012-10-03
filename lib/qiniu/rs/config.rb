@@ -33,6 +33,7 @@ module Qiniu
           :max_retry_times => 3,
           :block_size      => 1024*1024*4,
           :chunk_size      => 1024*256,
+          :enable_debug    => true,
           :tmpdir          => Dir.tmpdir + File::SEPARATOR + 'Qiniu-RS-Ruby-SDK'
         }
 

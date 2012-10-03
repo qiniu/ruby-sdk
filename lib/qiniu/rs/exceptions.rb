@@ -50,29 +50,29 @@ module Qiniu
 
     class FileSeekReadError < Exception
       def initialize(fpath, block_index, seek_pos, read_length, result_length)
-        msg = "Reading file: #{fpath}, "
-            + "at block index: #{block_index}. "
-            + "Expected seek_pos:#{seek_pos} and read_length:#{read_length}, "
-            + "but got result_length: #{result_length}."
+        msg =  "Reading file: #{fpath}, "
+        msg += "at block index: #{block_index}. "
+        msg += "Expected seek_pos:#{seek_pos} and read_length:#{read_length}, "
+        msg += "but got result_length: #{result_length}."
         super(msg)
       end
     end
 
     class BlockSizeNotMathchError < Exception
       def initialize(fpath, block_index, offset, restsize, block_size)
-        msg = "Reading file: #{fpath}, "
-            + "at block index: #{block_index}. "
-            + "Expected offset: #{offset}, restsize: #{restsize} and block_size: #{block_size}, "
-            + "but got offset+restsize=#{offset+restsize}."
+        msg  = "Reading file: #{fpath}, "
+        msg += "at block index: #{block_index}. "
+        msg += "Expected offset: #{offset}, restsize: #{restsize} and block_size: #{block_size}, "
+        msg += "but got offset+restsize=#{offset+restsize}."
         super(msg)
       end
     end
 
     class BlockCountNotMathchError < Exception
       def initialize(fpath, block_count, checksum_count, progress_count)
-        msg = "Reading file: #{fpath}, "
-            + "Expected block_count, checksum_count, progress_count is: #{block_count}, "
-            + "but got checksum_count: #{checksum_count}, progress_count: #{progress_count}."
+        msg  = "Reading file: #{fpath}, "
+        msg += "Expected block_count, checksum_count, progress_count is: #{block_count}, "
+        msg += "but got checksum_count: #{checksum_count}, progress_count: #{progress_count}."
         super(msg)
       end
     end
