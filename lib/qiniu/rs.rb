@@ -1,15 +1,15 @@
 # -*- encoding: utf-8 -*-
 
-require 'qiniu/rs/version'
-
 module Qiniu
   module RS
+    autoload :Version, 'qiniu/rs/version'
     autoload :Config, 'qiniu/rs/config'
     autoload :Log, 'qiniu/rs/log'
     autoload :Exception, 'qiniu/rs/exceptions'
     autoload :Utils, 'qiniu/rs/utils'
     autoload :Auth, 'qiniu/rs/auth'
     autoload :IO, 'qiniu/rs/io'
+    autoload :UP, 'qiniu/rs/up'
     autoload :RS, 'qiniu/rs/rs'
     autoload :EU, 'qiniu/rs/eu'
     autoload :Pub, 'qiniu/rs/pub'
@@ -17,6 +17,7 @@ module Qiniu
     autoload :AccessToken, 'qiniu/tokens/access_token'
     autoload :QboxToken, 'qiniu/tokens/qbox_token'
     autoload :UploadToken, 'qiniu/tokens/upload_token'
+    autoload :Abstract, 'qiniu/rs/abstract'
 
     class << self
 
@@ -99,15 +100,33 @@ module Qiniu
       end
 
       def upload_file opts = {}
-        code, data = IO.upload_with_token(opts[:uptoken],
-                                          opts[:file],
-                                          opts[:bucket],
-                                          opts[:key],
-                                          opts[:mime_type],
-                                          opts[:note],
-                                          opts[:callback_params],
-                                          opts[:enable_crc32_check])
-        code == StatusOK ? data : false
+        [:uptoken, :file, :bucket, :key].each do |opt|
+          raise MissingArgsError, [opt] unless opts.has_key?(opt)
+        end
+        source_file = opts[:file]
+        raise NoSuchFileError, source_file unless File.exist?(source_file)
+        opts[:enable_resumable_upload] = true unless opts.has_key?(:enable_resumable_upload)
+        if opts[:enable_resumable_upload] && File::size(source_file) > Config.settings[:block_size]
+          code, data = UP.upload_with_token(opts[:uptoken],
+                                            opts[:file],
+                                            opts[:bucket],
+                                            opts[:key],
+                                            opts[:mime_type],
+                                            opts[:note],
+                                            opts[:customer],
+                                            opts[:callback_params])
+        else
+          code, data = IO.upload_with_token(opts[:uptoken],
+                                            opts[:file],
+                                            opts[:bucket],
+                                            opts[:key],
+                                            opts[:mime_type],
+                                            opts[:note],
+                                            opts[:callback_params],
+                                            opts[:enable_crc32_check])
+        end
+        raise UploadFailedError.new(code, data) if code != StatusOK
+        return data
       end
 
       def stat(bucket, key)
