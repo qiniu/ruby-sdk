@@ -17,6 +17,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
     - [上传文件](#upload)
         - [获取用于上传文件的临时授权凭证](#generate-upload-token)
         - [服务端上传文件](#upload-server-side)
+            - [断点续上传](#resumable-upload)
             - [针对 NotFound 场景处理](#upload-file-for-not-found)
         - [客户端直传文件](#upload-client-side)
     - [查看文件属性信息](#stat)
@@ -185,9 +186,49 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 **返回值**
 
-上传成功，返回如下一个 Hash，否则返回 `false`：
+上传成功，返回如下一个 Hash：
 
     {"hash"=>"FgHk-_iqpnZji6PsNr4ghsK5qEwR"}
+
+上传失败，会抛出 `UploadFailedError` 异常。
+
+<a name="resumable-upload"></a>
+
+##### 断点续上传
+
+无需任何额外改动，SDK 提供的 `Qiniu::RS.upload_file()` 方法缺省支持断点续上传。默认情况下，SDK 会自动启用断点续上传的方式来上传超过 4MB 大小的文件。您也可以在 [应用接入](/v3/sdk/ruby/#establish_connection!) 时通过修改缺省配置来设置该阀值：
+
+    Qiniu::RS.establish_connection! :access_key      => YOUR_APP_ACCESS_KEY,
+                                    :secret_key      => YOUR_APP_SECRET_KEY,
+                                    :block_size      => 1024*1024*4,
+                                    :chunk_size      => 1024*256,
+                                    :tmpdir          => Dir.tmpdir + File::SEPARATOR + 'Qiniu-RS-Ruby-SDK',
+                                    :enable_debug    => true,
+                                    :auto_reconnect  => true,
+                                    :max_retry_times => 3
+
+**参数详解**
+
+应用接入初始化时，以下配置参数均为可选：
+
+:block_size
+: 整型，指定断点续上传针对大文件所使用的分块大小，缺省为 4MB ，小于该阀值的文件不启用断点续上传。
+
+:chunk_size
+: 整型，指定断点续上传每次http请求上传的数据块大小，缺省为 256KB。该设置尽量不要超过实际使用的上行带宽，且不能超过 `:block_size` 定义的值。
+
+:tmpdir
+: 字符串类型，指定持久化保存断点续上传进度状态临时文件的目录，缺省放置于操作系统的临时目录中。
+
+:enable_debug
+: 布尔值，是否启用调试模式，缺省启用（true），启用后会打印相关日志。该参数 SDK 全局有效。
+
+:auto_reconnect
+: 布尔值，指定每次 http 若请求失败是否启用重试，缺省启用（true）。该参数 SDK 全局有效。
+
+:max_retry_times
+: 整型，指定每次 http 若请求失败最多可以重试的次数，缺省为3次。该参数 SDK 全局有效。
+
 
 <a name="upload-file-for-not-found"></a>
 
