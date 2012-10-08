@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+require 'digest/sha1'
 require 'spec_helper'
 require 'qiniu/rs'
 
@@ -126,6 +127,41 @@ module Qiniu
         result = Qiniu::RS.upload_file(upload_opts)
         result.should_not be_false
         puts result.inspect
+      end
+    end
+
+    context ".resumable_upload_file" do
+      it "should works" do
+        # generate bigfile for testing
+        localfile = "test_bigfile"
+        File.open(localfile, "w"){|f| 5242888.times{f.write(Random.rand(9).to_s)}}
+        key = Digest::SHA1.hexdigest(localfile+Time.now.to_s)
+        # generate the upload token
+        uptoken_opts = {:scope => @bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com"}
+        uptoken = Qiniu::RS.generate_upload_token(uptoken_opts)
+        # uploading
+        upload_opts = {
+            :uptoken => uptoken,
+            :file => localfile,
+            :bucket => @bucket,
+            :key => key
+        }
+        #uploading
+        result1 = Qiniu::RS.upload_file(upload_opts)
+        #drop the bigfile
+        File.unlink(localfile) if File.exists?(localfile)
+        #expect
+        puts result1.inspect
+        result1.should_not be_false
+        result1.should_not be_empty
+        #stat
+        result2 = Qiniu::RS.stat(@bucket, key)
+        puts result2.inspect
+        result2.should_not be_false
+        #delete
+        result3 = Qiniu::RS.delete(@bucket, key)
+        puts result3.inspect
+        result3.should_not be_false
       end
     end
 
