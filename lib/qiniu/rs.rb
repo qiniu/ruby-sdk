@@ -9,6 +9,7 @@ module Qiniu
     autoload :Utils, 'qiniu/rs/utils'
     autoload :Auth, 'qiniu/rs/auth'
     autoload :IO, 'qiniu/rs/io'
+    autoload :UP, 'qiniu/rs/up'
     autoload :RS, 'qiniu/rs/rs'
     autoload :EU, 'qiniu/rs/eu'
     autoload :Pub, 'qiniu/rs/pub'
@@ -104,6 +105,7 @@ module Qiniu
         end
         source_file = opts[:file]
         raise NoSuchFileError, source_file unless File.exist?(source_file)
+        opts[:enable_resumable_upload] = true unless opts.has_key?(:enable_resumable_upload)
         if opts[:enable_resumable_upload] && File::size(source_file) > Config.settings[:block_size]
           code, data = UP.upload_with_token(opts[:uptoken],
                                             opts[:file],
