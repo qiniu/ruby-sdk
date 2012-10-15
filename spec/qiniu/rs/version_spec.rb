@@ -3,8 +3,8 @@
 require 'spec_helper'
 require 'qiniu/rs/version'
 
-describe Qiniu::RS do
+describe Qiniu::RS::Version do
   it "should has a VERSION" do
-    Qiniu::RS::VERSION.should =~ /^\d+\.\d+\.\d+?$/
+    Qiniu::RS::Version.to_s.should =~ /^\d+\.\d+\.\d+?$/
   end
 end

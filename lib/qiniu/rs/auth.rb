@@ -18,7 +18,7 @@ module Qiniu
             :password   => password
           }
           code, data = http_request Config.settings[:auth_url], post_data
-          reset_token(data["access_token"], data["refresh_token"]) if code == 200
+          reset_token(data["access_token"], data["refresh_token"]) if Utils.is_response_ok?(code)
           [code, data]
         end
 
@@ -29,7 +29,7 @@ module Qiniu
             :refresh_token => refresh_token
           }
           code, data = http_request Config.settings[:auth_url], post_data
-          reset_token(data["access_token"], data["refresh_token"]) if code == 200
+          reset_token(data["access_token"], data["refresh_token"]) if Utils.is_response_ok?(code)
           [code, data]
         end
 
@@ -48,7 +48,7 @@ module Qiniu
               raise MissingUsernameOrPassword if (@username.nil? || @password.nil?)
               code, data = exchange_by_password!(@username, @password)
             end
-            if code == 200
+            if Utils.is_response_ok?(code)
               retry_times += 1
               if Config.settings[:auto_reconnect] && retry_times < Config.settings[:max_retry_times]
                 return call_with_logged_in(url, data, retry_times)

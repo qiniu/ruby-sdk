@@ -17,22 +17,22 @@ module Qiniu
         @domain = 'iovip.qbox.me/test'
 
         code, data = Qiniu::RS::RS.mkbucket(@bucket)
-        code.should == 200
         puts data.inspect
+        code.should == 200
       end
 
       context "IO.upload_file" do
         it "should works" do
           code, data = Qiniu::RS::IO.put_auth()
+          puts data.inspect
           code.should == 200
           data["url"].should_not be_empty
           data["expiresIn"].should_not be_zero
-          puts data.inspect
           @put_url = data["url"]
 
           code2, data2 = Qiniu::RS::IO.upload_file(@put_url, __FILE__, @bucket, @key)
-          code2.should == 200
           puts data2.inspect
+          code2.should == 200
         end
       end
 
