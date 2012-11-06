@@ -10,7 +10,7 @@ module Qiniu
 
         include Utils
 
-        attr_accessor :scope, :expires_in, :callback_url, :callback_body_type, :customer
+        attr_accessor :scope, :expires_in, :callback_url, :callback_body_type, :customer, :escape
 
         def initialize(opts = {})
           @scope = opts[:scope]
@@ -18,6 +18,7 @@ module Qiniu
           @callback_url = opts[:callback_url]
           @callback_body_type = opts[:callback_body_type]
           @customer = opts[:customer]
+          @escape = opts[:escape]
         end
 
         def generate_signature
@@ -25,6 +26,7 @@ module Qiniu
           params[:callbackUrl] = @callback_url if !@callback_url.nil? && !@callback_url.empty?
           params[:callbackBodyType] = @callback_body_type if !@callback_body_type.nil? && !@callback_body_type.empty?
           params[:customer] = @customer if !@customer.nil? && !@customer.empty?
+          params[:escape] = 1 if @escape == 1 || @escape == true
           urlsafe_base64_encode(params.to_json)
         end
 
