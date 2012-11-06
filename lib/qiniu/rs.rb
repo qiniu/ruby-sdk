@@ -224,6 +224,7 @@ module Qiniu
         #token_obj.callback_url = opts[:callback_url]
         #token_obj.callback_body_type = opts[:callback_body_type]
         #token_obj.customer = opts[:customer]
+        #token_obj.escape = opts[:escape]
         token_obj.generate_token
       end
 
