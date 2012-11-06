@@ -10,35 +10,20 @@ module Qiniu
     describe Image do
 
       before :all do
-=begin
-        code, data = Qiniu::RS::Auth.exchange_by_password!("test@qbox.net", "test")
-        code.should == 200
-        data.should be_an_instance_of(Hash)
-        data["access_token"].should_not be_empty
-        data["refresh_token"].should_not be_empty
-        data["refresh_token"].should_not be_empty
-        puts data.inspect
-=end
 
         @bucket = "test_images_12345"
         @key = "image_logo_for_test.png"
 
-        local_file = File.expand_path('../' + @key, __FILE__)
-
-        result = Qiniu::RS.drop(@bucket)
-        result.should_not be_false
+        result = Qiniu::RS.mkbucket(@bucket)
         puts result.inspect
-
-        put_url = Qiniu::RS.put_auth(10)
-        put_url.should_not be_false
-        put_url.should_not be_empty
-        result = Qiniu::RS.upload :url => put_url,
-                                  :file => local_file,
-                                  :bucket => @bucket,
-                                  :key => @key,
-                                  :enable_crc32_check => true
         result.should be_true
 
+        local_file = File.expand_path('../' + @key, __FILE__)
+
+        upopts = {:scope => @bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com"}
+        uptoken = Qiniu::RS.generate_upload_token(upopts)
+        data = Qiniu::RS.upload_file :uptoken => uptoken, :file => local_file, :bucket => @bucket, :key => @key
+        puts data.inspect
 
         result = Qiniu::RS.get(@bucket, @key)
         result["url"].should_not be_empty
@@ -54,6 +39,13 @@ module Qiniu
             :format => "jpg",
             :auto_orient => true
         }
+      end
+
+      after :all do
+        @bucket = "test_images_12345"
+        result = Qiniu::RS.drop(@bucket)
+        puts result.inspect
+        result.should_not be_false
       end
 
       context ".info" do

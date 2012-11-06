@@ -10,13 +10,33 @@ module Qiniu
     before :all do
       @bucket = 'qiniu_rs_test'
       @key = Digest::SHA1.hexdigest Time.now.to_s
-      @domain = 'cdn.example.com'
-
-      @test_image_bucket = 'test_images_12345'
-      @test_image_key = 'image_logo_for_test.png'
+      @domain = 'qiniu-rs-test.dn.qbox.me'
 
       result = Qiniu::RS.mkbucket(@bucket)
       result.should_not be_false
+
+      @test_image_bucket = 'test_images_12345'
+      result2 = Qiniu::RS.mkbucket(@test_image_bucket)
+      puts result2.inspect
+      result2.should be_true
+
+      @test_image_key = 'image_logo_for_test.png'
+      local_file = File.expand_path('./rs/' + @test_image_key, File.dirname(__FILE__))
+      puts local_file.inspect
+      upopts = {:scope => @test_image_bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com"}
+      uptoken = Qiniu::RS.generate_upload_token(upopts)
+      data = Qiniu::RS.upload_file :uptoken => uptoken, :file => local_file, :bucket => @test_image_bucket, :key => @test_image_key
+      puts data.inspect
+    end
+
+    after :all do
+      result = Qiniu::RS.drop(@bucket)
+      puts result.inspect
+      result.should_not be_false
+
+      result2 = Qiniu::RS.drop(@test_image_bucket)
+      puts result2.inspect
+      result2.should_not be_false
     end
 
     context ".buckets" do

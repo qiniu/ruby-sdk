@@ -14,10 +14,5 @@ RSpec.configure do |config|
                                     :up_host    => "http://m1.qbox.me:13019",
                                     :pub_host   => "http://m1.qbox.me:13012",
                                     :eu_host    => "http://m1.qbox.me:13050"
-
-=begin
-    Qiniu::RS.establish_connection! :access_key => "aPoWOtE9EFca1fLxFCtlkeZAOV7aADVMTLdSydmr",
-                                    :secret_key => "L3ShtjCQTCagVCDPfHJoOix7JO_o3qHz3ScyflUG"
-=end
   end
 end
