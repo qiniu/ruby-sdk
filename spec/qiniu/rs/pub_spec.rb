@@ -10,24 +10,16 @@ module Qiniu
     describe Pub do
 
       before :all do
-        @bucket = "test123"
-        code, data = Qiniu::RS::RS.mkbucket(@bucket)
-        code.should == 200
-        puts data.inspect
+        @bucket = "pub_test_bucket"
+        result = Qiniu::RS.mkbucket(@bucket)
+        puts result.inspect
+        result.should_not be_false
       end
-
-=begin
-      context ".mkbucket" do
-        it "should works" do
-          code, data = Qiniu::RS::RS.mkbucket(@bucket)
-          code.should == 200
-          puts data.inspect
-        end
-      end
-=end
 
       after :all do
+        @bucket = "pub_test_bucket"
         result = Qiniu::RS.drop(@bucket)
+        puts result.inspect
         result.should_not be_false
       end
 
