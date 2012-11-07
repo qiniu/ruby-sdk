@@ -34,8 +34,8 @@ module Qiniu
           Auth.request url, ::IO.read(local_file), options
         end
 
-        def upload_with_token(uptoken, local_file, bucket, key = nil, mime_type = nil, custom_meta = nil, callback_params = nil, enable_crc32_check = false)
-          action_params = _generate_action_params(local_file, bucket, key, mime_type, custom_meta, enable_crc32_check)
+        def upload_with_token(uptoken, local_file, bucket, key = nil, mime_type = nil, custom_meta = nil, callback_params = nil, enable_crc32_check = false, rotate = nil)
+          action_params = _generate_action_params(local_file, bucket, key, mime_type, custom_meta, enable_crc32_check, rotate)
           callback_params = {:bucket => bucket, :key => key, :mime_type => mime_type} if callback_params.nil?
           callback_query_string = Utils.generate_query_string(callback_params)
           url = Config.settings[:up_host] + '/upload'
@@ -43,7 +43,7 @@ module Qiniu
         end
 
         private
-        def _generate_action_params(local_file, bucket, key = nil, mime_type = nil, custom_meta = nil, enable_crc32_check = false)
+        def _generate_action_params(local_file, bucket, key = nil, mime_type = nil, custom_meta = nil, enable_crc32_check = false, rotate = nil)
           raise NoSuchFileError, local_file unless File.exist?(local_file)
           key = Digest::SHA1.hexdigest(local_file + Time.now.to_s) if key.nil?
           entry_uri = bucket + ':' + key
@@ -54,6 +54,7 @@ module Qiniu
           action_params = '/rs-put/' + Utils.urlsafe_base64_encode(entry_uri) + '/mimeType/' + Utils.urlsafe_base64_encode(mime_type)
           action_params += '/meta/' + Utils.urlsafe_base64_encode(custom_meta) unless custom_meta.nil?
           action_params += '/crc32/' + Utils.crc32checksum(local_file).to_s if enable_crc32_check
+          action_params += '/rotate/' + rotate if !rotate.nil? && rotate.to_i >= 0
           action_params
         end
 
