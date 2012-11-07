@@ -120,7 +120,8 @@ title: Ruby SDK 使用指南 | 七牛云存储
                                     :expires_in         => expires_in_seconds,
                                     :callback_url       => callback_url,
                                     :callback_body_type => callback_body_type,
-                                    :customer           => end_user_id
+                                    :customer           => end_user_id,
+                                    :escape             => allow_upload_callback_api
 
 **参数**
 
@@ -139,6 +140,19 @@ title: Ruby SDK 使用指南 | 七牛云存储
 :customer
 : 可选，字符串类型（String），客户方终端用户（End User）的ID，该字段可以用来标示一个文件的属主，这在一些特殊场景下（比如给终端用户上传的图片打上名字水印）非常有用。
 
+:escape
+: 可选，数字类型，可选值 0 或者 1，缺省为 0 。值为 1 表示 callback 传递的自定义数据中允许存在转义符号 `$(VarExpression)`，参考 [VarExpression](/v3/api/words/#VarExpression)。
+
+当 `escape` 的值为 `1` 时，常见的转义语法如下：
+
+- 若 `callbackBodyType` 为 `application/json` 时，一个典型的自定义回调数据（[CallbackParams](/v3/api/io/#CallbackParams)）为：
+
+    `{foo: "bar", w: $(imageInfo.width), h: $(imageInfo.height), exif: $(exif)}`
+
+- 若 `callbackBodyType` 为 `application/x-www-form-urlencoded` 时，一个典型的自定义回调数据（[CallbackParams](/v3/api/io/#CallbackParams)）为：
+
+    `foo=bar&w=$(imageInfo.width)&h=$(imageInfo.height)&exif=$(exif)`
+
 **返回值**
 
 返回一个字符串类型（String）的用于上传文件用的临时授权 `upload_token`。
@@ -156,7 +170,8 @@ title: Ruby SDK 使用指南 | 七牛云存储
                           :mime_type          => file_mime_type,
                           :note               => some_notes,
                           :callback_params    => callback_params,
-                          :enable_crc32_check => false
+                          :enable_crc32_check => false,
+                          :rotate             => auto_rotate
 
 **参数**
 
@@ -183,6 +198,9 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 :enable_crc32_check
 : 可选，Boolean 类型，是否启用文件上传 crc32 校验，缺省为 false 。
+
+:rotate
+: 可选，数字类型，上传图片时专用，可针对图片上传后进行旋转。该参数值为 0 ：表示根据图像EXIF信息自动旋转；值为 1 : 右转90度；值为 2 :右转180度；值为 3 : 右转270度。
 
 **返回值**
 

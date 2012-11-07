@@ -115,7 +115,8 @@ module Qiniu
                               mime_type = nil,
                               custom_meta = nil,
                               customer = nil,
-                              callback_params = nil)
+                              callback_params = nil,
+                              rotate = nil)
           raise NoSuchFileError, local_file unless File.exist?(local_file)
           begin
             ifile = File.open(local_file, 'rb')
@@ -127,9 +128,9 @@ module Qiniu
               mime_type = mime.empty? ? 'application/octet-stream' : mime[0].content_type
             end
             if fsize > Config.settings[:block_size]
-              code, data = _resumable_upload(uptoken, fh, fsize, bucket, key, mime_type, custom_meta, customer, callback_params)
+              code, data = _resumable_upload(uptoken, fh, fsize, bucket, key, mime_type, custom_meta, customer, callback_params, rotate)
             else
-              code, data = IO.upload_with_token(uptoken, local_file, bucket, key, mime_type, custom_meta, callback_params, true)
+              code, data = IO.upload_with_token(uptoken, local_file, bucket, key, mime_type, custom_meta, callback_params, true, rotate)
             end
             [code, data]
           ensure
@@ -289,13 +290,14 @@ module Qiniu
             return [code, data]
         end
 
-        def _mkfile(uptoken, entry_uri, fsize, checksums, mime_type = nil, custom_meta = nil, customer = nil, callback_params = nil)
+        def _mkfile(uptoken, entry_uri, fsize, checksums, mime_type = nil, custom_meta = nil, customer = nil, callback_params = nil, rotate = nil)
           path = '/rs-mkfile/' + Utils.urlsafe_base64_encode(entry_uri) + "/fsize/#{fsize}"
           path += '/mimeType/' + Utils.urlsafe_base64_encode(mime_type) if !mime_type.nil? && !mime_type.empty?
           path += '/meta/' + Utils.urlsafe_base64_encode(custom_meta) if !custom_meta.nil? && !custom_meta.empty?
           path += '/customer/' + customer if !customer.nil? && !customer.empty?
           callback_query_string = Utils.generate_query_string(callback_params) if !callback_params.nil? && !callback_params.empty?
           path += '/params/' + Utils.urlsafe_base64_encode(callback_query_string) if !callback_query_string.nil? && !callback_query_string.empty?
+          path += '/rotate/' + rotate if !rotate.nil? && rotate.to_i >= 0
           url = Config.settings[:up_host] + path
           body = ''
           checksums.each do |checksum|
@@ -304,7 +306,7 @@ module Qiniu
           _call_binary_with_token(uptoken, url, body)
         end
 
-        def _resumable_upload(uptoken, fh, fsize, bucket, key, mime_type = nil, custom_meta = nil, customer = nil, callback_params = nil)
+        def _resumable_upload(uptoken, fh, fsize, bucket, key, mime_type = nil, custom_meta = nil, customer = nil, callback_params = nil, rotate = nil)
           block_count = _block_count(fsize)
           progress_data = ProgressData.new(key)
           checksums = progress_data.get_checksums
@@ -322,7 +324,7 @@ module Qiniu
           code, data = _resumable_put(uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
           if Utils.is_response_ok?(code)
             entry_uri = bucket + ':' + key
-            code, data = _mkfile(uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params)
+            code, data = _mkfile(uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params, rotate)
           end
           if Utils.is_response_ok?(code)
             Utils.debug "File #{fh.path} {size: #{fsize}} successfully uploaded."

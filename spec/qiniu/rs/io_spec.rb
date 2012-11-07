@@ -10,17 +10,19 @@ module Qiniu
     describe IO do
 
       before :all do
-=begin
-        code, data = Qiniu::RS::Auth.exchange_by_password!("test@qbox.net", "test")
-        code.should == 200
-        data.should be_an_instance_of(Hash)
-        data["access_token"].should_not be_empty
-        data["refresh_token"].should_not be_empty
-        data["refresh_token"].should_not be_empty
-        puts data.inspect
-=end
-        @bucket = "test"
+        @bucket = "io_test_bucket"
         @key = Digest::SHA1.hexdigest (Time.now.to_i+rand(100)).to_s
+
+        result = Qiniu::RS.mkbucket(@bucket)
+        puts result.inspect
+        result.should be_true
+      end
+
+      after :all do
+        @bucket = "io_test_bucket"
+        result = Qiniu::RS.drop(@bucket)
+        puts result.inspect
+        result.should_not be_false
       end
 
       context ".upload_file" do
