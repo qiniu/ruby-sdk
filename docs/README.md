@@ -170,7 +170,8 @@ title: Ruby SDK 使用指南 | 七牛云存储
                           :mime_type          => file_mime_type,
                           :note               => some_notes,
                           :callback_params    => callback_params,
-                          :enable_crc32_check => false
+                          :enable_crc32_check => false,
+                          :rotate             => auto_rotate
 
 **参数**
 
@@ -197,6 +198,9 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 :enable_crc32_check
 : 可选，Boolean 类型，是否启用文件上传 crc32 校验，缺省为 false 。
+
+:rotate
+: 可选，数字类型，上传图片时专用，可针对图片上传后进行旋转。该参数值为 0 ：表示根据图像EXIF信息自动旋转；值为 1 : 右转90度；值为 2 :右转180度；值为 3 : 右转270度。
 
 **返回值**
 

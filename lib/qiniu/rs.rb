@@ -114,7 +114,8 @@ module Qiniu
                                             opts[:mime_type],
                                             opts[:note],
                                             opts[:customer],
-                                            opts[:callback_params])
+                                            opts[:callback_params],
+                                            opts[:rotate])
         else
           code, data = IO.upload_with_token(opts[:uptoken],
                                             opts[:file],
@@ -123,7 +124,8 @@ module Qiniu
                                             opts[:mime_type],
                                             opts[:note],
                                             opts[:callback_params],
-                                            opts[:enable_crc32_check])
+                                            opts[:enable_crc32_check],
+                                            opts[:rotate])
         end
         raise UploadFailedError.new(code, data) if code != StatusOK
         return data
