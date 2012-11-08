@@ -11,13 +11,19 @@ module Qiniu
     describe RS do
 
       before :all do
-
-        @bucket = "test_bucket_1234"
+        @bucket = "rs_test_bucket"
         @key = Digest::SHA1.hexdigest (Time.now.to_i+rand(100)).to_s
-        @domain = 'iovip.qbox.me/test'
+        @domain = 'rs-test-bucket.dn.qbox.me'
 
         code, data = Qiniu::RS::RS.mkbucket(@bucket)
-        puts data.inspect
+        puts [code, data].inspect
+        code.should == 200
+      end
+
+      after :all do
+        @bucket = "rs_test_bucket"
+        code, data = Qiniu::RS::RS.drop(@bucket)
+        puts [code, data].inspect
         code.should == 200
       end
 

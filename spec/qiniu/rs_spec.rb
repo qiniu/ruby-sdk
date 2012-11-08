@@ -10,13 +10,33 @@ module Qiniu
     before :all do
       @bucket = 'qiniu_rs_test'
       @key = Digest::SHA1.hexdigest Time.now.to_s
-      @domain = 'cdn.example.com'
-
-      @test_image_bucket = 'test_images_12345'
-      @test_image_key = 'image_logo_for_test.png'
+      @domain = 'qiniu-rs-test.dn.qbox.me'
 
       result = Qiniu::RS.mkbucket(@bucket)
       result.should_not be_false
+
+      @test_image_bucket = 'test_images_12345'
+      result2 = Qiniu::RS.mkbucket(@test_image_bucket)
+      puts result2.inspect
+      result2.should be_true
+
+      @test_image_key = 'image_logo_for_test.png'
+      local_file = File.expand_path('./rs/' + @test_image_key, File.dirname(__FILE__))
+      puts local_file.inspect
+      upopts = {:scope => @test_image_bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com"}
+      uptoken = Qiniu::RS.generate_upload_token(upopts)
+      data = Qiniu::RS.upload_file :uptoken => uptoken, :file => local_file, :bucket => @test_image_bucket, :key => @test_image_key
+      puts data.inspect
+    end
+
+    after :all do
+      result = Qiniu::RS.drop(@bucket)
+      puts result.inspect
+      result.should_not be_false
+
+      result2 = Qiniu::RS.drop(@test_image_bucket)
+      puts result2.inspect
+      result2.should_not be_false
     end
 
     context ".buckets" do
@@ -116,7 +136,7 @@ module Qiniu
 
     context ".upload_file" do
       it "should works" do
-        uptoken_opts = {:scope => @bucket}
+        uptoken_opts = {:scope => @bucket, :escape => 0}
         upload_opts = {
           :uptoken => Qiniu::RS.generate_upload_token(uptoken_opts),
           :file => __FILE__,
@@ -137,7 +157,7 @@ module Qiniu
         File.open(localfile, "w"){|f| 5242888.times{f.write(Random.rand(9).to_s)}}
         key = Digest::SHA1.hexdigest(localfile+Time.now.to_s)
         # generate the upload token
-        uptoken_opts = {:scope => @bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com"}
+        uptoken_opts = {:scope => @bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com", :escape => 0}
         uptoken = Qiniu::RS.generate_upload_token(uptoken_opts)
         # uploading
         upload_opts = {
@@ -311,7 +331,7 @@ module Qiniu
 
     context ".generate_upload_token" do
       it "should works" do
-        data = Qiniu::RS.generate_upload_token({:scope => 'test_bucket', :expires_in => 3600})
+        data = Qiniu::RS.generate_upload_token({:scope => 'test_bucket', :expires_in => 3600, :escape => 0})
         data.should_not be_empty
         puts data.inspect
       end
