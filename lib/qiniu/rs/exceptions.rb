@@ -4,9 +4,6 @@ module Qiniu
   module RS
 
     class Exception < RuntimeError
-      def to_s
-        inspect
-      end
     end
 
     class ResponseError < Exception
