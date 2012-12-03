@@ -14,6 +14,9 @@ module Qiniu
   module RS
     module UP
 
+      PROGRESS_TMP_FILE = 'progresses'
+      CHECKSUM_TMP_FILE = 'checksums'
+
       module AbstractClass
         class ChunkProgressNotifier
           include Qiniu::RS::Abstract
@@ -29,78 +32,57 @@ module Qiniu
       end
 
       class ChunkProgressNotifier < AbstractClass::ChunkProgressNotifier
+          attr_reader :tmpdata
           def initialize(id)
-              @data = UP::ProgressData.new(id)
+              @tmpdata = UP::TmpData.new(id, PROGRESS_TMP_FILE)
           end
           def notify(index, progress)
-              @data.set_progresses(index, progress)
-              logmsg = "chunk #{progress[:offset]/Config.settings[:chunk_size]} in block #{index} successfully uploaded.\n" +
-                       "{ctx:#{progress[:ctx]}, offset:#{progress[:offset]}, restsize:#{progress[:restsize]}, status_code:#{progress[:status_code]}}"
+              @tmpdata.set(index, progress)
+              logmsg = "chunk #{progress[:offset]/Config.settings[:chunk_size]} in block #{index} successfully uploaded.\n" + progress.to_s
               Utils.debug(logmsg)
           end
       end
 
       class BlockProgressNotifier < AbstractClass::BlockProgressNotifier
+          attr_reader :tmpdata
           def initialize(id)
-              @data = UP::ProgressData.new(id)
+              @tmpdata = UP::TmpData.new(id, CHECKSUM_TMP_FILE)
           end
           def notify(index, checksum)
-              @data.set_checksums(index, checksum)
+              @tmpdata.set(index, checksum)
               Utils.debug "block #{index}: {checksum: #{checksum}} successfully uploaded."
           end
       end
 
-      class ProgressData
-          def initialize(id)
-              @id = id
-              @tmpdir = Config.settings[:tmpdir] + File::SEPARATOR + @id
+      class TmpData
+          def initialize(dir, filename)
+              @tmpdir = Config.settings[:tmpdir] + File::SEPARATOR + dir
               FileUtils.mkdir_p(@tmpdir) unless Dir.exists?(@tmpdir)
-              @checksum_file = @tmpdir + File::SEPARATOR + 'checksums'
-              @progress_file = @tmpdir + File::SEPARATOR + 'progresses'
+              @tmpfile = @tmpdir + File::SEPARATOR + filename
           end
 
-          def get_checksums
-              File.exist?(@checksum_file) ? YAML.load_file(@checksum_file) : []
-          end
-
-          def get_progresses
-              File.exist?(@progress_file) ? YAML.load_file(@progress_file) : []
-          end
-
-          def set_checksums(index, checksum)
-              checksums = get_checksums
-              checksums[index] = checksum
-              File.open(@checksum_file, "w") do |f|
-                  YAML::dump(checksums, f)
-                  Utils.debug %Q(Updating tmpfile: #{@checksum_file})
+          def init(values)
+              File.open(@tmpfile, "w") do |f|
+                  YAML::dump(values, f)
+                  Utils.debug %Q(Initializing tmpfile: #{@tmpfile})
               end
           end
 
-          def set_progresses(index, progress)
-              progresses = get_progresses
-              progresses[index] = progress
-              File.open(@progress_file, "w") do |f|
-                  YAML::dump(progresses, f)
-                  Utils.debug %Q(Updating tmpfile: #{@progress_file})
-              end
+          def all
+              File.exist?(@tmpfile) ? YAML.load_file(@tmpfile) : []
           end
 
-          def init_checksums(checksums)
-              File.open(@checksum_file, "w") do |f|
-                  YAML::dump(checksums, f)
-                  Utils.debug %Q(Initializing tmpfile: #{@checksum_file})
-              end
-          end
-
-          def init_progresses(progresses)
-              File.open(@progress_file, "w") do |f|
-                  YAML::dump(progresses, f)
-                  Utils.debug %Q(Initializing tmpfile: #{@progress_file})
+          def set(index, value)
+              values = all
+              values[index] = value
+              File.open(@tmpfile, "w") do |f|
+                  YAML::dump(values, f)
+                  Utils.debug %Q(Updating tmpfile: #{@tmpfile})
               end
           end
 
           def sweep!
-              FileUtils.rm_r(@tmpdir)
+              FileUtils.rm_r(@tmpdir) if  Dir.exists?(@tmpdir)
           end
       end
 
@@ -162,7 +144,7 @@ module Qiniu
         end
 
         def _new_block_put_progress_data
-          {:ctx => nil, :offset => 0, :restsize => nil, :status_code => nil}
+          {:ctx => nil, :offset => 0, :restsize => nil, :status_code => nil, :host => nil}
         end
 
         def _call_binary_with_token(uptoken, url, data, retry_times = 0)
@@ -186,8 +168,8 @@ module Qiniu
             _call_binary_with_token(uptoken, url, body)
         end
 
-        def _putblock(uptoken, ctx, offset, body)
-            url = Config.settings[:up_host] + "/bput/#{ctx}/#{offset}"
+        def _putblock(uphost, uptoken, ctx, offset, body)
+            url = uphost + "/bput/#{ctx}/#{offset}"
             _call_binary_with_token(uptoken, url, body)
         end
 
@@ -214,6 +196,7 @@ module Qiniu
                         progress[:offset] = body_length
                         progress[:restsize] = block_size - body_length
                         progress[:status_code] = code
+                        progress[:host] = data["host"]
                         if !notifier.nil? && notifier.respond_to?("notify")
                             notifier.notify(block_index, progress)
                         end
@@ -236,13 +219,14 @@ module Qiniu
                     if result_length != body_length
                         raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length)
                     end
-                    code, data = _putblock(uptoken, progress[:ctx], progress[:offset], body)
+                    code, data = _putblock(progress[:host], uptoken, progress[:ctx], progress[:offset], body)
                     body_crc32 = Zlib.crc32(body)
                     if Utils.is_response_ok?(code) && data["crc32"] == body_crc32
                         progress[:ctx] = data["ctx"]
                         progress[:offset] += body_length
                         progress[:restsize] -= body_length
                         progress[:status_code] = code
+                        progress[:host] = data["host"]
                         if !notifier.nil? && notifier.respond_to?("notify")
                             notifier.notify(block_index, progress)
                         end
@@ -281,6 +265,7 @@ module Qiniu
                     code, data = _resumable_put_block(uptoken, fh, block_index, block_size, Config.settings[:chunk_size], progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
                     if Utils.is_response_ok?(code)
                         checksums[block_index] = data["checksum"]
+                        #checksums[block_index] = data["ctx"]
                         if !block_notifier.nil? && block_notifier.respond_to?("notify")
                             block_notifier.notify(block_index, checksums[block_index])
                         end
@@ -290,7 +275,7 @@ module Qiniu
             return [code, data]
         end
 
-        def _mkfile(uptoken, entry_uri, fsize, checksums, mime_type = nil, custom_meta = nil, customer = nil, callback_params = nil, rotate = nil)
+        def _mkfile(uphost, uptoken, entry_uri, fsize, checksums, mime_type = nil, custom_meta = nil, customer = nil, callback_params = nil, rotate = nil)
           path = '/rs-mkfile/' + Utils.urlsafe_base64_encode(entry_uri) + "/fsize/#{fsize}"
           path += '/mimeType/' + Utils.urlsafe_base64_encode(mime_type) if !mime_type.nil? && !mime_type.empty?
           path += '/meta/' + Utils.urlsafe_base64_encode(custom_meta) if !custom_meta.nil? && !custom_meta.empty?
@@ -298,37 +283,39 @@ module Qiniu
           callback_query_string = Utils.generate_query_string(callback_params) if !callback_params.nil? && !callback_params.empty?
           path += '/params/' + Utils.urlsafe_base64_encode(callback_query_string) if !callback_query_string.nil? && !callback_query_string.empty?
           path += '/rotate/' + rotate if !rotate.nil? && rotate.to_i >= 0
-          url = Config.settings[:up_host] + path
+          url = uphost + path
           body = ''
           checksums.each do |checksum|
               body += Utils.urlsafe_base64_decode(checksum)
           end
+          #body = checksums.join(',')
           _call_binary_with_token(uptoken, url, body)
         end
 
         def _resumable_upload(uptoken, fh, fsize, bucket, key, mime_type = nil, custom_meta = nil, customer = nil, callback_params = nil, rotate = nil)
           block_count = _block_count(fsize)
-          progress_data = ProgressData.new(key)
-          checksums = progress_data.get_checksums
-          progresses = progress_data.get_progresses
-          if checksums.empty?
-              block_count.times{checksums << ''}
-              progress_data.init_checksums(checksums)
-          end
-          if progresses.empty?
-              block_count.times{progresses << _new_block_put_progress_data}
-              progress_data.init_progresses(progresses)
-          end
           chunk_notifier = ChunkProgressNotifier.new(key)
           block_notifier = BlockProgressNotifier.new(key)
+          progresses = chunk_notifier.tmpdata.all
+          if progresses.empty?
+              block_count.times{progresses << _new_block_put_progress_data}
+              chunk_notifier.tmpdata.init(progresses)
+          end
+          checksums = block_notifier.tmpdata.all
+          if checksums.empty?
+              block_count.times{checksums << ''}
+              block_notifier.tmpdata.init(checksums)
+          end
           code, data = _resumable_put(uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
           if Utils.is_response_ok?(code)
+            uphost = data["host"]
             entry_uri = bucket + ':' + key
-            code, data = _mkfile(uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params, rotate)
+            code, data = _mkfile(uphost, uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params, rotate)
           end
           if Utils.is_response_ok?(code)
             Utils.debug "File #{fh.path} {size: #{fsize}} successfully uploaded."
-            progress_data.sweep!
+            chunk_notifier.tmpdata.sweep!
+            block_notifier.tmpdata.sweep!
           end
           [code, data]
         end
