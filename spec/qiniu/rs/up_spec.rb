@@ -11,7 +11,7 @@ module Qiniu
 
       before :all do
         @localfile = "bigfile.txt"
-        File.open(@localfile, "w"){|f| 9437184.times{f.write(Random.rand(9).to_s)}}
+        File.open(@localfile, "w"){|f| 5242888.times{f.write(Random.rand(9).to_s)}}
         @bucket = "up_test_bucket"
         @key = Digest::SHA1.hexdigest(@localfile+Time.now.to_s)
 
@@ -21,10 +21,8 @@ module Qiniu
       end
 
       after :all do
-        @localfile = "bigfile.txt"
         File.unlink(@localfile) if File.exists?(@localfile)
 
-        @bucket = "up_test_bucket"
         code, data = Qiniu::RS::RS.drop(@bucket)
         puts [code, data].inspect
         code.should == 200
