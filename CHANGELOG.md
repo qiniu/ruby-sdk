@@ -1,5 +1,11 @@
 ## CHANGE LOG
 
+### v3.2.2
+
+fixed E701 error
+
+断点续上传根据 mkblk 返回的 host 字段进行 bput 和 mkfile ，规避由于DNS智能解析造成的分布式并行块上传会出现上下文不连贯导致的 E701 问题。
+
 ### v3.2.1
 
 allow images uploaded auto-orient.

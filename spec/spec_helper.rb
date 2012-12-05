@@ -6,13 +6,7 @@ require 'rspec'
 
 RSpec.configure do |config|
   config.before :all do
-    Qiniu::RS.establish_connection! :access_key => "dFX_wMGVrRzwdWaraW-Qe5ZCDT-kcSmIAGKQOkXh",
-                                    :secret_key => "VllxxDfkn_h2ZIqeKYTnHJiN4LVODfDBlJHy_KsW",
-                                    :auth_url   => "http://m1.qbox.me:13001/oauth2/token",
-                                    :rs_host    => "http://m1.qbox.me:13003",
-                                    :io_host    => "http://m1.qbox.me:13004",
-                                    :up_host    => "http://m1.qbox.me:13019",
-                                    :pub_host   => "http://m1.qbox.me:13012",
-                                    :eu_host    => "http://m1.qbox.me:13050"
+    Qiniu::RS.establish_connection! :access_key => "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV",
+                                    :secret_key => "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
   end
 end
