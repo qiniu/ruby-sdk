@@ -15,7 +15,7 @@ module Qiniu
     module UP
 
       PROGRESS_TMP_FILE = 'progresses'
-      CHECKSUM_TMP_FILE = 'checksums'
+      CHECKSUM_TMP_FILE = 'ctxes'
 
       module AbstractClass
         class ChunkProgressNotifier
@@ -50,6 +50,7 @@ module Qiniu
           end
           def notify(index, checksum)
               @tmpdata.set(index, checksum)
+              Utils.debug "block #{index}: {ctx: #{checksum}} successfully uploaded."
               Utils.debug "block #{index}: {checksum: #{checksum}} successfully uploaded."
           end
       end
@@ -147,17 +148,18 @@ module Qiniu
           {:ctx => nil, :offset => 0, :restsize => nil, :status_code => nil, :host => nil}
         end
 
-        def _call_binary_with_token(uptoken, url, data, retry_times = 0)
+        def _call_binary_with_token(uptoken, url, data, content_type = nil, retry_times = 0)
           options = {
               :method => :post,
               :content_type => 'application/octet-stream',
               :upload_signature_token => uptoken
           }
+          options[:content_type] = content_type if !content_type.nil? && !content_type.empty?
           code, data = http_request url, data, options
           unless Utils.is_response_ok?(code)
               retry_times += 1
               if Config.settings[:auto_reconnect] && retry_times < Config.settings[:max_retry_times]
-                  return _call_binary_with_token(uptoken, url, data, retry_times)
+                  return _call_binary_with_token(uptoken, url, data, options[:content_type], retry_times)
               end
           end
           [code, data]
@@ -264,8 +266,8 @@ module Qiniu
                     end
                     code, data = _resumable_put_block(uptoken, fh, block_index, block_size, Config.settings[:chunk_size], progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
                     if Utils.is_response_ok?(code)
-                        checksums[block_index] = data["checksum"]
-                        #checksums[block_index] = data["ctx"]
+                        #checksums[block_index] = data["checksum"]
+                        checksums[block_index] = data["ctx"]
                         if !block_notifier.nil? && block_notifier.respond_to?("notify")
                             block_notifier.notify(block_index, checksums[block_index])
                         end
@@ -284,12 +286,12 @@ module Qiniu
           path += '/params/' + Utils.urlsafe_base64_encode(callback_query_string) if !callback_query_string.nil? && !callback_query_string.empty?
           path += '/rotate/' + rotate if !rotate.nil? && rotate.to_i >= 0
           url = uphost + path
-          body = ''
-          checksums.each do |checksum|
-              body += Utils.urlsafe_base64_decode(checksum)
-          end
-          #body = checksums.join(',')
-          _call_binary_with_token(uptoken, url, body)
+          #body = ''
+          #checksums.each do |checksum|
+          #    body += Utils.urlsafe_base64_decode(checksum)
+          #end
+          body = checksums.join(',')
+          _call_binary_with_token(uptoken, url, body, 'text/plain')
         end
 
         def _resumable_upload(uptoken, fh, fsize, bucket, key, mime_type = nil, custom_meta = nil, customer = nil, callback_params = nil, rotate = nil)
