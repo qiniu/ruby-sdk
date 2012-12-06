@@ -29,7 +29,7 @@ module Qiniu
         end
 
         def generate_token
-          encoded_digest = generate_encoded_digest(signature)
+          encoded_digest = generate_encoded_digest(generate_signature)
           %Q(#{@access_key}:#{encoded_digest})
         end
 
