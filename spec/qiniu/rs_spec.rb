@@ -3,6 +3,7 @@
 require 'digest/sha1'
 require 'spec_helper'
 require 'qiniu/rs'
+require 'qiniu/rs/exceptions'
 
 module Qiniu
   describe RS do
@@ -147,6 +148,29 @@ module Qiniu
         result = Qiniu::RS.upload_file(upload_opts)
         result.should_not be_false
         puts result.inspect
+      end
+
+      it "should raise MissingArgsError" do
+        uptoken_opts = {:scope => @bucket, :escape => 0}
+        upload_opts = {
+          :uptoken => Qiniu::RS.generate_upload_token(uptoken_opts),
+          :file => __FILE__,
+          :key => @key,
+          :enable_crc32_check => true
+        }
+        lambda { Qiniu::RS.upload_file(upload_opts) }.should raise_error(RS::MissingArgsError)
+      end
+
+      it "should raise NoSuchFileError" do
+        uptoken_opts = {:scope => @bucket, :escape => 0}
+        upload_opts = {
+          :uptoken => Qiniu::RS.generate_upload_token(uptoken_opts),
+          :file => 'no_this_file',
+          :bucket => @bucket,
+          :key => @key,
+          :enable_crc32_check => true
+        }
+        lambda { Qiniu::RS.upload_file(upload_opts) }.should raise_error(RS::NoSuchFileError)
       end
     end
 

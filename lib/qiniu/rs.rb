@@ -100,12 +100,14 @@ module Qiniu
       end
 
       def upload_file opts = {}
-        [:uptoken, :file, :bucket, :key].each do |opt|
-          raise MissingArgsError, [opt] unless opts.has_key?(opt)
-        end
+        uncontained_opts = [:uptoken, :file, :bucket, :key] - opts.keys 
+        raise MissingArgsError, uncontained_opts unless uncontained_opts.empty?
+
         source_file = opts[:file]
         raise NoSuchFileError, source_file unless File.exist?(source_file)
+
         opts[:enable_resumable_upload] = true unless opts.has_key?(:enable_resumable_upload)
+
         if opts[:enable_resumable_upload] && File::size(source_file) > Config.settings[:block_size]
           code, data = UP.upload_with_token(opts[:uptoken],
                                             opts[:file],
