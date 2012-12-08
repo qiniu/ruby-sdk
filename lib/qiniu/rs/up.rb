@@ -100,7 +100,6 @@ module Qiniu
                               customer = nil,
                               callback_params = nil,
                               rotate = nil)
-          raise NoSuchFileError, local_file unless File.exist?(local_file)
           begin
             ifile = File.open(local_file, 'rb')
             fh = FileData.new(ifile)
@@ -110,11 +109,7 @@ module Qiniu
               mime = MIME::Types.type_for local_file
               mime_type = mime.empty? ? 'application/octet-stream' : mime[0].content_type
             end
-            if fsize > Config.settings[:block_size]
-              code, data = _resumable_upload(uptoken, fh, fsize, bucket, key, mime_type, custom_meta, customer, callback_params, rotate)
-            else
-              code, data = IO.upload_with_token(uptoken, local_file, bucket, key, mime_type, custom_meta, callback_params, true, rotate)
-            end
+            code, data = _resumable_upload(uptoken, fh, fsize, bucket, key, mime_type, custom_meta, customer, callback_params, rotate)
             [code, data]
           ensure
             ifile.close unless ifile.nil?
