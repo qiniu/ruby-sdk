@@ -80,6 +80,7 @@ module Qiniu
       end
     end
 
+=begin
     context ".set_watermark" do
       it "should works" do
         options = {
@@ -98,6 +99,7 @@ module Qiniu
         puts result.inspect
       end
     end
+=end
 
     context ".put_auth" do
       it "should works" do
