@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v3.3.0
+
+- 私有资源下载新版实现，添加 Qiniu::RS.generate_download_token() 方法。参考 [downloadToken](http://docs.qiniutek.com/v3/api/io/#get)
+
 ### v3.2.2
 
 fixed E701 error

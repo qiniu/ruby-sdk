@@ -8,6 +8,8 @@ module Qiniu
   module RS
       class QboxToken < AccessToken
 
+        include Utils
+
         attr_accessor :url, :params
 
         def initialize(opts = {})
@@ -20,10 +22,10 @@ module Qiniu
           signature = uri.path
           query_string = uri.query
           signature += '?' + query_string if !query_string.nil? && !query_string.empty?
-          signature += "\n";
+          signature += "\n"
           if @params.is_a?(Hash)
-            total_param = @params.map { |key, value| %Q(#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s).gsub('+', '%20')}) }
-            signature += total_param.join("&")
+              params_string = Utils.generate_query_string(@params)
+              signature += params_string
           end
           signature
         end

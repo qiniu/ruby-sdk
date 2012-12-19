@@ -17,6 +17,7 @@ module Qiniu
     autoload :AccessToken, 'qiniu/tokens/access_token'
     autoload :QboxToken, 'qiniu/tokens/qbox_token'
     autoload :UploadToken, 'qiniu/tokens/upload_token'
+    autoload :DownloadToken, 'qiniu/tokens/download_token'
     autoload :Abstract, 'qiniu/rs/abstract'
 
     class << self
@@ -100,7 +101,7 @@ module Qiniu
       end
 
       def upload_file opts = {}
-        uncontained_opts = [:uptoken, :file, :bucket, :key] - opts.keys 
+        uncontained_opts = [:uptoken, :file, :bucket, :key] - opts.keys
         raise MissingArgsError, uncontained_opts unless uncontained_opts.empty?
 
         source_file = opts[:file]
@@ -229,6 +230,15 @@ module Qiniu
         #token_obj.callback_body_type = opts[:callback_body_type]
         #token_obj.customer = opts[:customer]
         #token_obj.escape = opts[:escape]
+        token_obj.generate_token
+      end
+
+      def generate_download_token(opts = {})
+        token_obj = DownloadToken.new(opts)
+        token_obj.access_key = Config.settings[:access_key]
+        token_obj.secret_key = Config.settings[:secret_key]
+        #token_obj.expires_in = opts[:expires_in]
+        #token_obj.pattern = opts[:pattern]
         token_obj.generate_token
       end
 

@@ -58,7 +58,7 @@ module Qiniu
       class TmpData
           def initialize(dir, filename)
               @tmpdir = Config.settings[:tmpdir] + File::SEPARATOR + dir
-              FileUtils.mkdir_p(@tmpdir) unless Dir.exists?(@tmpdir)
+              FileUtils.mkdir_p(@tmpdir) unless File.directory?(@tmpdir)
               @tmpfile = @tmpdir + File::SEPARATOR + filename
           end
 
@@ -83,7 +83,7 @@ module Qiniu
           end
 
           def sweep!
-              FileUtils.rm_r(@tmpdir) if  Dir.exists?(@tmpdir)
+              FileUtils.rm_r(@tmpdir) if File.directory?(@tmpdir)
           end
       end
 
@@ -170,7 +170,7 @@ module Qiniu
             _call_binary_with_token(uptoken, url, body)
         end
 
-        def _resumable_put_block(uptoken, fh, block_index, block_size, chunk_size, progress, retry_times = 1, notifier)
+        def _resumable_put_block(uptoken, fh, block_index, block_size, chunk_size, progress, retry_times, notifier)
             code, data = 0, {}
             fpath = fh.path
             # this block has never been uploaded.
@@ -318,6 +318,7 @@ module Qiniu
         end
 
       end
+
     end
   end
 end

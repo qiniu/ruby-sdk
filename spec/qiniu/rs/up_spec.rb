@@ -11,7 +11,7 @@ module Qiniu
 
       before :all do
         @localfile = "bigfile.txt"
-        File.open(@localfile, "w"){|f| 5242888.times{f.write(Random.rand(9).to_s)}}
+        File.open(@localfile, "w"){|f| 5242888.times{f.write(rand(9).to_s)}}
         @bucket = "up_test_bucket"
         @key = Digest::SHA1.hexdigest(@localfile+Time.now.to_s)
 

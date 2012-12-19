@@ -31,9 +31,12 @@ module Qiniu
     end
 
     after :all do
-      result = Qiniu::RS.drop(@bucket)
-      puts result.inspect
+      result = Qiniu::RS.unpublish(@domain)
       result.should_not be_false
+
+      result1 = Qiniu::RS.drop(@bucket)
+      puts result1.inspect
+      result1.should_not be_false
 
       result2 = Qiniu::RS.drop(@test_image_bucket)
       puts result2.inspect
@@ -180,7 +183,7 @@ module Qiniu
       it "should works" do
         # generate bigfile for testing
         localfile = "test_bigfile"
-        File.open(localfile, "w"){|f| 5242888.times{f.write(Random.rand(9).to_s)}}
+        File.open(localfile, "w"){|f| 5242888.times{f.write(rand(9).to_s)}}
         key = Digest::SHA1.hexdigest(localfile+Time.now.to_s)
         # generate the upload token
         uptoken_opts = {:scope => @bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com", :escape => 0}
@@ -281,12 +284,14 @@ module Qiniu
       end
     end
 
+=begin
     context ".unpublish" do
       it "should works" do
         result = Qiniu::RS.unpublish(@domain)
         result.should_not be_false
       end
     end
+=end
 
     context ".delete" do
       it "should works" do
@@ -360,6 +365,16 @@ module Qiniu
         data = Qiniu::RS.generate_upload_token({:scope => 'test_bucket', :expires_in => 3600, :escape => 0})
         data.should_not be_empty
         puts data.inspect
+        data.split(":").length.should == 3
+      end
+    end
+
+    context ".generate_download_token" do
+      it "should works" do
+        data = Qiniu::RS.generate_download_token({:expires_in => 1, :pattern => 'http://qiniu-rs-test.dn.qbox.me/*'})
+        data.should_not be_empty
+        puts data.inspect
+        data.split(":").length.should == 3
       end
     end
 
