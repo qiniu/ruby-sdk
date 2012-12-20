@@ -6,7 +6,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](/v3/api/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
-七牛云存储 Ruby SDK 源码地址：[https://github.com/qiniu/ruby-sdk](https://github.com/qiniu/ruby-sdk)
+七牛云存储 Ruby SDK 源码地址：<https://github.com/qiniu/ruby-sdk>
 
 **文档大纲**
 
@@ -18,20 +18,18 @@ title: Ruby SDK 使用指南 | 七牛云存储
         - [获取用于上传文件的临时授权凭证](#generate-upload-token)
         - [服务端上传文件](#upload-server-side)
             - [断点续上传](#resumable-upload)
-            - [针对 NotFound 场景处理](#upload-file-for-not-found)
-        - [客户端直传文件](#upload-client-side)
+            - [自定义 404 NotFound 资源](#upload-file-for-not-found)
+        - [移动端/web端直传文件](#upload-client-side)
+    - [下载文件](#download)
+        - [公有资源下载](#download-public-files)
+        - [私有资源下载](#download-private-files)
     - [查看文件属性信息](#stat)
-    - [获取文件下载链接（含文件属性信息）](#get)
-    - [只获取文件下载链接](#download)
     - [删除指定文件](#delete)
     - [删除所有文件（单个 bucket）](#drop)
     - [批量操作](#batch)
-        - [批量获取文件属性信息（含下载链接）](#batch_get)
-        - [批量获取文件下载链接](#batch_download)
+        - [批量获取文件属性信息](#batch_get)
         - [批量删除文件](#batch_delete)
-    - [创建公开外链](#publish)
-    - [取消公开外链](#unpublish)
-    - [Bucket（资源表）管理](#buckets)
+    - [Bucket（空间）管理](#buckets)
         - [创建 Bucket](#mkbucket)
         - [列出所有 Bucket](#list-all-buckets)
         - [访问控制](#set-protected)
@@ -250,7 +248,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 <a name="upload-file-for-not-found"></a>
 
-##### 针对 NotFound 场景处理
+##### 自定义 404 NotFound 资源
 
 您可以上传一个应对 HTTP 404 出错处理的文件，当您 [创建公开外链](#publish) 后，若公开的外链找不到该文件，即可使用您上传的“自定义404文件”代替之。要这么做，您只须使用 `Qiniu::RS.upload_file` 函数上传一个 `key` 为固定字符串类型的值 `errno-404` 即可。
 
@@ -264,7 +262,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 <a name="upload-client-side"></a>
 
-#### 客户端直传文件
+#### 移动端/web端直传文件
 
 客户端上传流程和服务端上传类似，差别在于：客户端直传文件所需的 `upload_token` 可以选择在客户方的业务服务器端生成，也可以选择在客户方的客户端程序里边生成。选择前者，可以和客户方的业务揉合得更紧密和安全些，比如防伪造请求。
 
@@ -275,6 +273,39 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 如果您的网络程序是从云端（服务端程序）到终端（手持设备应用）的架构模型，且终端用户有使用您移动端App上传文件（比如照片或视频）的需求，可以把您服务器得到的此 `upload_token` 返回给手持设备端的App，然后您的移动 App 可以使用 [七牛云存储 Objective-SDK （iOS）](http://docs.qiniutek.com/v3/sdk/objc/) 或 [七牛云存储 Android-SDK](http://docs.qiniutek.com/v3/sdk/android/) 的相关上传函数或参照 [七牛云存储API之文件上传](http://docs.qiniutek.com/v3/api/io/#upload) 直传文件。这样，您的终端用户即可把数据（比如图片或视频）直接上传到七牛云存储服务器上无须经由您的服务端中转，而且在上传之前，七牛云存储做了智能加速，终端用户上传数据始终是离他物理距离最近的存储节点。当终端用户上传成功后，七牛云存储服务端会向您指定的 `callback_url` 发送回调数据。如果 `callback_url` 所在的服务处理完毕后输出 `JSON` 格式的数据，七牛云存储服务端会将该回调请求所得的响应信息原封不动地返回给终端应用程序。
 
+<a name="download"></a>
+### 下载文件
+
+私有(private)是 bucket(空间) 的一个属性，一个私有 bucket 中的资源为私有资源，私有资源不可匿名下载。
+
+新创建的bucket缺省为私有，也可以将某个bucket设为公有，公有bucket中的资源为公有资源，公有资源可以匿名下载。
+
+<a name="download-public-files"></a>
+#### 公有资源下载
+
+    http://<bucket>.qiniudn.com/<key>
+
+注意，尖括号不是必需，代表替换项。
+
+<a name="download-private-files"></a>
+#### 私有资源下载
+
+私有资源只能通过临时下载授权凭证(downloadToken)下载，下载链接格式如下：
+
+    http://<bucket>.qiniudn.com/<key>?token=<downloadToken>
+
+downloadToken 可以使用 SDK 提供的如下方法生成：
+
+    Qiniu::RS.generate_download_token :expires_in => expires_in_seconds,
+                                      :pattern    => download_url_patterns
+
+**参数**
+
+expires_in
+: 可选，数字类型，用于设置上传 URL 的有效期，单位：秒，缺省为 3600 秒，即 1 小时后该上传链接不再有效。
+
+pattern
+: 可选，字符串类型，用于设置可匹配的下载链接。参考：[downloadToken pattern 详解](/v3/api/io/#download-token-pattern)
 
 <a name="stat"></a>
 
@@ -314,66 +345,6 @@ mimeType
 
 putTime
 : 上传时间，单位是 百纳秒
-
-<a name="get"></a>
-
-### 获取文件下载链接（含文件属性信息）
-
-    Qiniu::RS.get(bucket, key, save_as = nil, expires_in = nil, version = nil)
-
-`Qiniu::RS.get` 函数除了能像 `Qiniu::RS.stat` 一样返回文件的属性信息外，还能返回具体的下载链接及其有效时间。
-
-**参数**
-
-bucket
-: 必须，字符串类型（String），类似传统数据库里边的表名称，我们暂且将其叫做“资源表”，每份数据是属性信息都存储到具体的 bucket（资源表）中 。
-
-key
-: 必须，字符串类型（String），类似传统数据库里边某个表的主键ID，每一个文件最终都用一个唯一 `key` 进行标示。
-
-save_as
-: 可选，字符串类型（String），文件下载时保存的具体名称
-
-expires_in
-: 可选，整型，用于设置下载 URL 的有效期，单位：秒，缺省为 3600 秒
-
-version
-: 可选，字符串类型（String），值为 `Qiniu::RS.stat` 或 `Qiniu::RS.get` 函数返回的 `hash` 字段的值，可用于断点续下载。
-
-**返回值**
-
-如果请求失败，返回 `false`；否则返回如下一个 `Hash` 类型的结构：
-
-    {
-        "fsize"    => 3053,
-        "hash"     => "Fu9lBSwQKbWNlBLActdx8-toAajv",
-        "mimeType" => "application/x-ruby",
-        "url"      => "http://iovip.qbox.me/file/<an-authorized-token>",
-        "expires"  => 3600
-    }
-
-fsize
-: 表示文件总大小，单位是 Byte
-
-hash
-: 文件的特征值，可以看做是基版本号
-
-mimeType
-: 文件的 mime-type
-
-url
-: 文件的临时有效下载链接
-
-expires
-: 文件下载链接的有效期，单位为 秒，过了 `expires` 秒之后，下载 `url` 将不再有效
-
-<a name="download"></a>
-
-### 只获取文件下载链接
-
-    Qiniu::RS.download(bucket, key, save_as = nil, expires_in = nil, version = nil)
-
-`Qiniu::RS.download` 函数参数与 `Qiniu::RS.get` 一样，差别在于，`Qiniu::RS.download` 只返回文件的下载链接。
 
 <a name="delete"></a>
 
@@ -451,7 +422,7 @@ keys
 
 <a name="batch_get"></a>
 
-#### 批量获取文件属性信息（含下载链接）
+#### 批量获取文件属性信息
 
     Qiniu::RS.batch_get(bucket, keys)
 
@@ -483,22 +454,6 @@ keys
         ...
     ]
 
-<a name="batch_download"></a>
-
-#### 批量获取文件下载链接
-
-    Qiniu::RS.batch_download(bucket, keys)
-
-`Qiniu::RS.batch_download` 函数也是在 `Qiniu::RS.batch` 之上的封装，提供批量获取文件下载链接的功能。
-
-参数同 `Qiniu::RS.batch_get` 的参数一样。
-
-**返回值**
-
-如果请求失败，返回 `false`，否则返回一个 `Array` 类型的结构，其中每个元素是一个字符串类型的下载链接：
-
-    ["<download-link-1>", "<download-link-2>", …, "<download-link-N>"]
-
 <a name="batch_delete"></a>
 
 #### 批量删除文件
@@ -513,50 +468,9 @@ keys
 
 如果批量删除成功，返回 `true` ，否则为 `false` 。
 
-<a name="publish"></a>
-
-### 创建公开外链
-
-    Qiniu::RS.publish(domain, bucket)
-
-调用 `Qiniu::RS.publish` 函数可以将您在七牛云存储中的资源表 `bucket` 发布到某个 `domain` 下，`domain` 需要在 DNS 管理里边 CNAME 到 `iovip.qbox.me` 。
-
-这样，用户就可以通过 `http://<domain>/<key>` 来访问资源表 `bucket` 中的文件。键值为 `foo/bar/file` 的文件对应访问 URL 为 `http://<domain>/foo/bar/file`。 另外，`domain` 可以是一个真实的域名，比如 `www.example.com`，也可以是七牛云存储的二级路径，比如 `iovip.qbox.me/example` 。
-
-例如：执行 `Qiniu::RS.publish("cdn.example.com", "EXAMPLE_BUCKET")` 后，那么键名为 `foo/bar/file` 的文件可以通过 `http://cdn.example.com/foo/bar/file` 访问。
-
-**参数**
-
-domain
-: 必须，字符串类型（String），资源表发布的目标域名，例如：`cdn.example.com`
-
-bucket
-: 必须，字符串类型（String），要公开发布的资源表名称。
-
-**返回值**
-
-如果发布成功，返回 `true`，否则返回 `false` 。
-
-<a name="unpublish"></a>
-
-### 取消公开外链
-
-    Qiniu::RS.unpublish(domain)
-
-可以通过 SDK 提供的 `Qiniu::RS.unpublish` 函数来取消指定 `bucket` 的在某个 `domain` 域下的所有公开外链访问。
-
-**参数**
-
-domain
-: 必须，字符串类型（String），资源表已发布的目标域名名称，例如：`cdn.example.com`
-
-**返回值**
-
-如果撤销成功，返回 `true`，否则返回 `false` 。
-
 <a name="buckets"></a>
 
-### Bucket（资源表）管理
+### Bucket（空间）管理
 
 <a name="mkbucket"></a>
 
@@ -689,7 +603,6 @@ spec
 **返回值**
 
 返回一个字符串类型的缩略图 URL
-
 
 
 <a name="image_mogrify_preview_url"></a>
