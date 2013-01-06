@@ -9,14 +9,14 @@ module Qiniu
   describe RS do
 
     before :all do
-      @bucket = 'qiniu_rs_test'
+      @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
       @key = Digest::SHA1.hexdigest Time.now.to_s
-      @domain = 'qiniu-rs-test.dn.qbox.me'
+      #@domain = @bucket + '.dn.qbox.me'
 
       result = Qiniu::RS.mkbucket(@bucket)
       result.should_not be_false
 
-      @test_image_bucket = 'test_images_12345'
+      @test_image_bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
       result2 = Qiniu::RS.mkbucket(@test_image_bucket)
       puts result2.inspect
       result2.should be_true
@@ -24,15 +24,15 @@ module Qiniu
       @test_image_key = 'image_logo_for_test.png'
       local_file = File.expand_path('./rs/' + @test_image_key, File.dirname(__FILE__))
       puts local_file.inspect
-      upopts = {:scope => @test_image_bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com"}
+      upopts = {:scope => @test_image_bucket, :expires_in => 3600, :customer => "why404@gmail.com"}
       uptoken = Qiniu::RS.generate_upload_token(upopts)
       data = Qiniu::RS.upload_file :uptoken => uptoken, :file => local_file, :bucket => @test_image_bucket, :key => @test_image_key
       puts data.inspect
     end
 
     after :all do
-      result = Qiniu::RS.unpublish(@domain)
-      result.should_not be_false
+      #result = Qiniu::RS.unpublish(@domain)
+      #result.should_not be_false
 
       result1 = Qiniu::RS.drop(@bucket)
       puts result1.inspect
@@ -186,7 +186,7 @@ module Qiniu
         File.open(localfile, "w"){|f| 5242888.times{f.write(rand(9).to_s)}}
         key = Digest::SHA1.hexdigest(localfile+Time.now.to_s)
         # generate the upload token
-        uptoken_opts = {:scope => @bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com", :escape => 0}
+        uptoken_opts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com", :escape => 0}
         uptoken = Qiniu::RS.generate_upload_token(uptoken_opts)
         # uploading
         upload_opts = {
@@ -277,12 +277,14 @@ module Qiniu
       end
     end
 
+=begin
     context ".publish" do
       it "should works" do
         result = Qiniu::RS.publish(@domain, @bucket)
         result.should_not be_false
       end
     end
+=end
 
 =begin
     context ".unpublish" do
@@ -338,10 +340,6 @@ module Qiniu
         data.should_not be_empty
         puts data.inspect
 
-        dest_bucket = "test_thumbnails_bucket"
-        result = Qiniu::RS.mkbucket(dest_bucket)
-        result.should_not be_false
-
         dest_key = "cropped-" + @test_image_key
         src_img_url = data["url"]
         mogrify_options = {
@@ -353,7 +351,7 @@ module Qiniu
           :format => "jpg",
           :auto_orient => true
         }
-        result2 = Qiniu::RS.image_mogrify_save_as(dest_bucket, dest_key, src_img_url, mogrify_options)
+        result2 = Qiniu::RS.image_mogrify_save_as(@test_image_bucket, dest_key, src_img_url, mogrify_options)
         result2.should_not be_false
         result2.should_not be_empty
         puts result2.inspect
@@ -362,7 +360,7 @@ module Qiniu
 
     context ".generate_upload_token" do
       it "should works" do
-        data = Qiniu::RS.generate_upload_token({:scope => 'test_bucket', :expires_in => 3600, :escape => 0})
+        data = Qiniu::RS.generate_upload_token({:scope => @bucket, :expires_in => 3600, :escape => 0})
         data.should_not be_empty
         puts data.inspect
         data.split(":").length.should == 3
@@ -371,7 +369,7 @@ module Qiniu
 
     context ".generate_download_token" do
       it "should works" do
-        data = Qiniu::RS.generate_download_token({:expires_in => 1, :pattern => 'http://qiniu-rs-test.dn.qbox.me/*'})
+        data = Qiniu::RS.generate_download_token({:expires_in => 1, :pattern => 'http://*.dn.qbox.me/*'})
         data.should_not be_empty
         puts data.inspect
         data.split(":").length.should == 3
