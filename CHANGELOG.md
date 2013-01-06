@@ -1,8 +1,23 @@
 ## CHANGE LOG
 
+### v3.3.1
+
+
+确保单元测试里边用到的测试 Bucket 全局唯一
+
+使得10多种不通的 Ruby 宿主环境能隔离互不影响地执行单元/集成测试
+
+Ruby 宿主环境如下
+
+1.8.7, 1.9.2, 1.9.3, jruby-18mode, jruby-19mode, rbx-18mode, rbx-19mode, ruby-head, jruby-head, ree
+
+详见 <https://travis-ci.org/qiniu/ruby-sdk>
+
 ### v3.3.0
 
-- 私有资源下载新版实现，添加 Qiniu::RS.generate_download_token() 方法。参考 [downloadToken](http://docs.qiniutek.com/v3/api/io/#get)
+私有资源下载新版实现，添加 Qiniu::RS.generate_download_token() 方法。参考 [downloadToken](http://docs.qiniutek.com/v3/api/io/#get)
+
+详见 [Ruby SDK 使用文档之私有资源下载](http://docs.qiniutek.com/v3/sdk/ruby/#download-private-files)
 
 ### v3.2.2
 

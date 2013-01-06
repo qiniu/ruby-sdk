@@ -10,8 +10,8 @@ module Qiniu
     describe EU do
 
       before :all do
-        @customer_id = "awhy.xu@gmail.com"
-        @bucket = "wm_test_bucket"
+        @customer_id = "why404@gmail.com"
+        @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
         @key = "image_logo_for_test.png"
 
         result = Qiniu::RS.mkbucket(@bucket)
@@ -35,7 +35,6 @@ module Qiniu
       end
 
       after :all do
-        @bucket = "wm_test_bucket"
         result = Qiniu::RS.drop(@bucket)
         puts result.inspect
         result.should_not be_false
