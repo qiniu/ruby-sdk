@@ -1,4 +1,4 @@
-# Utils.-*- encoding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 
 require 'digest/sha1'
 require 'spec_helper'
