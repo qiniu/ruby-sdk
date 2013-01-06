@@ -27,7 +27,7 @@ module Qiniu
           params[:callbackBodyType] = @callback_body_type if !@callback_body_type.nil? && !@callback_body_type.empty?
           params[:customer] = @customer if !@customer.nil? && !@customer.empty?
           params[:escape] = 1 if @escape == 1 || @escape == true
-          urlsafe_base64_encode(params.to_json)
+          Utils.urlsafe_base64_encode(params.to_json)
         end
 
         def generate_token
