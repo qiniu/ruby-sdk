@@ -10,14 +10,13 @@ module Qiniu
     describe Pub do
 
       before :all do
-        @bucket = "pub_test_bucket"
+        @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
         result = Qiniu::RS.mkbucket(@bucket)
         puts result.inspect
         result.should_not be_false
       end
 
       after :all do
-        @bucket = "pub_test_bucket"
         result = Qiniu::RS.drop(@bucket)
         puts result.inspect
         result.should_not be_false

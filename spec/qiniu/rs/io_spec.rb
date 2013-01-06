@@ -10,7 +10,7 @@ module Qiniu
     describe IO do
 
       before :all do
-        @bucket = "io_test_bucket"
+        @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
         @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
 
         result = Qiniu::RS.mkbucket(@bucket)
@@ -19,7 +19,6 @@ module Qiniu
       end
 
       after :all do
-        @bucket = "io_test_bucket"
         result = Qiniu::RS.drop(@bucket)
         puts result.inspect
         result.should_not be_false
@@ -48,7 +47,7 @@ module Qiniu
 
       context ".upload_with_token" do
         it "should works" do
-          upopts = {:scope => @bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com"}
+          upopts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com"}
           uptoken = Qiniu::RS.generate_upload_token(upopts)
           code, data = Qiniu::RS::IO.upload_with_token(uptoken, __FILE__, @bucket, @key, nil, nil, nil, true)
           code.should == 200

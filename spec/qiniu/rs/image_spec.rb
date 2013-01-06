@@ -11,7 +11,7 @@ module Qiniu
 
       before :all do
 
-        @bucket = "test_images_12345"
+        @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
         @key = "image_logo_for_test.png"
 
         result = Qiniu::RS.mkbucket(@bucket)
@@ -20,7 +20,7 @@ module Qiniu
 
         local_file = File.expand_path('../' + @key, __FILE__)
 
-        upopts = {:scope => @bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com"}
+        upopts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com"}
         uptoken = Qiniu::RS.generate_upload_token(upopts)
         data = Qiniu::RS.upload_file :uptoken => uptoken, :file => local_file, :bucket => @bucket, :key => @key
         puts data.inspect
@@ -42,7 +42,6 @@ module Qiniu
       end
 
       after :all do
-        @bucket = "test_images_12345"
         result = Qiniu::RS.drop(@bucket)
         puts result.inspect
         result.should_not be_false

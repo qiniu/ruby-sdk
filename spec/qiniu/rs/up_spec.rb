@@ -12,7 +12,7 @@ module Qiniu
       before :all do
         @localfile = "bigfile.txt"
         File.open(@localfile, "w"){|f| 5242888.times{f.write(rand(9).to_s)}}
-        @bucket = "up_test_bucket"
+        @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
         @key = Digest::SHA1.hexdigest(@localfile+Time.now.to_s)
 
         code, data = Qiniu::RS::RS.mkbucket(@bucket)
@@ -30,7 +30,7 @@ module Qiniu
 
       context ".upload_with_token" do
         it "should works" do
-          upopts = {:scope => @bucket, :expires_in => 3600, :customer => "awhy.xu@gmail.com"}
+          upopts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com"}
           uptoken = Qiniu::RS.generate_upload_token(upopts)
           code, data = Qiniu::RS::UP.upload_with_token(uptoken, @localfile, @bucket, @key)
           puts data.inspect
