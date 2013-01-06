@@ -12,7 +12,7 @@ module Qiniu
 
       before :all do
         @bucket = "rs_test_bucket"
-        @key = Digest::SHA1.hexdigest (Time.now.to_i+rand(100)).to_s
+        @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
         @domain = 'rs-test-bucket.dn.qbox.me'
 
         code, data = Qiniu::RS::RS.mkbucket(@bucket)

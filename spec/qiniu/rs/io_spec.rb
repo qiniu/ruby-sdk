@@ -1,4 +1,4 @@
-# Utils.-*- encoding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 
 require 'spec_helper'
 require 'qiniu/rs/auth'
@@ -11,7 +11,7 @@ module Qiniu
 
       before :all do
         @bucket = "io_test_bucket"
-        @key = Digest::SHA1.hexdigest (Time.now.to_i+rand(100)).to_s
+        @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
 
         result = Qiniu::RS.mkbucket(@bucket)
         puts result.inspect

@@ -41,6 +41,7 @@ module Qiniu
         result.should_not be_false
       end
 
+=begin
       context ".set_watermark" do
         it "should works" do
           options = {
@@ -59,6 +60,7 @@ module Qiniu
           puts data.inspect
         end
       end
+=end
 
     end
   end
