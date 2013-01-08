@@ -1,7 +1,15 @@
 ## CHANGE LOG
 
-### v3.3.1
+### v3.4.0
 
+增加文件复制/移动方法，包括批量复制/移动文件
+
+- `Qiniu::RS.copy(source_bucket, source_key, target_bucket, target_key)`
+- `Qiniu::RS.move(source_bucket, source_key, target_bucket, target_key)`
+- `Qiniu::RS.batch_copy [source_bucket, source_key, target_bucket, target_key], ...`
+- `Qiniu::RS.batch_move [source_bucket, source_key, target_bucket, target_key], ...`
+
+### v3.3.1
 
 确保单元测试里边用到的测试 Bucket 全局唯一
 
