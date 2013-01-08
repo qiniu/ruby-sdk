@@ -11,6 +11,7 @@ module Qiniu
     before :all do
       @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
       @key = Digest::SHA1.hexdigest Time.now.to_s
+      @key2 = @key + rand(100).to_s
       #@domain = @bucket + '.dn.qbox.me'
 
       result = Qiniu::RS.mkbucket(@bucket)
@@ -294,6 +295,52 @@ module Qiniu
       end
     end
 =end
+
+    context ".batch_copy" do
+      it "should works" do
+        result = Qiniu::RS.batch_copy [@bucket, @key, @bucket, @key2]
+        result.should_not be_false
+
+        #result2 = Qiniu::RS.stat(@bucket, @key2)
+        #result2.should_not be_false
+      end
+    end
+
+    context ".batch_move" do
+      it "should works" do
+        result = Qiniu::RS::RS.batch_move [@bucket, @key, @bucket, @key2]
+        result.should_not be_false
+
+        #result2 = Qiniu::RS.stat(@bucket, @key2)
+        #result2.should_not be_false
+
+        result3 = Qiniu::RS.batch_move [@bucket, @key2, @bucket, @key]
+        result3.should_not be_false
+      end
+    end
+
+    context ".copy" do
+      it "should works" do
+        result = Qiniu::RS.copy(@bucket, @key, @bucket, @key2)
+        result.should_not be_false
+
+        #result2 = Qiniu::RS.stat(@bucket, @key2)
+        #result2.should_not be_false
+      end
+    end
+
+    context ".move" do
+      it "should works" do
+        result = Qiniu::RS.move(@bucket, @key, @bucket, @key2)
+        result.should_not be_false
+
+        result2 = Qiniu::RS.stat(@bucket, @key2)
+        result2.should_not be_false
+
+        result3 = Qiniu::RS.move(@bucket, @key2, @bucket, @key)
+        result3.should_not be_false
+      end
+    end
 
     context ".delete" do
       it "should works" do
