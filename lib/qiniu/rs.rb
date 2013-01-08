@@ -63,6 +63,7 @@ module Qiniu
         code == StatusOK
       end
 
+=begin
       def set_watermark(customer_id, options = {})
         code, data = EU.set_watermark(customer_id, options)
         code == StatusOK
@@ -72,6 +73,7 @@ module Qiniu
         code, data = EU.get_watermark(customer_id)
         code == StatusOK ? data : false
       end
+=end
 
       def put_auth(expires_in = nil, callback_url = nil)
         code, data = IO.put_auth(expires_in, callback_url)
@@ -149,6 +151,16 @@ module Qiniu
         code == StatusOK ? data["url"] : false
       end
 
+      def copy(source_bucket, source_key, target_bucket, target_key)
+        code, data = RS.copy(source_bucket, source_key, target_bucket, target_key)
+        code == StatusOK
+      end
+
+      def move(source_bucket, source_key, target_bucket, target_key)
+        code, data = RS.move(source_bucket, source_key, target_bucket, target_key)
+        code == StatusOK
+      end
+
       def delete(bucket, key)
         code, data = RS.delete(bucket, key)
         code == StatusOK
@@ -167,6 +179,16 @@ module Qiniu
       def batch_get(bucket, keys)
         code, data = RS.batch_get(bucket, keys)
         code == StatusOK ? data : false
+      end
+
+      def batch_copy(*args)
+        code, data = RS.batch_copy(args)
+        code == StatusOK
+      end
+
+      def batch_move(*args)
+        code, data = RS.batch_move(args)
+        code == StatusOK
       end
 
       def batch_download(bucket, keys)

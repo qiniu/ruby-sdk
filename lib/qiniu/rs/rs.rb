@@ -26,6 +26,16 @@ module Qiniu
           Auth.request url
         end
 
+        def copy(source_bucket, source_key, target_bucket, target_key)
+          uri = _generate_cp_or_mv_opstr('copy', source_bucket, source_key, target_bucket, target_key)
+          Auth.request Config.settings[:rs_host] + uri
+        end
+
+        def move(source_bucket, source_key, target_bucket, target_key)
+          uri = _generate_cp_or_mv_opstr('move', source_bucket, source_key, target_bucket, target_key)
+          Auth.request Config.settings[:rs_host] + uri
+        end
+
         def delete(bucket, key)
           Auth.request Config.settings[:rs_host] + '/delete/' + encode_entry_uri(bucket, key)
         end
@@ -61,6 +71,14 @@ module Qiniu
           batch("stat", bucket, keys)
         end
 
+        def batch_copy(*args)
+          _batch_cp_or_mv('copy', args)
+        end
+
+        def batch_move(*args)
+          _batch_cp_or_mv('move', args)
+        end
+
         def batch_delete(bucket, keys)
           batch("delete", bucket, keys)
         end
@@ -75,6 +93,22 @@ module Qiniu
         def image_mogrify_save_as(bucket, key, source_image_url, options)
           mogrify_params_string = Image.generate_mogrify_params_string(options)
           save_as(bucket, key, source_image_url, mogrify_params_string)
+        end
+
+        private
+
+        def _generate_cp_or_mv_opstr(command, source_bucket, source_key, target_bucket, target_key)
+          source_encoded_entry_uri = encode_entry_uri(source_bucket, source_key)
+          target_encoded_entry_uri = encode_entry_uri(target_bucket, target_key)
+          %Q(/#{command}/#{source_encoded_entry_uri}/#{target_encoded_entry_uri})
+        end
+
+        def _batch_cp_or_mv(command, *op_args)
+          execs = []
+          op_args.each do |e|
+            execs << 'op=' + _generate_cp_or_mv_opstr(command, e[0], e[1], e[2], e[3]) if e.size == 4
+          end
+          Auth.request Config.settings[:rs_host] + "/batch?" + execs.join("&")
         end
 
       end

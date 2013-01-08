@@ -6,7 +6,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](/v3/api/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
-七牛云存储 Ruby SDK 源码地址：<https://github.com/qiniu/ruby-sdk>
+七牛云存储 Ruby SDK 源码地址：<https://github.com/qiniu/ruby-sdk> [![Build Status](https://api.travis-ci.org/qiniu/ruby-sdk.png?branch=master)](https://travis-ci.org/qiniu/ruby-sdk) [![Dependency Status](https://gemnasium.com/why404/qiniu-rs-for-ruby.png)](https://gemnasium.com/why404/qiniu-rs-for-ruby)
 
 **目录**
 
@@ -186,10 +186,10 @@ title: Ruby SDK 使用指南 | 七牛云存储
 : 必须，字符串类型（String），本地文件可被读取的有效路径
 
 :bucket
-: 必须，字符串类型（String），类似传统数据库里边的表名称，我们暂且将其叫做“资源表”，指定将该数据属性信息存储到具体的资源表中 。
+: 必须，字符串类型（String），空间名称。
 
 :key
-: 必须，字符串类型（String），类似传统数据库里边某个表的主键ID，给每一个文件一个UUID用于进行标示。
+: 必须，字符串类型（String），若把 Bucket 理解为关系性数据库的某个表，那么 key 类似数据库里边某个表的主键ID，需给每一个文件一个UUID用于进行标示。
 
 :mime_type
 : 可选，字符串类型（String），文件的 mime-type 值。如若不传入，SDK 会自行计算得出，若计算失败缺省使用 application/octet-stream 代替之。
@@ -364,10 +364,10 @@ pattern
 **参数**
 
 bucket
-: 必须，字符串类型（String），类似传统数据库里边的表名称，我们暂且将其叫做“资源表”，每份数据是属性信息都存储到具体的 bucket（资源表）中 。
+: 必须，字符串类型（String），空间名称。
 
 key
-: 必须，字符串类型（String），类似传统数据库里边某个表的主键ID，每一个文件最终都用一个唯一 `key` 进行标示。
+: 必须，字符串类型（String），若把 Bucket 理解为关系性数据库的某个表，那么 key 类似数据库里边某个表的主键ID，需给每一个文件一个UUID用于进行标示。
 
 **返回值**
 
@@ -392,6 +392,61 @@ mimeType
 putTime
 : 上传时间，单位是 百纳秒
 
+
+<a name="copy"></a>
+
+#### 复制单个文件
+
+    Qiniu::RS.copy(source_bucket, source_key, target_bucket, target_key)
+
+可以通过 SDK 提供的 `Qiniu::RS.copy` 函数进行文件复制操作。
+
+**参数**
+
+source_bucket
+: 必须，字符串类型（String），指定源空间。
+
+source_key
+: 必须，字符串类型（String），指定源文件。
+
+target_bucket
+: 必须，字符串类型（String），指定要复制到的目标空间。
+
+target_key
+: 必须，字符串类型（String），指定要复制到目标空间的目标文件名。
+
+**返回值**
+
+如果请求失败，返回 `false`；否则返回 `true` 。
+
+
+<a name="move"></a>
+
+#### 移动单个文件
+
+    Qiniu::RS.move(source_bucket, source_key, target_bucket, target_key)
+
+可以通过 SDK 提供的 `Qiniu::RS.move` 函数进行文件移动操作。
+
+**参数**
+
+source_bucket
+: 必须，字符串类型（String），指定源空间。
+
+source_key
+: 必须，字符串类型（String），指定源文件。
+
+target_bucket
+: 必须，字符串类型（String），指定要移动到的目标空间。
+
+target_key
+: 必须，字符串类型（String），指定要移动到目标空间的目标文件名。
+
+**返回值**
+
+如果请求失败，返回 `false`；否则返回 `true` 。
+
+
 <a name="delete"></a>
 
 ### 删除单个文件
@@ -403,10 +458,10 @@ putTime
 **参数**
 
 bucket
-: 必须，字符串类型（String），类似传统数据库里边的表名称，我们暂且将其叫做“资源表”，每份数据是属性信息都存储到具体的 bucket（资源表）中 。
+: 必须，字符串类型（String），空间名称。
 
 key
-: 必须，字符串类型（String），类似传统数据库里边某个表的主键ID，每一个文件最终都用一个唯一 `key` 进行标示。
+: 必须，字符串类型（String），若把 Bucket 理解为关系性数据库的某个表，那么 key 类似数据库里边某个表的主键ID，需给每一个文件一个UUID用于进行标示。
 
 **返回值**
 
@@ -427,7 +482,7 @@ command
 : 必须，字符串类型（String），其值可以是 `stat`, `get`, `delete` 中的一种
 
 bucket
-: 必须，字符串类型（String），类似传统数据库里边的表名称，我们暂且将其叫做“资源表”，每份数据是属性信息都存储到具体的 bucket（资源表）中 。
+: 必须，字符串类型（String），空间名称。
 
 keys
 : 必须，数组类型（Array），所要操作 `key` 的集合。
@@ -461,7 +516,7 @@ keys
 **参数**
 
 bucket
-: 必须，字符串类型（String），类似传统数据库里边的表名称，我们暂且将其叫做“资源表”，每份数据是属性信息都存储到具体的 bucket（资源表）中 。
+: 必须，字符串类型（String），空间名称。
 
 keys
 : 必须，数组类型（Array），所要操作 `key` 的集合。
@@ -483,6 +538,41 @@ keys
         },
         ...
     ]
+
+
+<a name="batch-copy"></a>
+
+#### 批量复制文件
+
+    Qiniu::RS.batch_copy(*args)
+
+等价于，
+
+    Qiniu::RS.batch_copy [source_bucket, source_key, target_bucket, target_key], ...
+
+`Qiniu::RS.batch_copy()` 的参数是一个可变长数组，其中每个数组其元素含义同 `Qiniu::RS.copy` 的参数一样。
+
+**返回值**
+
+如果批量删除成功，返回 `true` ，否则为 `false` 。
+
+
+<a name="batch-move"></a>
+
+#### 批量移动文件
+
+    Qiniu::RS.batch_move(*args)
+
+等价于，
+
+    Qiniu::RS.batch_move [source_bucket, source_key, target_bucket, target_key], ...
+
+`Qiniu::RS.batch_move()` 的参数是一个可变长数组，其中每个数组其元素含义同 `Qiniu::RS.move` 的参数一样。
+
+**返回值**
+
+如果批量删除成功，返回 `true` ，否则为 `false` 。
+
 
 <a name="batch-delete"></a>
 

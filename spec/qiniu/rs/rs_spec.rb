@@ -13,6 +13,7 @@ module Qiniu
       before :all do
         @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
         @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
+        @key2 = @key + rand(100).to_s
         #@domain = @bucket + '.dn.qbox.me'
 
         code, data = Qiniu::RS::RS.mkbucket(@bucket)
@@ -89,6 +90,34 @@ module Qiniu
         end
       end
 
+      context ".batch_copy" do
+        it "should works" do
+          code, data = Qiniu::RS::RS.batch_copy [@bucket, @key, @bucket, @key2]
+          code.should == 200
+          puts data.inspect
+
+          #code2, data2 = Qiniu::RS::RS.stat(@bucket, @key2)
+          #code2.should == 200
+          #puts data2.inspect
+        end
+      end
+
+      context ".batch_move" do
+        it "should works" do
+          code, data = Qiniu::RS::RS.batch_move [@bucket, @key, @bucket, @key2]
+          code.should == 200
+          puts data.inspect
+
+          #code2, data2 = Qiniu::RS::RS.stat(@bucket, @key2)
+          #code2.should == 200
+          #puts data2.inspect
+
+          code3, data3 = Qiniu::RS::RS.batch_move [@bucket, @key2, @bucket, @key]
+          code3.should == 200
+          puts data3.inspect
+        end
+      end
+
 =begin
       context ".publish" do
         it "should works" do
@@ -106,6 +135,34 @@ module Qiniu
         end
       end
 =end
+
+      context ".copy" do
+        it "should works" do
+          code, data = Qiniu::RS::RS.copy(@bucket, @key, @bucket, @key2)
+          code.should == 200
+          puts data.inspect
+
+          #code2, data2 = Qiniu::RS::RS.stat(@bucket, @key2)
+          #code2.should == 200
+          #puts data2.inspect
+        end
+      end
+
+      context ".move" do
+        it "should works" do
+          code, data = Qiniu::RS::RS.move(@bucket, @key, @bucket, @key2)
+          code.should == 200
+          puts data.inspect
+
+          code2, data2 = Qiniu::RS::RS.stat(@bucket, @key2)
+          code2.should == 200
+          puts data2.inspect
+
+          code3, data3 = Qiniu::RS::RS.move(@bucket, @key2, @bucket, @key)
+          code3.should == 200
+          puts data3.inspect
+        end
+      end
 
       context ".delete" do
         it "should works" do
