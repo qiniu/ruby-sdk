@@ -125,7 +125,8 @@ title: Ruby SDK 使用指南 | 七牛云存储
                                     :callback_url       => callback_url,
                                     :callback_body_type => callback_body_type,
                                     :customer           => end_user_id,
-                                    :escape             => allow_upload_callback_api
+                                    :escape             => allow_upload_callback_api,
+                                    :async_options      => async_callback_api_commands
 
 **参数**
 
@@ -156,6 +157,9 @@ title: Ruby SDK 使用指南 | 七牛云存储
 - 若 `callbackBodyType` 为 `application/x-www-form-urlencoded` 时，一个典型的自定义回调数据（[CallbackParams](/v3/api/io/#CallbackParams)）为：
 
     `foo=bar&w=$(imageInfo.width)&h=$(imageInfo.height)&exif=$(exif)`
+
+:async_options
+: 可选，字符串类型（String），用于设置文件上传成功后，执行指定的预转指令。参见 [uploadToken 之 asyncOps 说明](http://docs.qiniutek.com/v3/api/io/#uploadToken-asyncOps)
 
 **返回值**
 

@@ -1,5 +1,11 @@
 ## CHANGE LOG
 
+### v3.4.1
+
+增加为上传文件进行预转的选项，参见 [uploadToken 之 asyncOps 说明](http://docs.qiniutek.com/v3/api/io/#uploadToken-asyncOps)
+
+- `Qiniu::RS.generate_upload_token()` 方法新增 `:async_options` 选项用于进行预转操作。
+
 ### v3.4.0
 
 增加文件复制/移动方法，包括批量复制/移动文件
