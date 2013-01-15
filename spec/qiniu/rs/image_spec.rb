@@ -20,7 +20,12 @@ module Qiniu
 
         local_file = File.expand_path('../' + @key, __FILE__)
 
-        upopts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com"}
+        upopts = {
+            :scope => @bucket,
+            :expires_in => 3600,
+            :customer => "why404@gmail.com",
+            :async_options => "imageView/1/w/120/h/120"
+        }
         uptoken = Qiniu::RS.generate_upload_token(upopts)
         data = Qiniu::RS.upload_file :uptoken => uptoken, :file => local_file, :bucket => @bucket, :key => @key
         puts data.inspect

@@ -252,6 +252,7 @@ module Qiniu
         #token_obj.callback_body_type = opts[:callback_body_type]
         #token_obj.customer = opts[:customer]
         #token_obj.escape = opts[:escape]
+        #token_obj.async_options = opts[:async_options]
         token_obj.generate_token
       end
 
