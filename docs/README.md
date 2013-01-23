@@ -126,7 +126,8 @@ title: Ruby SDK 使用指南 | 七牛云存储
                                     :callback_body_type => callback_body_type,
                                     :customer           => end_user_id,
                                     :escape             => allow_upload_callback_api,
-                                    :async_options      => async_callback_api_commands
+                                    :async_options      => async_callback_api_commands,
+                                    :return_body        => custom_response_body
 
 **参数**
 
@@ -159,7 +160,11 @@ title: Ruby SDK 使用指南 | 七牛云存储
     `foo=bar&w=$(imageInfo.width)&h=$(imageInfo.height)&exif=$(exif)`
 
 :async_options
-: 可选，字符串类型（String），用于设置文件上传成功后，执行指定的预转指令。参见 [uploadToken 之 asyncOps 说明](http://docs.qiniutek.com/v3/api/io/#uploadToken-asyncOps)
+: 可选，字符串类型（String），用于设置文件上传成功后，执行指定的预转指令。参考 [uploadToken 之 asyncOps 说明](http://docs.qiniutek.com/v3/api/io/#uploadToken-asyncOps)
+
+:return_body
+: 可选，字符串类型（String），用于设置文件上传成功后，执行七牛云存储规定的回调API，并以 JSON 响应格式返回其执行结果。参考 [uploadToken 之 returnBody 说明](/v3/api/io/#uploadToken-returnBody)。
+
 
 **返回值**
 
