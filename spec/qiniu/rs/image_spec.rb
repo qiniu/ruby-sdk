@@ -24,11 +24,17 @@ module Qiniu
             :scope => @bucket,
             :expires_in => 3600,
             :customer => "why404@gmail.com",
-            :async_options => "imageView/1/w/120/h/120"
+            :async_options => "imageView/1/w/120/h/120",
+            :return_body => '{"size":$(fsize), "hash":$(etag), "width":$(imageInfo.width), "height":$(imageInfo.height)}'
         }
         uptoken = Qiniu::RS.generate_upload_token(upopts)
         data = Qiniu::RS.upload_file :uptoken => uptoken, :file => local_file, :bucket => @bucket, :key => @key
         puts data.inspect
+
+        data["size"].should_not be_zero
+        data["hash"].should_not be_empty
+        data["width"].should_not be_zero
+        data["height"].should_not be_zero
 
         result = Qiniu::RS.get(@bucket, @key)
         result["url"].should_not be_empty

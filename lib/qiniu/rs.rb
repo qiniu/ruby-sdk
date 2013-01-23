@@ -253,6 +253,7 @@ module Qiniu
         #token_obj.customer = opts[:customer]
         #token_obj.escape = opts[:escape]
         #token_obj.async_options = opts[:async_options]
+        #token_obj.return_body = opts[:return_body]
         token_obj.generate_token
       end
 
