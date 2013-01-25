@@ -1,19 +1,15 @@
---- 
 language: ruby
-rvm: 
-- 1.8.7
-- 1.9.2
-- 1.9.3
-- jruby-18mode
-- jruby-19mode
-- rbx-18mode
-- rbx-19mode
-- ruby-head
-- jruby-head
-- ree
-env: 
-  global: 
-  - secure: |-
-      he4EVmkP5wpMt6Q7EXnjrlCGhVeHx33E7OzUl3d13luaT3WPrauWbgPdfDyC
-      Wh1OroKRQ1ZPV5VwLldf2vgv5G+lqyHcawTyz8iK+jg5SE8PMaNS6KBWOW3f
-      8vEMHcgyRk8UUbg9pE6KbpXPbq6sKCb+6VdtkgEm4i2O6uHE9/Q=
+rvm:
+  - 1.8.7
+  - 1.9.2
+  - 1.9.3
+  - jruby-18mode
+  - jruby-19mode
+  - rbx-18mode
+  - rbx-19mode
+  - ruby-head
+  - jruby-head
+  - ree
+before_script:
+  - export QINIU_ACCESS_KEY=iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV
+  - export QINIU_SECRET_KEY=6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j
