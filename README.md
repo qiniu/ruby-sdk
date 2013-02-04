@@ -32,7 +32,7 @@
 
 ## 许可证
 
-Copyright (c) 2012 qiniutek.com
+Copyright (c) 2012-2013 qiniutek.com
 
 基于 MIT 协议发布:
 
