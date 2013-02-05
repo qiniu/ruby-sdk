@@ -325,10 +325,10 @@ title: Ruby SDK 使用指南 | 七牛云存储
 **参数**
 
 expires_in
-: 可选，数字类型，用于设置上传 URL 的有效期，单位：秒，缺省为 3600 秒，即 1 小时后该上传链接不再有效。
+: 可选，数字类型，用于设置上传 URL 的有效期，单位：秒，缺省为 3600 秒，即 1 小时后该下载授权凭证（downloadToken）不再有效。
 
 pattern
-: 可选，字符串类型，用于设置可匹配的下载链接。参考：[downloadToken pattern 详解](/v3/api/io/#download-token-pattern)
+: 必须，字符串类型，用于设置可匹配的下载链接。参考：[downloadToken pattern 详解](/v3/api/io/#download-token-pattern)
 
 
 <a name="other-download-features"></a>
