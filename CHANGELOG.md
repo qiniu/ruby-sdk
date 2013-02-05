@@ -1,5 +1,11 @@
 ## CHANGE LOG
 
+### v3.4.2
+
+- `Qiniu::RS.generate_upload_token()` 方法新增 `:return_body` 选项。
+
+该选项（`:return_body`）可设置文件上传成功后，执行七牛云存储规定的回调API，并以 JSON 响应格式返回其执行结果。参考 [uploadToken 之 returnBody 说明](http://docs.qiniutek.com/v3/api/io/#uploadToken-returnBody)。
+
 ### v3.4.1
 
 增加为上传文件进行预转的选项，参见 [uploadToken 之 asyncOps 说明](http://docs.qiniutek.com/v3/api/io/#uploadToken-asyncOps)
