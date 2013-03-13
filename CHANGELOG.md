@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v3.4.2
+
+- test
+
 ### v3.4.1
 
 增加为上传文件进行预转的选项，参见 [uploadToken 之 asyncOps 说明](http://docs.qiniutek.com/v3/api/io/#uploadToken-asyncOps)
