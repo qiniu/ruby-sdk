@@ -33,6 +33,12 @@ module Qiniu
         code == StatusOK
       end
 
+      def list_files(bucket, marker=nil, limit=nil, prefix=nil)
+        hash = { bucket: bucket, marker: marker, limit: limit, prefix: prefix }
+        code, data = RS.list_files(hash)
+        code == StatusOK ? data : false
+      end
+
       def mkbucket(bucket_name)
         code, data = RS.mkbucket(bucket_name)
         code == StatusOK

@@ -10,6 +10,11 @@ module Qiniu
           Auth.request Config.settings[:rs_host] + '/buckets'
         end
 
+        def list_files(params_hash)
+          param = params_hash.map { |key, value| "#{key}=#{value}" unless value.nil? }.compact.join('&')
+          Auth.request Config.settings[:rsf_host] + "/dump?#{param}"
+        end
+
         def mkbucket(bucket_name)
           Auth.request Config.settings[:rs_host] + '/mkbucket/' + bucket_name
         end

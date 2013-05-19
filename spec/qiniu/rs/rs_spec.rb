@@ -180,6 +180,13 @@ module Qiniu
         end
       end
 
+      context '.list_files' do
+        it 'should work' do
+          code, data = Qiniu::RS::RS.list_files({bucket: @bucket})
+          code.should == 200
+          puts data.inspect
+        end
+      end
     end
   end
 end

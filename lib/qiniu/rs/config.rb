@@ -21,6 +21,7 @@ module Qiniu
           :content_type    => 'application/x-www-form-urlencoded',
           :auth_url        => "https://acc.qbox.me/oauth2/token",
           :rs_host         => "http://rs.qbox.me",
+          :rsf_host        => "http://rsf.qbox.me",
           :io_host         => "http://iovip.qbox.me",
           :up_host         => "http://up.qbox.me",
           :pub_host        => "http://pu.qbox.me:10200",
