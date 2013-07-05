@@ -10,8 +10,9 @@
 
 require 'tmpdir'
 
-module Qiniu
-  module Config
+module qiniu
+  module conf
+
     class << self
 
       DEFAULT_OPTIONS = {

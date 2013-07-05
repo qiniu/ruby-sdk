@@ -7,78 +7,80 @@ require 'zlib'
 require 'base64'
 require 'rest_client'
 require 'hmac-sha1'
-require 'qiniu/rs/exceptions'
+require 'qiniu/basic/exceptions'
 
 module Qiniu
-  module RS
-    module Utils extend self
+	module Utils
 
-      def urlsafe_base64_encode content
-        Base64.encode64(content).strip.gsub('+', '-').gsub('/','_').gsub(/\r?\n/, '')
-      end
+		class << self
 
-      def urlsafe_base64_decode encoded_content
-        Base64.decode64 encoded_content.gsub('_','/').gsub('-', '+')
-      end
+			def urlsafe_base64_encode content
+				Base64.encode64(content).strip.gsub('+', '-').gsub('/','_').gsub(/\r?\n/, '')
+			end
 
-      def encode_entry_uri(bucket, key)
-        entry_uri = bucket + ':' + key
-        urlsafe_base64_encode(entry_uri)
-      end
+			def urlsafe_base64_decode encoded_content
+				Base64.decode64 encoded_content.gsub('_','/').gsub('-', '+')
+			end
 
-      def safe_json_parse(data)
-        JSON.parse(data)
-      rescue JSON::ParserError
-        {}
-      end
+			def encode_entry_uri(bucket, key)
+				entry_uri = bucket + ':' + key
+				urlsafe_base64_encode(entry_uri)
+			end
 
-      def is_response_ok?(status_code)
-          status_code/100 == 2
-      end
+			def safe_json_parse(data)
+				JSON.parse(data)
+				rescue JSON::ParserError
+					{}
+				end
+			end
 
-      def response_error(status_code, errmsg)
-          [status_code, {"error" => errmsg}]
-      end
+			def is_response_ok?(status_code)
+				status_code/100 == 2
+			end
 
-      def debug(msg)
-          if Config.settings[:enable_debug]
-              Log.logger.debug(msg)
-          end
-      end
+			def response_error(status_code, errmsg)
+				[status_code, {"error" => errmsg}]
+			end
 
-      def send_request_with url, data = nil, options = {}
-        options[:method] = Config.settings[:method] unless options[:method]
-        options[:content_type] = Config.settings[:content_type] unless options[:content_type]
-        header_options = {
-          :accept => :json,
-          :user_agent => Config.settings[:user_agent]
-        }
-        auth_token = nil
-        if !options[:qbox_signature_token].nil? && !options[:qbox_signature_token].empty?
-          auth_token = 'QBox ' + options[:qbox_signature_token]
-        elsif !options[:upload_signature_token].nil? && !options[:upload_signature_token].empty?
-          auth_token = 'UpToken ' + options[:upload_signature_token]
-        elsif options[:access_token]
-          auth_token = 'Bearer ' + options[:access_token]
-        end
-        header_options.merge!('Authorization' => auth_token) unless auth_token.nil?
-        case options[:method]
-        when :get
-          response = RestClient.get(url, header_options)
-        when :post
-          header_options.merge!(:content_type => options[:content_type])
-          response = RestClient.post(url, data, header_options)
-        end
-        code = response.respond_to?(:code) ? response.code.to_i : 0
-        unless is_response_ok?(code)
-          raise RequestFailed.new("Request Failed", response)
-        else
-          data = {}
-          body = response.respond_to?(:body) ? response.body : {}
-          data = safe_json_parse(body) unless body.empty?
-        end
-        [code, data]
-      end
+			def debug(msg)
+				if Config.settings[:enable_debug]
+					Log.logger.debug(msg)
+				end
+			end
+
+			def send_request_with url, data = nil, options = {}
+				options[:method] = Config.settings[:method] unless options[:method]
+				options[:content_type] = Config.settings[:content_type] unless options[:content_type]
+				header_options = {
+					:accept => :json,
+					:user_agent => Config.settings[:user_agent]
+				}
+				auth_token = nil
+				if !options[:qbox_signature_token].nil? && !options[:qbox_signature_token].empty?
+					auth_token = 'QBox ' + options[:qbox_signature_token]
+				elsif !options[:upload_signature_token].nil? && !options[:upload_signature_token].empty?
+					auth_token = 'UpToken ' + options[:upload_signature_token]
+				elsif options[:access_token]
+					auth_token = 'Bearer ' + options[:access_token]
+				end
+				header_options.merge!('Authorization' => auth_token) unless auth_token.nil?
+				case options[:method]
+				when :get
+					response = RestClient.get(url, header_options)
+				when :post
+					header_options.merge!(:content_type => options[:content_type])
+					response = RestClient.post(url, data, header_options)
+				end
+				code = response.respond_to?(:code) ? response.code.to_i : 0
+				unless is_response_ok?(code)
+					raise RequestFailed.new("Request Failed", response)
+				else
+					data = {}
+					body = response.respond_to?(:body) ? response.body : {}
+					data = safe_json_parse(body) unless body.empty?
+				end
+				[code, data]
+			end
 
       def http_request url, data = nil, options = {}
         retry_times = 0
@@ -145,6 +147,6 @@ module Qiniu
         %Q(#{access_key}:#{encoded_digest})
       end
 
+
     end
-  end
 end

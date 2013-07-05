@@ -2,8 +2,9 @@
 
 require "qiniu/auth/digest"
 
-module Qiniu
-  module RS
+module qiniu
+  module rs
+
       class EntryPath
         attr_accessor :Bucket, :Key
       end
@@ -25,7 +26,7 @@ module Qiniu
     class Client
 
       def initialize(mac = nil)
-        return @conn = Digest.ManageClient(Config.settings[:rs_host], mac)
+        @conn = Digest.ManageClient(Config.settings[:rs_host], mac)
       end
 
       def Stat(bucket, key)

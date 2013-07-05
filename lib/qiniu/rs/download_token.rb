@@ -1,12 +1,13 @@
 # -*- encoding: utf-8 -*-
 
 require 'json'
-require 'qiniu/auth'
-require 'qiniu/rs/utils'
+require 'qiniu/auth/digest'
+require 'qiniu/basic/utils'
 require 'uri'
 
 module Qiniu
-  module RS
+  module Rs
+
       class GetPolicy
 
         include Utils
@@ -23,14 +24,8 @@ module Qiniu
             raise 'Invalid argument: "base_url" '
           end
 
-          if mac == nil then
-            mac = Mac.New()
-            mac.access_key = Config.settings[:access_key]
-            mac.secret_key = Config.settings[:secret_key]
-            if mac.access_key == nil || mac.access_key.empty() ||
-              mac.secret_key == nil || mac.secret_key.empty() then
-              raise "Invalid Access Key or Secret Key"
-            end
+          if mac.nil? then
+            mac = Mac.New(Config.settings[:access_key], Config.settings[:secret_key])
           end
 
           deadline = Time.now.to_i + @Expires
@@ -49,6 +44,15 @@ module Qiniu
         end
 
       end
+
+	  class << self
+
+        # MakeBaseUrl(): construct url with domain & key
+        def MakeBaseUrl(domain, key)
+          return "http://" + domain + "/" + URI.escape(key)
+        end
+
+	  end
 
   end
 end

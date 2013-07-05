@@ -1,8 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 module Qiniu
-  module RS
-    module Image
+  module fop
       class << self
         include Utils
 
@@ -36,7 +35,6 @@ module Qiniu
           'imageMogr' + URI.escape(params_string)
         end
 
-      end
     end
   end
 end
