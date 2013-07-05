@@ -3,9 +3,9 @@
 module Qiniu
   module RS
     module Version
-      MAJOR = 3
-      MINOR = 4
-      PATCH = 1
+      MAJOR = 6
+      MINOR = 0
+      PATCH = 0
       # Returns a version string by joining <tt>MAJOR</tt>, <tt>MINOR</tt>, and <tt>PATCH</tt> with <tt>'.'</tt>
       #
       # Example

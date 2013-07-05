@@ -1,33 +1,54 @@
 # -*- encoding: utf-8 -*-
 
 require 'json'
-require 'qiniu/tokens/access_token'
+require 'qiniu/auth'
 require 'qiniu/rs/utils'
+require 'uri'
 
 module Qiniu
   module RS
-      class DownloadToken < AccessToken
+      class GetPolicy
 
         include Utils
 
-        attr_accessor :pattern, :expires_in
+        attr_accessor :Expires
 
-        def initialize(opts = {})
-          @pattern = opts[:pattern] || "*"
-          @expires_in = opts[:expires_in] || 3600
+        def initialize
+          @Expires = 3600
         end
 
-        def generate_signature
-          params = {"S" => @pattern, "E" => Time.now.to_i + @expires_in}
-          Utils.urlsafe_base64_encode(params.to_json)
-        end
+        def make_request(base_url, mac = nil)
+          
+          if base_url == nil || base_url.empty() then
+            raise 'Invalid argument: "base_url" '
+          end
 
-        def generate_token
-          signature = generate_signature
-          encoded_digest = generate_encoded_digest(signature)
-          %Q(#{@access_key}:#{encoded_digest}:#{signature})
+          if mac == nil then
+            mac = Mac.New()
+            mac.access_key = Config.settings[:access_key]
+            mac.secret_key = Config.settings[:secret_key]
+            if mac.access_key == nil || mac.access_key.empty() ||
+              mac.secret_key == nil || mac.secret_key.empty() then
+              raise "Invalid Access Key or Secret Key"
+            end
+          end
+
+          deadline = Time.now.to_i + @Expires
+
+          if base_url['?'] != nil then
+            base_url += '&'
+          else
+            base_url += '?'
+          end
+
+          base_url += "e=" + deadline.to_s
+
+          token = mac.generate_encoded_digest(base_url)
+
+          return base_url + "&token=" + token
         end
 
       end
+
   end
 end
