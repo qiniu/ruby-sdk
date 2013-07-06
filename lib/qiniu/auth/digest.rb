@@ -39,7 +39,7 @@ module Qiniu
           access = path
           access += '?' + query if !query.nil? && !query.empty?
           access += "\n";
-          access += body
+          access += body if !body.nil? && !body.empty?
           return %Q(#{@access_key}:#{sign_it(access)})
         end
 

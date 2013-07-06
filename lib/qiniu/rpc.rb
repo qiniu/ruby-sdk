@@ -7,7 +7,10 @@ require 'zlib'
 require 'base64'
 require 'rest_client'
 require 'hmac-sha1'
-require 'basic/exceptions'
+require 'qiniu/basic/exceptions'
+require 'qiniu/basic/utils'
+require 'qiniu/conf'
+require 'qiniu/auth/digest'
 
 module Qiniu
 	module Rpc
@@ -16,7 +19,7 @@ module Qiniu
 
 			def initialize(host)
 				@host = host
-				@headers = {:user_agent => Config.settings[:user_agent]}
+				@headers = {:user_agent => Qiniu::Conf.settings[:user_agent]}
 			end
 
 			def call(path)
@@ -43,7 +46,11 @@ module Qiniu
 					headers = {}
 				end
 				headers.merge(@headers)
-	        	RestClient.post(host + "/" + path, playload, headers)
+				url = @host
+				url += "/" if path[0].chr != '/' && @host[@host.length - 1].chr != '/'
+				url += path
+				puts url
+	        	RestClient.post(url, payload, headers)
 			end
 
 			def get(path, headers = nil)
@@ -55,7 +62,7 @@ module Qiniu
 			end
 		end
 
-      class Client < RPC.Client
+      class AuthClient < Client
 
         include Utils
 
@@ -64,14 +71,14 @@ module Qiniu
         def initialize(host, mac = nil)
           super(host)
           if mac.nil? then
-            @mac = Mac.new(Config.settings[:access_key], Config.settings[:secret_key])
+            @mac = Qiniu::Auth::Digest::Mac.new(Qiniu::Conf.settings[:access_key], Qiniu::Conf.settings[:secret_key])
           else
             @mac = mac
           end
         end        
       end
 
-      class PutClient < Client
+      class PutClient < AuthClient
 
         include Utils
 
@@ -87,7 +94,7 @@ module Qiniu
         end
       end
 
-      class ManageClient < Client
+      class ManageClient < AuthClient
 
         include Utils
 
@@ -100,10 +107,14 @@ module Qiniu
         #   1. path：操作构成的路径。
         #   2. body：管理操作的body（操作的集合）。
         def call(path, query, body)
-          token = @mac.generate_access_token(path, query, ops)
+          token = @mac.generate_access_token(path, query, body)
 
-          post(path + "?" + query, body, { "Content-Type" => "application/x-www-form-urlencoded", 
-            "Authorization" => "Qbox " + token })
+		  qry_str = path
+		  qry_str += "?" + query if !query.nil? && !query.empty?
+
+		  headers = { "Authorization" => "QBox " + token , "Content-Type" => "application/x-www-form-urlencoded" }
+
+          post(qry_str, body, headers)
         end
 
       end
