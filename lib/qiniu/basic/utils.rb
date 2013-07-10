@@ -29,9 +29,8 @@ module Qiniu
 
 			def safe_json_parse(data)
 				JSON.parse(data)
-				rescue JSON::ParserError
-					{}
-				end
+			rescue JSON::ParserError
+				{}
 			end
 
 			def is_response_ok?(status_code)
@@ -82,71 +81,71 @@ module Qiniu
 				[code, data]
 			end
 
-      def http_request url, data = nil, options = {}
-        retry_times = 0
-        begin
-          retry_times += 1
-          send_request_with url, data, options
-        rescue Errno::ECONNRESET => err
-          if Config.settings[:auto_reconnect] && retry_times < Config.settings[:max_retry_times]
-            retry
-          else
-            Log.logger.error err
-          end
-        rescue => e
-          Log.logger.warn "#{e.message} => Utils.http_request('#{url}')"
-          code = 0
-          data = {}
-          body = {}
-          if e.respond_to? :response
-            res = e.response
-            code = res.code.to_i if res.respond_to? :code
-            body = res.respond_to?(:body) ? res.body : ""
-            data = safe_json_parse(body) unless body.empty?
-          end
-          [code, data]
-        end
-      end
+			def http_request url, data = nil, options = {}
+				retry_times = 0
+				begin
+					retry_times += 1
+					send_request_with url, data, options
+				rescue Errno::ECONNRESET => err
+					if Config.settings[:auto_reconnect] && retry_times < Config.settings[:max_retry_times]
+						retry
+					else
+						Log.logger.error err
+					end
+				rescue => e
+					Log.logger.warn "#{e.message} => Utils.http_request('#{url}')"
+					code = 0
+					data = {}
+					body = {}
+					if e.respond_to? :response
+						res = e.response
+						code = res.code.to_i if res.respond_to? :code
+						body = res.respond_to?(:body) ? res.body : ""
+						data = safe_json_parse(body) unless body.empty?
+					end
+					[code, data]
+				end
+			end
 
-      def upload_multipart_data(url, filepath, action_string, callback_query_string = '', uptoken = nil)
-          post_data = {
-            :params => callback_query_string,
-            :action => action_string,
-            :file => File.new(filepath, 'rb'),
-            :multipart => true
-          }
-          post_data[:auth] = uptoken unless uptoken.nil?
-          http_request url, post_data
-      end
+			def upload_multipart_data(url, filepath, action_string, callback_query_string = '', uptoken = nil)
+				post_data = {
+					:params => callback_query_string,
+					:action => action_string,
+					:file => File.new(filepath, 'rb'),
+					:multipart => true
+				}
+				post_data[:auth] = uptoken unless uptoken.nil?
+				http_request url, post_data
+			end
 
-      def generate_query_string(params)
-        return params if params.is_a?(String)
-        total_param = params.map { |key, value| %Q(#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s).gsub('+', '%20')}) }
-        total_param.join("&")
-      end
+			def generate_query_string(params)
+				return params if params.is_a?(String)
+				total_param = params.map { |key, value| %Q(#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s).gsub('+', '%20')}) }
+				total_param.join("&")
+			end
 
-      def crc32checksum(filepath)
-        File.open(filepath, "rb") { |f| Zlib.crc32 f.read }
-      end
+			def crc32checksum(filepath)
+				File.open(filepath, "rb") { |f| Zlib.crc32 f.read }
+			end
 
-      def generate_qbox_signature(url, params)
-        access_key = Config.settings[:access_key]
-        secret_key = Config.settings[:secret_key]
-        uri = URI.parse(url)
-        signature = uri.path
-        query_string = uri.query
-        signature += '?' + query_string if !query_string.nil? && !query_string.empty?
-        signature += "\n"
-        if params.is_a?(Hash)
-            params_string = generate_query_string(params)
-            signature += params_string
-        end
-        hmac = HMAC::SHA1.new(secret_key)
-        hmac.update(signature)
-        encoded_digest = urlsafe_base64_encode(hmac.digest)
-        %Q(#{access_key}:#{encoded_digest})
-      end
+			def generate_qbox_signature(url, params)
+				access_key = Config.settings[:access_key]
+				secret_key = Config.settings[:secret_key]
+				uri = URI.parse(url)
+				signature = uri.path
+				query_string = uri.query
+				signature += '?' + query_string if !query_string.nil? && !query_string.empty?
+				signature += "\n"
+				if params.is_a?(Hash)
+					params_string = generate_query_string(params)
+					signature += params_string
+				end
+				hmac = HMAC::SHA1.new(secret_key)
+				hmac.update(signature)
+				encoded_digest = urlsafe_base64_encode(hmac.digest)
+				%Q(#{access_key}:#{encoded_digest})
+			end
 
-
+		end
     end
 end

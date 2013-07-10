@@ -2,11 +2,13 @@
 
 require 'mime/types'
 require 'digest/sha1'
-require 'qiniu/rs/exceptions'
+require 'qiniu/basic/exceptions'
 require 'qiniu/auth/digest'
+require 'qiniu/rpc'
+require 'qiniu/conf'
 
-module qiniu
-	module io
+module Qiniu
+	module Io
 
       class PutExtra
 
@@ -17,6 +19,7 @@ module qiniu
           @MimeType = ''
           @Crc32 = 0
           @CheckCrc = 0
+		end
       end
 
       class PutRet
@@ -43,31 +46,33 @@ module qiniu
           fields = {}
 
           if extra.CheckCrc != 0 then
-            fields.merge({ :crc32 => extra.Crc32 })
+            fields[:crc32] = extra.Crc32
           end
 
           if !key.nil? then
-            fields.merge({ :key => key })
+            fields[:key] = key
           end
 
           if data.nil? then
             raise "Invalid 'data' parameter. "
           end
 
-          fields.merge({ :file => data })
+          fields[:file] = data
 
-          if token.nil? then
+          if uptoken.nil? then
             raise "Invalid parameter 'put_policy'."
           end
 
-          fields.merge(extra.Params)
+          fields[:token] = uptoken
 
-          return digest.PutClient.new(Config.settings[:up_host]).call(fields)
+          fields = fields.merge(extra.Params)
+
+          return Qiniu::Rpc::PutClient.new(Qiniu::Conf.settings[:up_host]).call(fields)
         end
 
         def PutFile(uptoken, key, localfile, extra)
           if extra.CheckCrc == 1 then
-            extra.Crc32 = crc32checksum(localfile)
+            extra.Crc32 = Qiniu::Utils.crc32checksum(localfile)
           end
 
           data = File.new(localfile, 'rb')

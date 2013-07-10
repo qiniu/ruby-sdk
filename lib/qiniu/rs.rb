@@ -2,30 +2,23 @@
 
 module Qiniu
   module RS
-    autoload :Version, 'qiniu/rs/version'
-    autoload :Config, 'qiniu/rs/config'
-    autoload :Log, 'qiniu/rs/log'
-    autoload :Exception, 'qiniu/rs/exceptions'
-    autoload :Utils, 'qiniu/rs/utils'
-    autoload :Auth, 'qiniu/rs/auth'
-    autoload :IO, 'qiniu/rs/io'
-    autoload :UP, 'qiniu/rs/up'
+    autoload :Version, 'qiniu/version'
+    autoload :Conf, 'qiniu/conf'
+    autoload :Log, 'qiniu/basic/log'
+    autoload :Exception, 'qiniu/basic/exceptions'
+    autoload :Utils, 'qiniu/basic/utils'
+    autoload :Auth, 'qiniu/auth/digest'
+    autoload :IO, 'qiniu/io'
+    autoload :UP, 'qiniu/up'
     autoload :RS, 'qiniu/rs/rs'
-    autoload :EU, 'qiniu/rs/eu'
-    autoload :Pub, 'qiniu/rs/pub'
-    autoload :Image, 'qiniu/rs/image'
-    autoload :AccessToken, 'qiniu/tokens/access_token'
-    autoload :QboxToken, 'qiniu/tokens/qbox_token'
-    autoload :UploadToken, 'qiniu/tokens/upload_token'
-    autoload :DownloadToken, 'qiniu/tokens/download_token'
-    autoload :Abstract, 'qiniu/rs/abstract'
+    autoload :EU, 'qiniu/rs/tokens'
 
     class << self
 
       StatusOK = 200
 
       def establish_connection!(opts = {})
-        Config.initialize_connect opts
+        Conf.initialize_connect opts
       end
 
       def login!(user, pwd)
@@ -211,11 +204,6 @@ module Qiniu
 
       def unpublish(domain)
         code, data = RS.unpublish(domain)
-        code == StatusOK
-      end
-
-      def drop(bucket)
-        code, data = RS.drop(bucket)
         code == StatusOK
       end
 
