@@ -24,24 +24,6 @@ module Qiniu
         end
       end
 
-      class BatchItemRet
-        attr_accessor :Error, :Code
-        def initialize(error, code)
-          @Error = error
-          @Code = code
-        end
-      end
-
-      class BatchStatItemRet
-        attr_accessor :Data, :Error, :Code
-        def initialize(data, error, code)
-          @Data = data
-          @Error = error
-          @Code = code
-        end
-      end
-
-
 
     class Client
 
@@ -84,7 +66,7 @@ module Qiniu
       def BatchMove(entries = [])
         ops = []
         entries.each {|entry|
-          ops << 'op=' + uri_move(entry.Src.Bucket, entry.Src.Key, entry.Dest.Bucket, entry.Dest.Key)
+          ops << 'op=' + uri_move(entry.Src.Bucket, entry.Src.Key, entry.Destgg.Bucket, entry.Dest.Key)
         }
         return batch(ops)
       end

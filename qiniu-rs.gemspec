@@ -3,9 +3,9 @@
 require File.expand_path('../lib/qiniu/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = ["why404"]
-  gem.email         = ["longshanks@gmail.com"]
-  gem.description   = %q{Qiniu Resource (Cloud) Storage SDK for Ruby. See: http://docs.qiniutek.com/v3/sdk/ruby/}
+  gem.authors       = ["mohuafeng"]
+  gem.email         = ["mohuafeng@qiniu.com"]
+  gem.description   = %q{Qiniu Resource (Cloud) Storage SDK for Ruby. }
   gem.summary       = %q{Qiniu Resource (Cloud) Storage SDK for Ruby}
   gem.homepage      = "https://github.com/qiniu/ruby-sdk"
 
