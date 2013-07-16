@@ -9,10 +9,12 @@ module Qiniu
     describe Auth do
 
       before :all do
+# @gist make_mac
         @access_key = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
         @secret_key = "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
 
 		    @mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
+# @endgist
 
 		    @to_sign = "http://wolfgang.qiniudn.com/down.jpg?e=1373249874"
 		    @signed = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV:vT1lXEttzzPLP4i5T8YVz0AEjCg="
@@ -30,6 +32,19 @@ module Qiniu
         	puts token.inspect
         end
       end
+
+=begin
+      context ".sign_data" do
+        it "should works" do
+# @gist downloadUrl
+          base_url = Qiniu::Rs.MakeBaseUrl("a.qiniudn.com", "down.jpg")
+          url = @mac.make_request(base_url, @mac)
+# @endgist
+          token.should == @signed
+          puts token.inspect
+        end
+      end
+=end
 
 =begin
       context ".upload_token" do

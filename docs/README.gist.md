@@ -134,22 +134,7 @@ title: C/C++ SDK 使用指南 | 七牛云存储
 [uptoken](http://docs.qiniu.com/api/put.html#uploadToken) 实际上是用 AccessKey/SecretKey 进行数字签名的上传策略(`Qiniu_RS_PutPolicy`)，它控制则整个上传流程的行为。让我们快速过一遍你都能够决策啥：
 
 ```
-class PutPolicy
-
-  include Utils
-
-  attr_accessor :scope, :callback_url, :callback_body, :return_url, :return_body, :async_ops, :end_user, :expires
-
-  def initialize(opts = {})
-    @scope = opts[:scope]
-    @callback_url = opts[:callback_url]
-    @callback_body = opts[:callback_body]
-    @return_url = opts[:return_url]
-    @return_body = opts[:return_body]
-    @async_ops = opts[:async_ops]
-    @end_user = opts[:end_user]
-    @expires = opts[:expires] || 3600
-  end
+@gist(../lib/qiniu/rs/tokens.rb#put-policy)
 ```
 
 * `scope` 限定客户端的权限。如果 `scope` 是 bucket，则客户端只能新增文件到指定的 bucket，不能修改文件。如果 `scope` 为 bucket:key，则客户端可以修改指定的文件。
@@ -168,11 +153,8 @@ class PutPolicy
 服务端生成 [uptoken](http://docs.qiniu.com/api/put.html#uploadToken) 代码如下：
 
 ```
-@access_key = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
-@secret_key = "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
-@mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
-pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800 })
-token = pp.token(@mac)
+@gist(../spec/qiniu/io_rs_spec.rb#make_mac)
+@gist(../spec/qiniu/io_rs_spec.rb#uptoken)
 ```
 
 <a name="upload-do"></a>
@@ -182,14 +164,8 @@ token = pp.token(@mac)
 上传文件到七牛（通常是客户端完成，但也可以发生在服务端）：
 
 ```
-@access_key = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
-@secret_key = "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
-@mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
-pe = Qiniu::Io::PutExtra.new
-pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800 })
-token = pp.token(@mac)
-file_data = File.new(@file_path, 'r')
-code, res = Qiniu::Io.Put(token, @to_del_key, file_data, pe)
+@gist(../spec/qiniu/io_rs_spec.rb#make_mac)
+@gist(../spec/qiniu/io_rs_spec.rb#upload)
 ```
 
 上传文件有两种方式：Put()接受一个文件对象作为参数；PutFile()接受一个文件的路径做为参数。文件上传可以通过PutExtra结构控制更多的上传行为，具体参考[PutExtra](#put-extra)
@@ -201,17 +177,7 @@ code, res = Qiniu::Io.Put(token, @to_del_key, file_data, pe)
 PutExtra是上传时的可选信息，默认为None
 
 ```
-class PutExtra
-
-  attr_accessor :Params, :MimeType, :Crc32, :CheckCrc
-
-  def initialize
-    @Params = {}          #用户自定义参数，{"x:<name>" => <value>}，参数名以x:开头
-    @MimeType = ''
-    @Crc32 = 0
-    @CheckCrc = 0
-end
-end
+@gist(../lib/qiniu/io.rb#PutExtra)
 ```
 
 * `params` 是一个Hash。用于放置[自定义变量](http://docs.qiniu.com/api/put.html#xVariables)，key必须以 x: 开头命名，不限个数。可以在 uploadToken 的 callbackBody 选项中求值。
@@ -248,12 +214,8 @@ end
 其中 dntoken 是由业务服务器签发的一个[临时下载授权凭证](http://docs.qiniu.com/api/get.html#download-token)，deadline 是 dntoken 的有效期。dntoken不需要单独生成，SDK 提供了生成完整 downloadUrl 的方法（包含了 dntoken），示例代码如下：
 
 ```
-@access_key = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
-@secret_key = "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
-
-ac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
-base_url = Qiniu::Rs.MakeBaseUrl("a.qiniudn.com", "down.jpg")
-url = @mac.make_request(base_url, @mac)
+@gist(../spec/qiniu/auth_spec.rb#make_mac)
+@gist(../spec/qiniu/auth_spec.rb#downloadUrl)
 ```
 
 生成 downloadUrl 后，服务端下发 downloadUrl 给客户端。客户端收到 downloadUrl 后，和公有资源类似，直接用任意的 HTTP 客户端就可以下载该资源了。唯一需要注意的是，在 downloadUrl 失效却还没有完成下载时，需要重新向服务器申请授权。
@@ -279,8 +241,8 @@ url = @mac.make_request(base_url, @mac)
 用户可以通过Qiniu::Rs::Client.Stat()获取文件信息。使用方式如下：
 
 ```
-@rs_cli = Qiniu::Rs::Client.new(@mac)
-code, res = @rs_cli.Stat(@bucket1, @to_del_key)
+@gist(../spec/qiniu/io_rs_spec.rb#make_rs_cli)
+@gist(../spec/qiniu/io_rs_spec.rb#stat)
 ```
 
 <a name="rs-delete"></a>
@@ -290,8 +252,8 @@ code, res = @rs_cli.Stat(@bucket1, @to_del_key)
 用户可以通过Qiniu::Rs::Client.Delete()删除文件。使用方式如下：
 
 ```
-@rs_cli = Qiniu::Rs::Client.new(@mac)
-code, res = @rs_cli.Delete(@bucket1, @to_del_key)
+@gist(../spec/qiniu/io_rs_spec.rb#make_rs_cli)
+@gist(../spec/qiniu/io_rs_spec.rb#delete)
 ```
 
 <a name="rs-copy-move"></a>
@@ -301,8 +263,8 @@ code, res = @rs_cli.Delete(@bucket1, @to_del_key)
 用户可以通过Qiniu::Rs::Client.Move()移动文件。使用方式如下：
 
 ```
-@rs_cli = Qiniu::Rs::Client.new(@mac)
-code, res = @rs_cli.Copy(@bucket1, @to_copy_key, @bucket1, @to_move_key)
+@gist(../spec/qiniu/io_rs_spec.rb#make_rs_cli)
+@gist(../spec/qiniu/io_rs_spec.rb#move)
 ```
 
 <a name="rs-copy-move"></a>
@@ -312,8 +274,8 @@ code, res = @rs_cli.Copy(@bucket1, @to_copy_key, @bucket1, @to_move_key)
 用户可以通过Qiniu::Rs::Client.Copy()复制文件。使用方式如下：
 
 ```
-@rs_cli = Qiniu::Rs::Client.new(@mac)
-code, res = @rs_cli.Copy(@bucket1, @to_del_key, @bucket1, @to_copy_key)
+@gist(../spec/qiniu/io_rs_spec.rb#make_rs_cli)
+@gist(../spec/qiniu/io_rs_spec.rb#copy)
 ```
 
 <a name="rs-batch"></a>
@@ -335,47 +297,19 @@ code, res = @rs_cli.Copy(@bucket1, @to_del_key, @bucket1, @to_copy_key)
 批量操作的具体使用方式如下：
 
 ```
-@rs_cli = Qiniu::Rs::Client.new(@mac)
+@gist(../spec/qiniu/io_rs_spec.rb#make_rs_cli)
 
 # 批量获取文件信息
-to_stat = []
-@keys.each do | key |
-	to_stat << Qiniu::Rs::EntryPath.new(@bucket1, key)
-end
-code, res = @rs_cli.BatchStat(to_stat)
+@gist(../spec/qiniu/io_rs_spec.rb#batch_stat)
 
 # 批量删除文件
-to_del = []
-@keys.each do  | key |
-	to_del << Qiniu::Rs::EntryPath.new(@bucket1, key)
-end
-@move_keys.each do | key |
-	to_del << Qiniu::Rs::EntryPath.new(@bucket1, key)
-end
-
-code, res = @rs_cli.BatchDelete(to_del)
+@gist(../spec/qiniu/io_rs_spec.rb#batch_del)
 
 # 批量移动文件
-to_move = []
-i = 0
-while i < @copy_keys.length do
-	to_move << Qiniu::Rs::EntryPathPair.new(
-		Qiniu::Rs::EntryPath.new(@bucket1, @copy_keys[i]),
-		Qiniu::Rs::EntryPath.new(@bucket2, @move_keys[i]))
-	i += 1
-end
-code, res = @rs_cli.BatchMove(to_move)
+@gist(../spec/qiniu/io_rs_spec.rb#batch_move)
 
 # 批量复制文件
-to_copy = []
-i = 0
-while i < @keys.length do
-	to_copy << Qiniu::Rs::EntryPathPair.new(
-		Qiniu::Rs::EntryPath.new(@bucket1, @keys[i]),
-		Qiniu::Rs::EntryPath.new(@bucket2, @copy_keys[i]))
-	i += 1
-end
-code, res = @rs_cli.BatchCopy(to_copy)
+@gist(../spec/qiniu/io_rs_spec.rb#batch_copy)
 ```
 
 ## 贡献代码
@@ -393,4 +327,3 @@ Copyright (c) 2013 qiniu.com
 基于 MIT 协议发布:
 
 * [www.opensource.org/licenses/MIT](http://www.opensource.org/licenses/MIT)
-

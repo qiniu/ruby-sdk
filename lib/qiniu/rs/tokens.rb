@@ -54,6 +54,7 @@ module Qiniu
 
       end
 
+# @gist put-policy
       class PutPolicy
 
         include Utils
@@ -70,6 +71,7 @@ module Qiniu
           @end_user = opts[:end_user]
           @expires = opts[:expires] || 3600
         end
+# @endgist
 
         def token(mac = nil)
           if mac == nil then

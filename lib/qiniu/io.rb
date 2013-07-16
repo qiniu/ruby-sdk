@@ -10,6 +10,7 @@ require 'qiniu/conf'
 module Qiniu
 	module Io
 
+# @gist PutExtra
       class PutExtra
 
         attr_accessor :Params, :MimeType, :Crc32, :CheckCrc
@@ -19,8 +20,9 @@ module Qiniu
           @MimeType = ''
           @Crc32 = 0
           @CheckCrc = 0
-		end
+		    end
       end
+# @endgist
 
       class PutRet
 

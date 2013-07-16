@@ -13,11 +13,15 @@ module Qiniu
 	describe Rs do
 
 		before :all do
+# @gist make_mac
 			@access_key = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
 			@secret_key = "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
 			@mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
+# @endgist
 
+# @gist make_rs_cli
 			@rs_cli = Qiniu::Rs::Client.new(@mac)
+# @endgist
 
 			@bucket1 = "a"
 			@bucket2 = "a"
@@ -57,11 +61,13 @@ module Qiniu
 
 		context ".upload_data" do
 			it "should works" do
+# @gist upload
 				pe = Qiniu::Io::PutExtra.new
 				pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800 })
 				token = pp.token(@mac)
 				file_data = File.new(@file_path, 'r')
 				code, res = Qiniu::Io.Put(token, @to_del_key, file_data, pe)
+# @endgist
 				puts %Q(     result: #{code.inspect}, #{puts res.inspect})
 				code.should == 200
 			end
@@ -70,8 +76,10 @@ module Qiniu
 		context ".upload_file" do
 			it "should works" do
 				pe = Qiniu::Io::PutExtra.new
+# @gist uptoken
 				pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800 })
 				token = pp.token(@mac)
+# @endgist
 				code, res = Qiniu::Io.PutFile(token, @keys[0], @file_path, pe)
 				puts %Q(    result: #{@keys[0].inspect} => #{code.inspect}, #{res.inspect})
 				code.should == 200
@@ -107,7 +115,9 @@ module Qiniu
 
 		context ".stat" do
 			it "should works" do
+# @gist stat
 				code, res = @rs_cli.Stat(@bucket1, @to_del_key)
+# @endgist
 				puts %Q(    result: #{@bucket1}:#{@to_del_key} -> #{code}, #{res})
 				code.should == 200
 			end
@@ -115,7 +125,9 @@ module Qiniu
 
 		context ".copy" do
 			it "should works" do
+# @gist copy
 				code, res = @rs_cli.Copy(@bucket1, @to_del_key, @bucket1, @to_copy_key)
+# @endgist
 				puts %Q(    copy #{@bucket1}:#{@to_del_key} to #{@bucket2}:#{@to_copy_key} -> #{code}, #{res})
 				code.should == 200
 			end
@@ -123,7 +135,9 @@ module Qiniu
 
 		context ".move" do
 			it "should works" do
+# @gist move
 				code, res = @rs_cli.Copy(@bucket1, @to_copy_key, @bucket1, @to_move_key)
+# @endgist
 				puts %Q(    move #{@bucket1}:#{@to_copy_key} to #{@bucket2}:#{@to_move_key} -> #{code}, #{res})
 				code.should == 200
 			end
@@ -131,7 +145,9 @@ module Qiniu
 
 		context ".delete" do
 			it "should workds" do
+# @gist delete
 				code, res = @rs_cli.Delete(@bucket1, @to_del_key)
+# @endgist
 				puts %Q(    delete #{@bucket1}:#{@to_del_key} -> #{code}, #{res})
 				code.should == 200
 
@@ -143,11 +159,13 @@ module Qiniu
 
 		context ".batch_stat" do
 			it "should works" do
+# @gist batch_stat
 				to_stat = []
 				@keys.each do | key |
 					to_stat << Qiniu::Rs::EntryPath.new(@bucket1, key)
 				end
 				code, res = @rs_cli.BatchStat(to_stat)
+# @endgist
 				puts %Q(    result: #{code}, #{res})
 				code.should == 200
 			end
@@ -155,6 +173,7 @@ module Qiniu
 
 		context ".batch_copy" do
 			it "should works" do
+# @gist batch_copy
 				to_copy = []
 				i = 0
 				while i < @keys.length do
@@ -164,6 +183,7 @@ module Qiniu
 					i += 1
 				end
 				code, res = @rs_cli.BatchCopy(to_copy)
+# @endgist
 				puts %Q(    result: #{code}, #{res})
 				code.should == 200
 			end
@@ -171,6 +191,7 @@ module Qiniu
 
 		context ".batch_move" do
 			it "should works" do
+# @gist batch_move
 				to_move = []
 				i = 0
 				while i < @copy_keys.length do
@@ -180,6 +201,7 @@ module Qiniu
 					i += 1
 				end
 				code, res = @rs_cli.BatchMove(to_move)
+# @endgist
 				puts %Q(    result: #{code}, #{res})
 				code.should == 200
 			end
@@ -187,6 +209,7 @@ module Qiniu
 
 		context ".batch_delete" do
 			it "should works" do
+# @gist batch_del
 				to_del = []
 				@keys.each do  | key |
 					to_del << Qiniu::Rs::EntryPath.new(@bucket1, key)
@@ -196,6 +219,7 @@ module Qiniu
 				end
 
 				code, res = @rs_cli.BatchDelete(to_del)
+# @endgist
 				puts %Q(    result: #{code}, #{res})
 				code.should == 200
 			end
