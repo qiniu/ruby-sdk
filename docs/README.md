@@ -1,12 +1,10 @@
 ---
-title: Ruby SDK 使用指南 | 七牛云存储
+title: Ruby SDK
 ---
 
-# Ruby SDK 使用指南
+此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](http://docs.qiniu.com/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
-此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](/v3/api/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
-
-七牛云存储 Ruby SDK 源码地址：<https://github.com/qiniu/ruby-sdk> [![Build Status](https://api.travis-ci.org/qiniu/ruby-sdk.png?branch=master)](https://travis-ci.org/qiniu/ruby-sdk) [![Dependency Status](https://gemnasium.com/why404/qiniu-rs-for-ruby.png)](https://gemnasium.com/why404/qiniu-rs-for-ruby)
+七牛云存储 Ruby SDK 源码地址：<https://github.com/qiniu/ruby-sdk>
 
 **目录**
 
@@ -76,8 +74,8 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 要接入七牛云存储，您需要拥有一对有效的 Access Key 和 Secret Key 用来进行签名认证。可以通过如下步骤获得：
 
-1. [开通七牛开发者帐号](https://dev.qiniutek.com/signup)
-2. [登录七牛开发者自助平台，查看 Access Key 和 Secret Key](https://dev.qiniutek.com/account/keys) 。
+1. [开通七牛开发者帐号](https://portal.qiniu.com/signup)
+2. [登录七牛开发者自助平台，查看 Access Key 和 Secret Key](https://portal.qiniu.com/setting/key)
 
 在获取到 Access Key 和 Secret Key 之后，您可以在您的程序中调用如下两行代码进行初始化对接：
 
@@ -110,7 +108,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 ### 文件上传
 
-**注意**：如果您只是想要上传已存在您电脑本地或者是服务器上的文件到七牛云存储，可以直接使用七牛提供的 [qrsync](/v3/tools/qrsync/) 上传工具。如果是需要通过您的网站或是移动应用(App)上传文件，则可以接入使用此 SDK，详情参考如下文档说明。
+**注意**：如果您只是想要上传已存在您电脑本地或者是服务器上的文件到七牛云存储，可以直接使用七牛提供的 [qrsync](http://docs.qiniu.com/tools/qrsync.html) 上传工具。如果是需要通过您的网站或是移动应用(App)上传文件，则可以接入使用此 SDK，详情参考如下文档说明。
 
 <a name="generate-upload-token"></a>
 
@@ -147,15 +145,15 @@ title: Ruby SDK 使用指南 | 七牛云存储
 : 可选，字符串类型（String），客户方终端用户（End User）的ID，该字段可以用来标示一个文件的属主，这在一些特殊场景下（比如给终端用户上传的图片打上名字水印）非常有用。
 
 :escape
-: 可选，数字类型，可选值 0 或者 1，缺省为 0 。值为 1 表示 callback 传递的自定义数据中允许存在转义符号 `$(VarExpression)`，参考 [VarExpression](/v3/api/words/#VarExpression)。
+: 可选，数字类型，可选值 0 或者 1，缺省为 0 。值为 1 表示 callback 传递的自定义数据中允许存在转义符号 `$(VarExpression)`，参考 [VarExpression](http://docs.qiniutek.com/v3/api/words/#VarExpression)。
 
 当 `escape` 的值为 `1` 时，常见的转义语法如下：
 
-- 若 `callbackBodyType` 为 `application/json` 时，一个典型的自定义回调数据（[CallbackParams](/v3/api/io/#CallbackParams)）为：
+- 若 `callbackBodyType` 为 `application/json` 时，一个典型的自定义回调数据（[CallbackParams](http://docs.qiniutek.com/v3/api/io/#CallbackParams)）为：
 
     `{foo: "bar", w: $(imageInfo.width), h: $(imageInfo.height), exif: $(exif)}`
 
-- 若 `callbackBodyType` 为 `application/x-www-form-urlencoded` 时，一个典型的自定义回调数据（[CallbackParams](/v3/api/io/#CallbackParams)）为：
+- 若 `callbackBodyType` 为 `application/x-www-form-urlencoded` 时，一个典型的自定义回调数据（[CallbackParams](http://docs.qiniutek.com/v3/api/io/#CallbackParams)）为：
 
     `foo=bar&w=$(imageInfo.width)&h=$(imageInfo.height)&exif=$(exif)`
 
@@ -163,7 +161,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
 : 可选，字符串类型（String），用于设置文件上传成功后，执行指定的预转指令。参考 [uploadToken 之 asyncOps 说明](http://docs.qiniutek.com/v3/api/io/#uploadToken-asyncOps)
 
 :return_body
-: 可选，字符串类型（String），用于设置文件上传成功后，执行七牛云存储规定的回调API，并以 JSON 响应格式返回其执行结果。参考 [uploadToken 之 returnBody 说明](/v3/api/io/#uploadToken-returnBody)。
+: 可选，字符串类型（String），用于设置文件上传成功后，执行七牛云存储规定的回调API，并以 JSON 响应格式返回其执行结果。参考 [uploadToken 之 returnBody 说明](http://docs.qiniutek.com/v3/api/io/#uploadToken-returnBody)。
 
 
 **返回值**
@@ -227,7 +225,7 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
 ##### 开启断点续上传
 
-无需任何额外改动，SDK 提供的 `Qiniu::RS.upload_file()` 方法缺省支持断点续上传。默认情况下，SDK 会自动启用断点续上传的方式来上传超过 4MB 大小的文件。您也可以在 [应用接入](/v3/sdk/ruby/#establish_connection!) 时通过修改缺省配置来设置该阀值：
+无需任何额外改动，SDK 提供的 `Qiniu::RS.upload_file()` 方法缺省支持断点续上传。默认情况下，SDK 会自动启用断点续上传的方式来上传超过 4MB 大小的文件。您也可以在 [应用接入](http://docs.qiniutek.com/v3/sdk/ruby/#establish_connection!) 时通过修改缺省配置来设置该阀值：
 
     Qiniu::RS.establish_connection! :access_key      => YOUR_APP_ACCESS_KEY,
                                     :secret_key      => YOUR_APP_SECRET_KEY,
@@ -270,9 +268,9 @@ title: Ruby SDK 使用指南 | 七牛云存储
 简单来讲，客户端上传流程分为两步：
 
 1. [服务端生成上传授权凭证（uploadToken）](#generate-upload-token)
-2. 客户端程序调用 [iOS](/v3/sdk/objc/) / [Android](/v3/sdk/android/) SDK 的文件上传方法进行上传
+2. 客户端程序调用 [iOS](http://docs.qiniu.com/ios-sdk/index.html) / [Android](http://docs.qiniu.com/android-sdk/index.html) SDK 的文件上传方法进行上传
 
-如果是网页直传文件到七牛云存储，网页可以使用 JavaScript 动态实现 [七牛云存储上传API](/v3/api/io/#upload-file-by-html-form)。
+如果是网页直传文件到七牛云存储，网页可以使用 JavaScript 动态实现 [七牛云存储上传API](http://docs.qiniutek.com/v3/api/io/#upload-file-by-html-form)。
 
 通过客户端直传文件，您的终端用户即可把数据（比如图片或视频）直接上传到七牛云存储服务器上，而无须经由您的服务端中转，终端用户上传数据始终是离他物理距离最近的七牛存储节点。当终端用户上传成功后，七牛云存储服务端会向您指定的 `callback_url` （一般在 [uploadToken](#generate-upload-token) 里边指定）发送回调数据（回调数据在客户端程序里边指定）。如果 `callback_url` 所指向的服务端处理完毕后输出 `JSON` 格式的数据，七牛云存储服务端会将该回调请求所得的 JSON 响应信息原封不动地返回给客户端应用程序。
 
@@ -297,9 +295,9 @@ title: Ruby SDK 使用指南 | 七牛云存储
 
     [GET] http://<绑定域名>/<key>
 
-绑定域名可以是自定义域名，可以在 [七牛云存储开发者自助网站](https://dev.qiniutek.com/buckets) 进行域名绑定操作。
+绑定域名可以是自定义域名，可以在 [七牛云存储开发者自助网站](https://portal.qiniu.com/) 进行域名绑定操作。
 
-注意，尖括号不是必需，代表替换项。
+**注意**，尖括号不是必需，代表替换项。
 
 <a name="download-private-files"></a>
 
@@ -328,7 +326,7 @@ expires_in
 : 可选，数字类型，用于设置上传 URL 的有效期，单位：秒，缺省为 3600 秒，即 1 小时后该上传链接不再有效。
 
 pattern
-: 可选，字符串类型，用于设置可匹配的下载链接。参考：[downloadToken pattern 详解](/v3/api/io/#download-token-pattern)
+: 可选，字符串类型，用于设置可匹配的下载链接。参考：[downloadToken pattern 详解](http://docs.qiniu.com/api/get.html#download-token-pattern)
 
 
 <a name="other-download-features"></a>
@@ -339,7 +337,7 @@ pattern
 
 ##### 断点续下载
 
-七牛云存储支持标准的断点续下载，参考：[云存储API之断点续下载](/v3/api/io/#download-by-range-bytes)
+七牛云存储支持标准的断点续下载，参考：[云存储API之断点续下载](http://docs.qiniu.com/api/get.html#download-by-range-bytes)
 
 <a name="upload-file-for-not-found"></a>
 
@@ -347,7 +345,7 @@ pattern
 
 您可以上传一个应对 HTTP 404 出错处理的文件，当用户访问一个不存在的文件时，即可使用您上传的“自定义404文件”代替之。要这么做，您只须使用 `Qiniu::RS.upload_file` 函数上传一个 `key` 为固定字符串类型的值 `errno-404` 即可。
 
-除了使用 SDK 提供的方法，同样也可以借助七牛云存储提供的命令行辅助工具 [qboxrsctl](/v3/tools/qboxrsctl/) 达到同样的目的：
+除了使用 SDK 提供的方法，同样也可以借助七牛云存储提供的命令行辅助工具 [qboxrsctl](http://docs.qiniu.com/tools/qboxrsctl.html) 达到同样的目的：
 
     qboxrsctl put <Bucket> <Key> <LocalFile>
 
@@ -687,7 +685,7 @@ mogrify_options
         :auto_orient => <TrueOrFalse>
     }
 
-`Qiniu::RS.image_mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v3/api/foimg/#fo-imageMogr)。
+`Qiniu::RS.image_mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](http://docs.qiniu.com/api/image-process.html#imageMogr)。
 
 **返回值**
 
@@ -727,7 +725,7 @@ mogrify_options
         :auto_orient => <TrueOrFalse>
     }
 
-`Qiniu::RS::Image.mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](/v3/api/foimg/#fo-imageMogr)。
+`Qiniu::RS::Image.mogrify_preview_url()` 方法是对七牛云存储图像处理高级接口的完整包装，关于 `mogrify_options` 参数里边的具体含义和使用方式，可以参考文档：[图像处理高级接口](http://docs.qiniu.com/api/image-process.html#imageMogr)
 
 **返回值**
 
