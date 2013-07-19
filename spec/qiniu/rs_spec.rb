@@ -319,16 +319,6 @@ module Qiniu
       end
     end
 
-    context ".copy" do
-      it "should works" do
-        result = Qiniu::RS.copy(@bucket, @key, @bucket, @key2)
-        result.should_not be_false
-
-        #result2 = Qiniu::RS.stat(@bucket, @key2)
-        #result2.should_not be_false
-      end
-    end
-
     context ".move" do
       it "should works" do
         result = Qiniu::RS.move(@bucket, @key, @bucket, @key2)
@@ -339,6 +329,16 @@ module Qiniu
 
         result3 = Qiniu::RS.move(@bucket, @key2, @bucket, @key)
         result3.should_not be_false
+      end
+    end
+
+    context ".copy" do
+      it "should works" do
+        result = Qiniu::RS.copy(@bucket, @key, @bucket, @key2)
+        result.should_not be_false
+
+        #result2 = Qiniu::RS.stat(@bucket, @key2)
+        #result2.should_not be_false
       end
     end
 
