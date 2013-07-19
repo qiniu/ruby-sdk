@@ -136,18 +136,6 @@ module Qiniu
       end
 =end
 
-      context ".copy" do
-        it "should works" do
-          code, data = Qiniu::RS::RS.copy(@bucket, @key, @bucket, @key2)
-          code.should == 200
-          puts data.inspect
-
-          #code2, data2 = Qiniu::RS::RS.stat(@bucket, @key2)
-          #code2.should == 200
-          #puts data2.inspect
-        end
-      end
-
       context ".move" do
         it "should works" do
           code, data = Qiniu::RS::RS.move(@bucket, @key, @bucket, @key2)
@@ -161,6 +149,18 @@ module Qiniu
           code3, data3 = Qiniu::RS::RS.move(@bucket, @key2, @bucket, @key)
           code3.should == 200
           puts data3.inspect
+        end
+      end
+
+      context ".copy" do
+        it "should works" do
+          code, data = Qiniu::RS::RS.copy(@bucket, @key, @bucket, @key2)
+          code.should == 200
+          puts data.inspect
+
+          #code2, data2 = Qiniu::RS::RS.stat(@bucket, @key2)
+          #code2.should == 200
+          #puts data2.inspect
         end
       end
 
