@@ -323,10 +323,10 @@ title: Ruby SDK
 **参数**
 
 expires_in
-: 可选，数字类型，用于设置上传 URL 的有效期，单位：秒，缺省为 3600 秒，即 1 小时后该上传链接不再有效。
+: 可选，数字类型，用于设置上传 URL 的有效期，单位：秒，缺省为 3600 秒，即 1 小时后该下载授权凭证（downloadToken）不再有效。
 
 pattern
-: 可选，字符串类型，用于设置可匹配的下载链接。参考：[downloadToken pattern 详解](http://docs.qiniu.com/api/get.html#download-token-pattern)
+: 可选，字符串类型，用于设置可匹配的下载链接。参考：[downloadToken pattern 详解](http://docs.qiniutek.com/v3/api/io/#download-token-pattern)
 
 
 <a name="other-download-features"></a>
@@ -756,11 +756,9 @@ mogrify_options
       thumbnail = Qiniu::RS.get(target_bucket, target_key)
       puts thumbnail["url"]
 
-      # 您可以选择将存放缩略图的 bucket 公开，这样就可以直接以外链的形式访问到缩略图，而不用走API获取下载URL。
-      result = Qiniu::RS.publish("pic.example.com", target_bucket)
+      # 您可以选择将存放缩略图的 bucket 公开，这样就可以直接以外链的形式访问到缩略图，而不用走API获取下载URL，就可以直接以如下方式访问缩略图：
 
-      # 然后将 pic.example.com CNAME 到 iovip.qbox.me ，就可以直接以如下方式访问缩略图
-      # [GET] http://pic.example.com/<target_key>
+      # [GET] http://<bucket>.qiniudn.com/<target_key>
     end
 
 
@@ -768,10 +766,10 @@ mogrify_options
 
 ## 贡献代码
 
-七牛云存储 Ruby SDK 源码地址：[https://github.com/qiniu/ruby-sdk](https://github.com/qiniu/ruby-sdk)
+七牛云存储 Ruby SDK 源码地址：<https://github.com/qiniu/ruby-sdk>
 
-1. 登录 [github.com](https://github.com)
-2. Fork [https://github.com/qiniu/ruby-sdk](https://github.com/qiniu/ruby-sdk)
+1. 登录 <https://github.com>
+2. Fork <https://github.com/qiniu/ruby-sdk>
 3. 创建您的特性分支 (`git checkout -b my-new-feature`)
 4. 提交您的改动 (`git commit -am 'Added some feature'`)
 5. 将您的改动记录提交到远程 `git` 仓库 (`git push origin my-new-feature`)
