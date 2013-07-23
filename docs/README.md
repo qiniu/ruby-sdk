@@ -121,6 +121,7 @@ title: Ruby SDK
     Qiniu::RS.generate_upload_token :scope              => target_bucket,
                                     :expires_in         => expires_in_seconds,
                                     :callback_url       => callback_url,
+                                    :callback_body      => callback_body,
                                     :callback_body_type => callback_body_type,
                                     :customer           => end_user_id,
                                     :escape             => allow_upload_callback_api,
@@ -137,6 +138,9 @@ title: Ruby SDK
 
 :callback_url
 : 可选，字符串类型（String），用于设置文件上传成功后，七牛云存储服务端要回调客户方的业务服务器地址。
+
+:callback_body
+: 可选，字符串类型（String），用于设置文件上传成功后，七牛云存储服务端向客户方的业务服务器发送回调请求的值。
 
 :callback_body_type
 : 可选，字符串类型（String），用于设置文件上传成功后，七牛云存储服务端向客户方的业务服务器发送回调请求的 `Content-Type`。
