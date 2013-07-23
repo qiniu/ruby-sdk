@@ -423,5 +423,21 @@ module Qiniu
       end
     end
 
+    describe '.list_files' do
+      context 'success' do
+        it 'should return data' do
+          data = Qiniu::RS.list_files(@bucket)
+          data.should_not be_empty
+          puts data.inspect
+        end
+      end
+
+      context 'fail' do
+        it 'should return false' do
+          data = Qiniu::RS.list_files('wrong_bucket')
+          data.should == false
+        end
+      end
+    end
   end
 end
