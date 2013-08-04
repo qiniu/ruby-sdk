@@ -5,7 +5,7 @@ require 'qiniu/auth/digest'
 require 'qiniu/rs/tokens'
 
 module Qiniu
-  module RS
+  module Rs
     describe Auth do
 
       before :all do
@@ -13,11 +13,11 @@ module Qiniu
         @access_key = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
         @secret_key = "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
 
-		    @mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
+		@mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
 # @endgist
 
-		    @to_sign = "http://wolfgang.qiniudn.com/down.jpg?e=1373249874"
-		    @signed = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV:vT1lXEttzzPLP4i5T8YVz0AEjCg="
+		@to_sign = "http://wolfgang.qiniudn.com/down.jpg?e=1373249874"
+		@signed = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV:vT1lXEttzzPLP4i5T8YVz0AEjCg="
 
         @bucket = "a"
         @key = "myKey1"
