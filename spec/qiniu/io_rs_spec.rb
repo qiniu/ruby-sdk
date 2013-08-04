@@ -48,7 +48,7 @@ module Qiniu
 				Digest::SHA1.hexdigest(rand(100000).to_s)
 			]
 
-			@file_path = "toupload.jpg"
+			@file_path = "spec/fixtures/toupload.jpg"
 		end
 
 =begin
