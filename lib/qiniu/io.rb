@@ -10,6 +10,13 @@ require 'qiniu/conf'
 module Qiniu
 	module Io
 
+      #上传文件控制：
+      # 参数：
+      #   1. uptoken：upload token
+      #   2. key：待上传的key
+      #   3. data：上传的数据，需要File对象
+      #   4. extra：PutExtra对象，包含用户自定义参数
+
 # @gist PutExtra
       class PutExtra
 
@@ -34,12 +41,6 @@ module Qiniu
 
         include Utils
 
-        #上传文件对象：
-        # 参数：
-        #   1. uptoken：upload token
-        #   2. key：待上传的key
-        #   3. data：上传的数据，需要File对象
-        #   4. extra：PutExtra对象，包含用户自定义参数
         def Put(uptoken, key, data, extra = nil)
           if extra.nil? then
             extra = PutExtra.new()
