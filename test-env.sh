@@ -1,2 +1,3 @@
-export QINIU_ACCESS_KEY=iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV
-export QINIU_SECRET_KEY=6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j
+# Just for test
+export QINIU_ACCESS_KEY="<Your Access Key>"
+export QINIU_SECRET_KEY="<Your Secket Key>"
