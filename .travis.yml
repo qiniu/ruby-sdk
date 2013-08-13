@@ -3,13 +3,18 @@ rvm:
   - 1.8.7
   - 1.9.2
   - 1.9.3
+  - 2.0.0
   - jruby-18mode
   - jruby-19mode
   - rbx-18mode
   - rbx-19mode
-  - ruby-head
   - jruby-head
   - ree
+
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+
 before_script:
   - export QINIU_ACCESS_KEY=iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV
   - export QINIU_SECRET_KEY=6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j
