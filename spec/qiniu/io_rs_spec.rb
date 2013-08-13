@@ -10,14 +10,19 @@ require 'qiniu/rs/tokens'
 require 'qiniu/basic/utils'
 
 module Qiniu
-	describe Rs do
+  describe Rs do
 
-		before :all do
+    before :all do
+      if ENV['QINIU_ACCESS_KEY'] && ENV['QINIU_SECRET_KEY']
 # @gist make_mac
-			@access_key = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
-			@secret_key = "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
-			@mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
+        @access_key = ENV['QINIU_ACCESS_KEY']
+        @secret_key = ENV['QINIU_SECRET_KEY']
+        @mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
 # @endgist
+      else
+        puts 'source test-env.sh'
+        exit(1)
+      end
 
 # @gist make_rs_cli
 			@rs_cli = Qiniu::Rs::Client.new(@mac)
@@ -50,14 +55,6 @@ module Qiniu
 
 			@file_path = "spec/fixtures/toupload.jpg"
 		end
-
-=begin
-		after :all do
-		result = Qiniu::RS.drop(@bucket)
-		puts result.inspect
-		result.should_not be_false
-		end
-=end
 
 		context ".upload_data" do
 			it "should works" do

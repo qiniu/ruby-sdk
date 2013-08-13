@@ -10,13 +10,13 @@ require 'qiniu/rs/tokens'
 
 
 module Qiniu
-    class << self
+  class << self
 
-      StatusOK = 200
+    StatusOK = 200
 
-      def establish_connection!(opts = {})
-        Qiniu::Conf.initialize_connect opts
-      end
+    def establish_connection!(opts = {})
+      Qiniu::Conf.initialize_connect opts
+    end
 
-	end
+  end
 end

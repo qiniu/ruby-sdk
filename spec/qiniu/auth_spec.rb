@@ -9,12 +9,17 @@ module Qiniu
     describe Auth do
 
       before :all do
+        if ENV['QINIU_ACCESS_KEY'] && ENV['QINIU_SECRET_KEY']
 # @gist make_mac
-        @access_key = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
-        @secret_key = "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
+          @access_key = ENV['QINIU_ACCESS_KEY']
+          @secret_key = ENV['QINIU_SECRET_KEY']
 
-		@mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
+          @mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
 # @endgist
+        else
+          puts 'source test-env.sh'
+          exit(1)
+        end
 
 		@to_sign = "http://wolfgang.qiniudn.com/down.jpg?e=1373249874"
 		@signed = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV:vT1lXEttzzPLP4i5T8YVz0AEjCg="

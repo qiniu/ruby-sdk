@@ -18,7 +18,6 @@ module Qiniu
 
       DEFAULT_OPTIONS = {
         :user_agent      => 'Qiniu-RS-Ruby-SDK-' + VERSION.to_s + '()',
-        :method          => :post,
         :content_type    => 'application/x-www-form-urlencoded',
         :auth_url        => "https://acc.qbox.me/oauth2/token",
         :rs_host         => "http://rs.qbox.me",
@@ -27,8 +26,6 @@ module Qiniu
         :pub_host        => "http://pu.qbox.me:10200",
         :eu_host         => "http://eu.qbox.me",
         :rsf_host        => "http:rsf.qbox.me",
-        :client_id       => "a75604760c4da4caaa456c0c5895c061c3065c5a",
-        :client_secret   => "75df554a39f58accb7eb293b550fa59618674b7d",
         :access_key      => "",
         :secret_key      => "",
         :auto_reconnect  => true,
