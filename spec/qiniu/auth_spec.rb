@@ -11,8 +11,8 @@ module Qiniu
       before :all do
         if ENV['QINIU_ACCESS_KEY'] && ENV['QINIU_SECRET_KEY']
 # @gist make_mac
-          @access_key = ENV['QINIU_ACCESS_KEY']
-          @secret_key = ENV['QINIU_SECRET_KEY']
+          @access_key = Qiniu::Conf.settings[:access_key]
+          @secret_key = Qiniu::Conf.settings[:secret_key]
 
           @mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
 # @endgist

@@ -1,9 +1,6 @@
 ---
-title: C/C++ SDK 使用指南 | 七牛云存储
+title: Ruby SDK 使用指南
 ---
-
-# Ruby SDK 使用指南
-
 
 **文档大纲**
 
@@ -28,6 +25,7 @@ title: C/C++ SDK 使用指南 | 七牛云存储
 		- [删除文件](#rs-delete)
 		- [复制/移动文件](#rs-copy-move)
 		- [批量操作](#rs-batch)
+    - [云处理](#fop)
 
 <a name="overview"></a>
 
@@ -133,7 +131,7 @@ title: C/C++ SDK 使用指南 | 七牛云存储
 
 [uptoken](http://docs.qiniu.com/api/put.html#uploadToken) 实际上是用 AccessKey/SecretKey 进行数字签名的上传策略(`Qiniu_RS_PutPolicy`)，它控制则整个上传流程的行为。让我们快速过一遍你都能够决策啥：
 
-```
+```{ruby}
 class PutPolicy
 
   include Utils
@@ -167,9 +165,10 @@ class PutPolicy
 
 服务端生成 [uptoken](http://docs.qiniu.com/api/put.html#uploadToken) 代码如下：
 
-```
-@access_key = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
-@secret_key = "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
+```{ruby}
+@access_key = Qiniu::Conf.settings[:access_key]
+@secret_key = Qiniu::Conf.settings[:secret_key]
+
 @mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
 pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800 })
 token = pp.token(@mac)
@@ -181,9 +180,10 @@ token = pp.token(@mac)
 
 上传文件到七牛（通常是客户端完成，但也可以发生在服务端）：
 
-```
-@access_key = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
-@secret_key = "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
+```{ruby}
+@access_key = Qiniu::Conf.settings[:access_key]
+@secret_key = Qiniu::Conf.settings[:secret_key]
+
 @mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
 pe = Qiniu::Io::PutExtra.new
 pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800 })
@@ -200,7 +200,7 @@ code, res = Qiniu::Io.Put(token, @to_del_key, file_data, pe)
 
 PutExtra是上传时的可选信息，默认为None
 
-```
+```{ruby}
 class PutExtra
 
   attr_accessor :Params, :MimeType, :Crc32, :CheckCrc
@@ -247,11 +247,11 @@ end
 
 其中 dntoken 是由业务服务器签发的一个[临时下载授权凭证](http://docs.qiniu.com/api/get.html#download-token)，deadline 是 dntoken 的有效期。dntoken不需要单独生成，SDK 提供了生成完整 downloadUrl 的方法（包含了 dntoken），示例代码如下：
 
-```
-@access_key = "iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV"
-@secret_key = "6QTOr2Jg1gcZEWDQXKOGZh5PziC2MCV5KsntT70j"
+```{ruby}
+@access_key = Qiniu::Conf.settings[:access_key]
+@secret_key = Qiniu::Conf.settings[:secret_key]
 
-ac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
+@mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
 base_url = Qiniu::Rs.MakeBaseUrl("a.qiniudn.com", "down.jpg")
 url = @mac.make_request(base_url, @mac)
 ```
@@ -278,7 +278,7 @@ url = @mac.make_request(base_url, @mac)
 
 用户可以通过Qiniu::Rs::Client.Stat()获取文件信息。使用方式如下：
 
-```
+```{ruby}
 @rs_cli = Qiniu::Rs::Client.new(@mac)
 code, res = @rs_cli.Stat(@bucket1, @to_del_key)
 ```
@@ -289,7 +289,7 @@ code, res = @rs_cli.Stat(@bucket1, @to_del_key)
 
 用户可以通过Qiniu::Rs::Client.Delete()删除文件。使用方式如下：
 
-```
+```{ruby}
 @rs_cli = Qiniu::Rs::Client.new(@mac)
 code, res = @rs_cli.Delete(@bucket1, @to_del_key)
 ```
@@ -300,7 +300,7 @@ code, res = @rs_cli.Delete(@bucket1, @to_del_key)
 
 用户可以通过Qiniu::Rs::Client.Move()移动文件。使用方式如下：
 
-```
+```{ruby}
 @rs_cli = Qiniu::Rs::Client.new(@mac)
 code, res = @rs_cli.Copy(@bucket1, @to_copy_key, @bucket1, @to_move_key)
 ```
@@ -311,7 +311,7 @@ code, res = @rs_cli.Copy(@bucket1, @to_copy_key, @bucket1, @to_move_key)
 
 用户可以通过Qiniu::Rs::Client.Copy()复制文件。使用方式如下：
 
-```
+```{ruby}
 @rs_cli = Qiniu::Rs::Client.new(@mac)
 code, res = @rs_cli.Copy(@bucket1, @to_del_key, @bucket1, @to_copy_key)
 ```
@@ -329,12 +329,9 @@ code, res = @rs_cli.Copy(@bucket1, @to_del_key, @bucket1, @to_copy_key)
 
 批量获取文件信息和批量删除文件的参数是EntryPath的数组，用于指定一组文件。批量移动文件和批量复制文件使用的参数是EntryPathPair的数组，EntryPathPair包含一对EntryPath，分别指定源文件和目标文件。
 
-```
-```
-
 批量操作的具体使用方式如下：
 
-```
+```{ruby}
 @rs_cli = Qiniu::Rs::Client.new(@mac)
 
 # 批量获取文件信息
@@ -376,6 +373,36 @@ while i < @keys.length do
 	i += 1
 end
 code, res = @rs_cli.BatchCopy(to_copy)
+```
+
+<a name="fop"></a>
+
+### 云处理
+
+#### 查看图像信息
+
+```{ruby}
+ii = Qiniu::Fop::ImageInfo.new
+code, ret = ii.call @image_url
+puts code, ret
+```
+
+#### 查看图像Exif
+
+```{ruby}
+exif = Qiniu::Fop::Exif.new
+code, ret = exif.call @image_url
+puts code, ret
+```
+
+#### 生成缩略图
+
+```{ruby}
+iv = Qiniu::Fop::ImageView.new
+iv.height = 100
+iv.width = 40
+returl = iv.make_request @image_url
+puts returl
 ```
 
 ## 贡献代码
