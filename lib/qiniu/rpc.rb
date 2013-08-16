@@ -13,122 +13,134 @@ require 'qiniu/conf'
 require 'qiniu/auth/digest'
 
 module Qiniu
-	module Rpc
+  module Rpc
 
-		class Client
+    class Client
 
-			def initialize(host)
-				@host = host
-				@headers = {:user_agent => Qiniu::Conf.settings[:user_agent]}
-			end
+      def initialize(host)
+        @host = host
+        @headers = {:user_agent => Qiniu::Conf.settings[:user_agent]}
+      end
 
-			def call(path)
-				call_with(path, nil)
-			end
+      def call(path)
+        call_with(path, nil)
+      end
 
-			def call_with(path, body, content_type, content_length)
-			end
+      def call_with(path, body, content_type, content_length)
+      end
 
-			def post_multipart(path, fields, headers = nil)
-				the_fields = {}
+      def post_multipart(path, fields, headers = nil)
+        the_fields = {}
 
-				the_fields = the_fields.merge(fields)
+        the_fields = the_fields.merge(fields)
 
-	        	the_fields[:multipart] = true
+        the_fields[:multipart] = true
 
-	        	post(path, the_fields, headers)
-			end
+        post(path, the_fields, headers)
+      end
 
-			def call_with_form(path, ops)
-			end
+      def call_with_form(path, ops)
+      end
 
-			def post(path, payload = nil, headers = nil)
-				if headers.nil? then
-					headers = {}
-				end
-				headers = headers.merge(@headers)
-				url = @host
-				if !path.nil? && !path.empty? then
-					url += "/" if path[0].chr != '/' && @host[@host.length - 1].chr != '/'
-					url += path
-				end
-				
-				begin
-		        	res = RestClient.post(url, payload, headers)
-				rescue RestClient::Exception => e
-					return e.http_code, e.http_body
-				end
-				return 200, res
-			end
+      def post(path, payload = nil, headers = nil)
+        if headers.nil? then
+          headers = {}
+        end
+        headers = headers.merge(@headers)
+        url = @host
+        if !path.nil? && !path.empty? then
+          url += "/" if path[0].chr != '/' && @host[@host.length - 1].chr != '/'
+          url += path
+        end
 
-			def get(path, headers = nil)
-				if headers.nil? then
-					headers = {}
-				end
-				headers = headers.merge(@headers)
-				begin
-					res = RestClient.get(host + "/" + path, headers)
-				rescue RestClient::Exception => e
-					return e.response, e.message
-				end
-				return 200, res
-			end
-		end
+        begin
+          res = RestClient.post(url, payload, headers)
+        rescue RestClient::Exception => e
+          return e.http_code, e.http_body
+        end
+        return 200, res
+      end
 
-		class AuthClient < Client
+      def get(path, headers = nil)
+        if headers.nil? then
+          headers = {}
+        end
+        headers = headers.merge(@headers)
+        begin
+          res = RestClient.get(host + "/" + path, headers)
+        rescue RestClient::Exception => e
+          return e.response, e.message
+        end
+        return 200, res
+      end
+    end
 
-        	include Utils
+    class AuthClient < Client
 
-			attr_accessor :mac
+      include Utils
 
-			def initialize(host, mac = nil)
-				super(host)
-				if mac.nil? then
-            		@mac = Qiniu::Auth::Digest::Mac.new(Qiniu::Conf.settings[:access_key], Qiniu::Conf.settings[:secret_key])
-				else
-					@mac = mac
-				end
-			end
-		end
+      attr_accessor :mac
 
-		class PutClient < AuthClient
+      def initialize(host, mac = nil)
+        super(host)
+        if mac.nil? then
+          @mac = Qiniu::Auth::Digest::Mac.new(Qiniu::Conf.settings[:access_key], Qiniu::Conf.settings[:secret_key])
+        else
+          @mac = mac
+        end
+      end
+    end
 
-			include Utils
+    class PutClient < AuthClient
 
-			def initialize(host, mac = nil)
-				super(host, mac)
-			end
+      include Utils
 
-			# 执行put操作，调用post_multipart()
-			# 参数：
-			#   1. fields：放入multipart的字段
-			def call(fields)
-				return post_multipart("", fields)
-			end
-		end
+      def initialize(host, mac = nil)
+        super(host, mac)
+      end
 
-		class ManageClient < AuthClient
+      # 执行put操作，调用post_multipart()
+      # 参数：
+      #   1. fields：放入multipart的字段
+      def call(fields)
+        return post_multipart("", fields)
+      end
+    end
 
-			include Utils
+    class ManageClient < AuthClient
 
-			def initialize(host, mac = nil)
-				super(host, mac)
-			end
+      include Utils
 
-			# 执行management操作，包括生成AccessToken，构造form body等
-			# 参数：
-			#   1. path：操作构成的路径。
-			#   2. body：管理操作的body（操作的集合）。
-			def call(path, query, body)
-				token = @mac.generate_access_token(path, query, body)
+      def initialize(host, mac = nil)
+        super(host, mac)
+      end
 
-				qry_str = path
-				qry_str += "?" + query if !query.nil? && !query.empty?
+      # 执行management操作，包括生成AccessToken，构造form body等
+      # 参数：
+      #   1. path：操作构成的路径。
+      #   2. body：管理操作的body（操作的集合）。
+      def call(path, query, body)
+        token = @mac.generate_access_token(path, query, body)
 
-				headers = { "Authorization" => "QBox " + token , "Content-Type" => "application/x-www-form-urlencoded" }
+        qry_str = path
+        qry_str += "?" + query if !query.nil? && !query.empty?
 
-				return post(qry_str, body, headers)
-			end
-		end
-	end
+        headers = { "Authorization" => "QBox " + token , "Content-Type" => "application/x-www-form-urlencoded" }
+
+        return post(qry_str, body, headers)
+      end
+    end
+
+    class << self
+      def get(url, headers = {})
+        begin
+          res = RestClient.get(url, headers)
+        rescue RestClient::Exception => e
+          return e.response, e.message
+        end
+        return 200, Qiniu::Utils.safe_json_parse(res)
+      end
+    end
+
+  end
 end
