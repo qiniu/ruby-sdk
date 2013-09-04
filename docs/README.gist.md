@@ -78,8 +78,8 @@ title: Ruby SDK 使用指南
 
 在使用Ruby SDK之前，需要初始化环境，并且设置默认的ACCESS_KEY和SECRET_KEY：
 
-    Qiniu::RS.establish_connection! :access_key => <YOUR_APP_ACCESS_KEY>,
-                                    :secret_key => <YOUR_APP_SECRET_KEY>
+    Qiniu.establish_connection! :access_key => <YOUR_APP_ACCESS_KEY>,
+                                :secret_key => <YOUR_APP_SECRET_KEY>
 
 如果您使用的是 [Ruby on Rails](http://rubyonrails.org/) 框架，我们建议您在应用初始化启动的过程中，依次调用上述两个函数即可，操作如下：
 
@@ -87,8 +87,8 @@ title: Ruby SDK 使用指南
 
 然后，编辑 `YOUR_RAILS_APP/config/initializers/qiniu-rs.rb` 文件内容如下：
 
-    Qiniu::RS.establish_connection! :access_key => YOUR_APP_ACCESS_KEY,
-                                    :secret_key => YOUR_APP_SECRET_KEY
+    Qiniu.establish_connection! :access_key => <YOUR_APP_ACCESS_KEY>,
+                                :secret_key => <YOUR_APP_SECRET_KEY>
 
 这样，您就可以在您的 `RAILS_APP` 中使用七牛云存储 Ruby SDK 提供的其他任意方法了。
 

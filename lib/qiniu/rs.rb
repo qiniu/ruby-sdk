@@ -14,7 +14,7 @@ module Qiniu
 
     StatusOK = 200
 
-    def establish_connection!(opts = {})
+    def establish_connection! opts = {}
       Qiniu::Conf.initialize_connect opts
     end
 
