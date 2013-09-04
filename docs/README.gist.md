@@ -23,6 +23,7 @@ title: Ruby SDK
 		- [删除文件](#rs-delete)
 		- [复制/移动文件](#rs-copy-move)
 		- [批量操作](#rs-batch)
+    - [云处理](#fop)
 
 <a name="overview"></a>
 
@@ -129,7 +130,7 @@ title: Ruby SDK
 
 [uptoken](http://docs.qiniu.com/api/put.html#uploadToken) 实际上是用 AccessKey/SecretKey 进行数字签名的上传策略(`Qiniu_RS_PutPolicy`)，它控制则整个上传流程的行为。让我们快速过一遍你都能够决策啥：
 
-```
+```{ruby}
 @gist(../lib/qiniu/rs/tokens.rb#put-policy)
 ```
 
@@ -148,7 +149,7 @@ title: Ruby SDK
 
 服务端生成 [uptoken](http://docs.qiniu.com/api/put.html#uploadToken) 代码如下：
 
-```
+```{ruby}
 @gist(../spec/qiniu/io_rs_spec.rb#make_mac)
 @gist(../spec/qiniu/io_rs_spec.rb#uptoken)
 ```
@@ -159,7 +160,7 @@ title: Ruby SDK
 
 上传文件到七牛（通常是客户端完成，但也可以发生在服务端）：
 
-```
+```{ruby}
 @gist(../spec/qiniu/io_rs_spec.rb#make_mac)
 @gist(../spec/qiniu/io_rs_spec.rb#upload)
 ```
@@ -172,7 +173,7 @@ title: Ruby SDK
 
 PutExtra是上传时的可选信息，默认为None
 
-```
+```{ruby}
 @gist(../lib/qiniu/io.rb#PutExtra)
 ```
 
@@ -209,7 +210,7 @@ PutExtra是上传时的可选信息，默认为None
 
 其中 dntoken 是由业务服务器签发的一个[临时下载授权凭证](http://docs.qiniu.com/api/get.html#download-token)，deadline 是 dntoken 的有效期。dntoken不需要单独生成，SDK 提供了生成完整 downloadUrl 的方法（包含了 dntoken），示例代码如下：
 
-```
+```{ruby}
 @gist(../spec/qiniu/auth_spec.rb#make_mac)
 @gist(../spec/qiniu/auth_spec.rb#downloadUrl)
 ```
@@ -236,7 +237,7 @@ PutExtra是上传时的可选信息，默认为None
 
 用户可以通过Qiniu::Rs::Client.Stat()获取文件信息。使用方式如下：
 
-```
+```{ruby}
 @gist(../spec/qiniu/io_rs_spec.rb#make_rs_cli)
 @gist(../spec/qiniu/io_rs_spec.rb#stat)
 ```
@@ -247,7 +248,7 @@ PutExtra是上传时的可选信息，默认为None
 
 用户可以通过Qiniu::Rs::Client.Delete()删除文件。使用方式如下：
 
-```
+```{ruby}
 @gist(../spec/qiniu/io_rs_spec.rb#make_rs_cli)
 @gist(../spec/qiniu/io_rs_spec.rb#delete)
 ```
@@ -258,7 +259,7 @@ PutExtra是上传时的可选信息，默认为None
 
 用户可以通过Qiniu::Rs::Client.Move()移动文件。使用方式如下：
 
-```
+```{ruby}
 @gist(../spec/qiniu/io_rs_spec.rb#make_rs_cli)
 @gist(../spec/qiniu/io_rs_spec.rb#move)
 ```
@@ -269,7 +270,7 @@ PutExtra是上传时的可选信息，默认为None
 
 用户可以通过Qiniu::Rs::Client.Copy()复制文件。使用方式如下：
 
-```
+```{ruby}
 @gist(../spec/qiniu/io_rs_spec.rb#make_rs_cli)
 @gist(../spec/qiniu/io_rs_spec.rb#copy)
 ```
@@ -287,12 +288,9 @@ PutExtra是上传时的可选信息，默认为None
 
 批量获取文件信息和批量删除文件的参数是EntryPath的数组，用于指定一组文件。批量移动文件和批量复制文件使用的参数是EntryPathPair的数组，EntryPathPair包含一对EntryPath，分别指定源文件和目标文件。
 
-```
-```
-
 批量操作的具体使用方式如下：
 
-```
+```{ruby}
 @gist(../spec/qiniu/io_rs_spec.rb#make_rs_cli)
 
 # 批量获取文件信息
@@ -306,6 +304,29 @@ PutExtra是上传时的可选信息，默认为None
 
 # 批量复制文件
 @gist(../spec/qiniu/io_rs_spec.rb#batch_copy)
+```
+
+<a name="fop"></a>
+
+### 云处理
+
+#### 查看图像信息
+
+```{ruby}
+@gist(../spec/qiniu/fop_spec.rb#imageinfo)
+```
+
+#### 查看图像Exif
+
+```{ruby}
+@gist(../spec/qiniu/fop_spec.rb#exif)
+```
+
+#### 生成缩略图
+
+```{ruby}
+@gist(../spec/qiniu/fop_spec.rb#imageview1)
+@gist(../spec/qiniu/fop_spec.rb#imageview2)
 ```
 
 ## 贡献代码
