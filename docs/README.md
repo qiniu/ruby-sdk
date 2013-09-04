@@ -1,11 +1,6 @@
 ---
-title: C/C++ SDK 使用指南 | 七牛云存储
+title: Ruby SDK
 ---
-
-# Ruby SDK 使用指南
-
-
-**文档大纲**
 
 - [概述](#overview)
 - [准备开发环境](#prepare)
@@ -30,6 +25,7 @@ title: C/C++ SDK 使用指南 | 七牛云存储
 		- [批量操作](#rs-batch)
 
 <a name="overview"></a>
+
 
 ## 概述
 

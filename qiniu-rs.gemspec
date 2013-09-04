@@ -6,6 +6,7 @@ Gem::Specification.new do |gem|
   gem.authors       = ["mohuafeng"]
   gem.email         = ["mohuafeng@qiniu.com"]
   gem.description   = %q{Qiniu Resource (Cloud) Storage SDK for Ruby. }
+
   gem.summary       = %q{Qiniu Resource (Cloud) Storage SDK for Ruby}
   gem.homepage      = "https://github.com/qiniu/ruby-sdk"
 

@@ -1,5 +1,6 @@
 ## CHANGE LOG
 
+
 ### v6.0.0
  
  - 遵循 [sdkspec v6.0.0](https://github.com/qiniu/sdkspec/tree/v6.0.0)
@@ -8,9 +9,20 @@
    - io.Put/PutFile 支持支持 key = UNDEFINED_KEY，这样服务端将自动生成 key 并返回
    - io.Put/PutFile 支持自定义的 "x:" 参数(Qiniu::Io::PutExtra.Params)、支持 Crc 检查
 
+### v3.4.5
+
+- `Qiniu::RS.generate_upload_token()` 方法新增 `:callback_body` 和 `return_url` 选项。
+- 选项含义参考: <http://docs.qiniu.com/api/v6/put.html#uploadToken-args>
+
+### v3.4.2
+
+- `Qiniu::RS.generate_upload_token()` 方法新增 `:return_body` 选项。
+
+该选项（`:return_body`）可设置文件上传成功后，执行七牛云存储规定的回调API，并以 JSON 响应格式返回其执行结果。参考 [uploadToken 之 returnBody 说明](http://docs.qiniu.com/api/v6/put.html#uploadToken-returnBody)。
+
 ### v3.4.1
 
-增加为上传文件进行预转的选项，参见 [uploadToken 之 asyncOps 说明](http://docs.qiniutek.com/v3/api/io/#uploadToken-asyncOps)
+增加为上传文件进行预转的选项，参见 [uploadToken 之 asyncOps 说明](http://docs.qiniu.com/api/v6/put.html#uploadToken-asyncOps)
 
 - `Qiniu::RS.generate_upload_token()` 方法新增 `:async_options` 选项用于进行预转操作。
 
