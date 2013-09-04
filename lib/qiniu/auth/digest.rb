@@ -13,9 +13,9 @@ module Qiniu
 
 		attr_accessor :access_key
 
-        def initialize(accesskey, secretkey)
-          @access_key = accesskey
-          @secret_key = secretkey
+        def initialize(accesskey = nil, secretkey = nil)
+          @access_key = accesskey || Qiniu::Conf.settings[:access_key] 
+          @secret_key = secretkey || Qiniu::Conf.settings[:secret_key]
         end
 
         def sign_it(data)

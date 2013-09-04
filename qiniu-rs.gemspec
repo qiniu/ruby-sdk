@@ -8,6 +8,7 @@ Gem::Specification.new do |gem|
   gem.description   = %q{Qiniu Resource (Cloud) Storage SDK for Ruby. }
   gem.summary       = %q{Qiniu Resource (Cloud) Storage SDK for Ruby}
   gem.homepage      = "https://github.com/qiniu/ruby-sdk"
+  gem.license       = 'MIT'
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

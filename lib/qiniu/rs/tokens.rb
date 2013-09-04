@@ -11,7 +11,7 @@ module Qiniu
 	  class << self
 
         # MakeBaseUrl(): construct url with domain & key
-        def MakeBaseUrl(domain, key)
+        def make_base_url(domain, key)
           return "http://" + domain + "/" + URI.escape(key)
         end
 
@@ -34,7 +34,7 @@ module Qiniu
           end
 
           if mac.nil? then
-            mac = Mac.New(Config.settings[:access_key], Config.settings[:secret_key])
+            mac = Qiniu::Auth::Digest::Mac.new(Qiniu::Conf.settings[:access_key], Qiniu::Conf.settings[:secret_key])
           end
 
           deadline = Time.now.to_i + @Expires
@@ -74,14 +74,8 @@ module Qiniu
 # @endgist
 
         def token(mac = nil)
-          if mac == nil then
-            mac = Mac.New()
-            mac.access_key = Config.settings[:access_key]
-            mac.secret_key = Config.settings[:secret_key]
-            if mac.access_key.nil? || mac.access_key.empty? ||
-              mac.secret_key.nil? || mac.secret_key.empty? then
-              raise "Invalid Access Key or Secret Key"
-            end
+          if mac.nil? then
+            mac = Qiniu::Auth::Digest::Mac.new()
           end
 
           policy_json = marshal_policy()
@@ -90,11 +84,11 @@ module Qiniu
 
         def marshal_policy
           params = {:scope => @scope, :deadline => Time.now.to_i + @expires}
-          params[:callbackUrl] = @callback_url if !@callback_url.nil? && !@callback_url.empty?
-          params[:callbackBody] = @callback_body if !@callback_body.nil? && !@callback_body.empty?
-          params[:returnUrl] = @return_url if !@return_url.nil? && !@return.empty?
-          params[:returnBody] = @return_body if !@return_body.nil? && !@return_body.empty?
-          params[:asyncOps] = @async_ops if !@async_ops.nil? && !@async_ops.empty?
+          params[:callbackUrl] = @callback_url unless @callback_url.nil?
+          params[:callbackBody] = @callback_body unless @callback_body.nil?
+          params[:returnUrl] = @return_url unless @return_url.nil?
+          params[:returnBody] = @return_body unless @return_body.nil? 
+          params[:asyncOps] = @async_ops unless @async_ops.nil?
           params[:endUser] = 1 if @escape == 1 || @escape == true
           return params.to_json
         end
