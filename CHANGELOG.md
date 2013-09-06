@@ -2,6 +2,7 @@
 
 ### v6.0.0
  
+ - *注意* 当前为Bata版本
  - 遵循 [sdkspec v6.0.0](https://github.com/qiniu/sdkspec/tree/v6.0.0)
    - UserAgent 支持。增加 conf.SetUserAgent
    - io.Put/PutFile 调整为基于 up.qiniu.com 的协议，extra *PutExtra 参数可以为 nil
