@@ -85,6 +85,22 @@ module Qiniu
 			end
 		end
 
+    context ".upload_file with saveKey" do
+			it "should works" do
+				pe = Qiniu::Io::PutExtra.new
+        save_key = "$(year)-$(mon)-$(day)-$(hour)-$(min)-$(sec)-$(etag)-$(fname)"
+# @gist uptoken
+				pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800, :save_key => save_key})
+				token = pp.token(@mac)
+# @endgist
+				code, res = Qiniu::Io.PutFile(token, nil, @file_path, pe)
+        puts %Q(    result: #{code.inspect}, #{res.inspect})
+#				puts %Q(    result: #{@keys[0].inspect} => #{code.inspect}, #{res.inspect})
+				code.should == 200
+
+			end
+		end
+
 		context ".upload_data_crc" do
 			it "should works" do
 				pe = Qiniu::Io::PutExtra.new
