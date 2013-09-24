@@ -35,6 +35,7 @@ title: Ruby SDK 使用指南
 
 七牛云存储 Ruby SDK 源码地址：<https://github.com/qiniu/ruby-sdk> [![Build Status](https://api.travis-ci.org/qiniu/ruby-sdk.png?branch=master)](https://travis-ci.org/qiniu/ruby-sdk) [![Dependency Status](https://gemnasium.com/why404/qiniu-rs-for-ruby.png)]
 
+
 <a name="prepare"></a>
 
 ## 准备开发环境
@@ -251,8 +252,10 @@ end
 @secret_key = Qiniu::Conf.settings[:secret_key]
 
 @mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
-base_url = Qiniu::Rs.MakeBaseUrl("a.qiniudn.com", "down.jpg")
-url = @mac.make_request(base_url, @mac)
+base_url = Qiniu::Rs.make_base_url("a.qiniudn.com", "down.jpg")
+get_policy = Qiniu::Rs::GetPolicy.new
+get_policy.Expires = 1000
+url = get_policy.make_request(base_url, @mac)
 ```
 
 生成 downloadUrl 后，服务端下发 downloadUrl 给客户端。客户端收到 downloadUrl 后，和公有资源类似，直接用任意的 HTTP 客户端就可以下载该资源了。唯一需要注意的是，在 downloadUrl 失效却还没有完成下载时，需要重新向服务器申请授权。

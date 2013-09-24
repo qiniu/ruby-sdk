@@ -38,18 +38,17 @@ module Qiniu
         end
       end
 
-=begin
       context ".sign_data" do
         it "should works" do
 # @gist downloadUrl
-          base_url = Qiniu::Rs.MakeBaseUrl("a.qiniudn.com", "down.jpg")
-          url = @mac.make_request(base_url, @mac)
+          base_url = Qiniu::Rs.make_base_url("a.qiniudn.com", "down.jpg")
+          get_policy = Qiniu::Rs::GetPolicy.new
+          get_policy.Expires = 1000
+          url = get_policy.make_request(base_url, @mac)
 # @endgist
-          token.should == @signed
-          puts token.inspect
+          puts url
         end
       end
-=end
 
 =begin
       context ".upload_token" do

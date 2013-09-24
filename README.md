@@ -22,7 +22,9 @@
 
 ## 使用
 
-参考文档：[七牛云存储 Ruby SDK 使用指南](http://docs.qiniutek.com/v3/sdk/ruby/)
+参考文档：[七牛云存储 Ruby SDK 使用指南](https://github.com/qiniu/ruby-sdk/tree/develop/docs)
+
+v3版本文档请点击[这里](http://docs.qiniu.com/ruby-sdk/v3/index.html)
 
 ## 贡献代码
 
@@ -34,7 +36,7 @@
 
 ## 许可证
 
-Copyright (c) 2012-2013 qiniutek.com
+Copyright (c) 2012-2013 qiniu.com
 
 基于 MIT 协议发布:
 
