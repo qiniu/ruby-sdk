@@ -15,6 +15,8 @@ rvm:
 matrix:
   allow_failures:
     - rvm: ruby-head
+    - rvm: rbx-18mode
+    - rvm: rbx-19mode
 
 before_script:
   - export QINIU_ACCESS_KEY=iN7NgwM31j4-BZacMjPrOQBs34UG1maYCAQmhdCV
