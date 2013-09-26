@@ -90,7 +90,7 @@ module Qiniu
           params[:returnUrl] = @return_url unless @return_url.nil?
           params[:returnBody] = @return_body unless @return_body.nil? 
           params[:asyncOps] = @async_ops unless @async_ops.nil?
-          params[:endUser] = 1 if @escape == 1 || @escape == true
+          params[:endUser] = @end_user unless @end_user.nil?
           params[:saveKey] = @save_key unless @save_key.nil?
           return params.to_json
         end

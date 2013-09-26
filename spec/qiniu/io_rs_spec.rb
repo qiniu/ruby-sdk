@@ -61,7 +61,7 @@ module Qiniu
 			it "should works" do
 # @gist upload
 				pe = Qiniu::Io::PutExtra.new
-				pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800 })
+        pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :end_user => "ikbear", :expires => 1800 })
 				token = pp.token(@mac)
 				file_data = File.new(@file_path, 'r')
 				code, res = Qiniu::Io.Put(token, @to_del_key, file_data, pe)
@@ -75,7 +75,7 @@ module Qiniu
 			it "should works" do
 				pe = Qiniu::Io::PutExtra.new
 # @gist uptoken
-				pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800 })
+        pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :end_user => "ikbear", :expires => 1800 })
 				token = pp.token(@mac)
 # @endgist
 				code, res = Qiniu::Io.PutFile(token, @keys[0], @file_path, pe)
@@ -90,7 +90,7 @@ module Qiniu
 				pe = Qiniu::Io::PutExtra.new
         save_key = "$(year)-$(mon)-$(day)-$(hour)-$(min)-$(sec)-$(etag)-$(fname)"
 # @gist uptoken
-				pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800, :save_key => save_key})
+        pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800, :end_user => "ikbear", :save_key => save_key})
 				token = pp.token(@mac)
 # @endgist
 				code, res = Qiniu::Io.PutFile(token, nil, @file_path, pe)
