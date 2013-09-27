@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v3.4.6
+
+- `Qiniu::RS.generate_download_token()` 方法的 `:pattern` 调整为必选项。
+
 ### v3.4.5
 
 - `Qiniu::RS.generate_upload_token()` 方法新增 `:callback_body` 和 `return_url` 选项。
