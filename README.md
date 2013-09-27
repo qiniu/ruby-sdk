@@ -1,4 +1,4 @@
-# Qiniu Resource (Cloud) Storage SDK for Ruby - [![Build Status](https://api.travis-ci.org/qiniu/ruby-sdk.png?branch=master)](https://travis-ci.org/qiniu/ruby-sdk) [![Dependency Status](https://gemnasium.com/why404/qiniu-rs-for-ruby.png)](https://gemnasium.com/why404/qiniu-rs-for-ruby)
+# Qiniu Resource Storage SDK for Ruby - [![Build Status](https://api.travis-ci.org/qiniu/ruby-sdk.png?branch=master)](https://travis-ci.org/qiniu/ruby-sdk) [![Dependency Status](https://gemnasium.com/why404/qiniu-rs-for-ruby.png)](https://gemnasium.com/why404/qiniu-rs-for-ruby)
 
 # 关于
 
