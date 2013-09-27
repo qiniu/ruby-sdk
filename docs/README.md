@@ -330,7 +330,7 @@ expires_in
 : 可选，数字类型，用于设置上传 URL 的有效期，单位：秒，缺省为 3600 秒，即 1 小时后该下载授权凭证（downloadToken）不再有效。
 
 pattern
-: 可选，字符串类型，用于设置可匹配的下载链接。参考：[downloadToken pattern 详解](http://docs.qiniutek.com/v3/api/io/#download-token-pattern)
+: 必选，字符串类型，用于设置可匹配的下载链接。参考：[downloadToken pattern 详解](http://docs.qiniutek.com/v3/api/io/#download-token-pattern)
 
 
 <a name="other-download-features"></a>

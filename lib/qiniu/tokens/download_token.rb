@@ -13,7 +13,7 @@ module Qiniu
         attr_accessor :pattern, :expires_in
 
         def initialize(opts = {})
-          @pattern = opts[:pattern] || "*"
+          @pattern = opts[:pattern]
           @expires_in = opts[:expires_in] || 3600
         end
 
