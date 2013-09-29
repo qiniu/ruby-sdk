@@ -8,6 +8,7 @@ require 'qiniu/auth/digest'
 require 'qiniu/io'
 require 'qiniu/rs/tokens'
 require 'qiniu/basic/utils'
+require 'qiniu/rsf'
 
 module Qiniu
   describe Rs do
@@ -27,6 +28,7 @@ module Qiniu
 
 # @gist make_rs_cli
 			@rs_cli = Qiniu::Rs::Client.new(@mac)
+      @rsf_cli = Qiniu::Rsf::Client.new(@mac)
 # @endgist
 
 			@bucket1 = "a"
@@ -56,6 +58,15 @@ module Qiniu
 
 			@file_path = "spec/fixtures/toupload.jpg"
 		end
+
+       
+    context ".list" do
+      it "should works" do
+        code, res = @rsf_cli.List(@bucket1, nil, nil, nil)
+        puts %Q( Files are: \n #{res} ) 
+        code.should == 200
+      end
+    end
 
 		context ".upload_data" do
 			it "should works" do
@@ -238,5 +249,6 @@ module Qiniu
 				code.should == 200
 			end
 		end
+
 	end
 end
