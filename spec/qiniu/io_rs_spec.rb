@@ -11,25 +11,25 @@ require 'qiniu/basic/utils'
 require 'qiniu/rsf'
 
 module Qiniu
-  describe Rs do
+	describe Rs do
 
-    before :all do
-      if ENV['QINIU_ACCESS_KEY'] && ENV['QINIU_SECRET_KEY']
+		before :all do
+     		if ENV['QINIU_ACCESS_KEY'] && ENV['QINIU_SECRET_KEY']
 # @gist make_mac
-        @access_key = Qiniu::Conf.settings[:access_key]
-        @secret_key = Qiniu::Conf.settings[:secret_key]
+      			@access_key = Qiniu::Conf.settings[:access_key]
+	        	@secret_key = Qiniu::Conf.settings[:secret_key]
 
-        @mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
+	        	@mac = Qiniu::Auth::Digest::Mac.new(@access_key, @secret_key)
 # @endgist
-      else
-        puts 'source test-env.sh'
-        exit(1)
-      end
+      		else
+		        puts 'source test-env.sh'
+		        exit(1)
+      		end
 
 # @gist make_rs_cli
 			@rs_cli = Qiniu::Rs::Client.new(@mac)
-      @rsf_cli = Qiniu::Rsf::Client.new(@mac)
-# @endgist
+			@rsf_cli = Qiniu::Rsf::Client.new(@mac)
+	# @endgist
 
 			@bucket1 = "a"
 			@bucket2 = "a"
@@ -60,19 +60,19 @@ module Qiniu
 		end
 
        
-    context ".list" do
-      it "should works" do
-        code, res = @rsf_cli.List(@bucket1, nil, nil, nil)
-        puts %Q( Files are: \n #{res} ) 
-        code.should == 200
-      end
-    end
+    	context ".list" do
+        	it "should works" do
+        		code, res = @rsf_cli.List(@bucket1, nil, nil, nil)
+	        	puts %Q( Files are: \n #{res} ) 
+	        	code.should == 200
+      		end
+    	end
 
 		context ".upload_data" do
 			it "should works" do
 # @gist upload
 				pe = Qiniu::Io::PutExtra.new
-        pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :end_user => "ikbear", :expires => 1800 })
+       		 	pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :end_user => "ikbear", :expires => 1800 })
 				token = pp.token(@mac)
 				file_data = File.new(@file_path, 'r')
 				code, res = Qiniu::Io.Put(token, @to_del_key, file_data, pe)
@@ -86,7 +86,7 @@ module Qiniu
 			it "should works" do
 				pe = Qiniu::Io::PutExtra.new
 # @gist uptoken
-        pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :end_user => "ikbear", :expires => 1800 })
+        		pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :end_user => "ikbear", :expires => 1800 })
 				token = pp.token(@mac)
 # @endgist
 				code, res = Qiniu::Io.PutFile(token, @keys[0], @file_path, pe)
@@ -96,18 +96,18 @@ module Qiniu
 			end
 		end
 
-    context ".upload_file with saveKey" do
+    	context ".upload_file with saveKey" do
 			it "should works" do
-				pe = Qiniu::Io::PutExtra.new
-        save_key = "$(year)-$(mon)-$(day)-$(hour)-$(min)-$(sec)-$(etag)-$(fname)"
+			pe = Qiniu::Io::PutExtra.new
+    		save_key = "$(year)-$(mon)-$(day)-$(hour)-$(min)-$(sec)-$(etag)-$(fname)"
 # @gist uptoken
-        pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800, :end_user => "ikbear", :save_key => save_key})
-				token = pp.token(@mac)
+    		pp = Qiniu::Rs::PutPolicy.new({ :scope => @bucket1, :expires => 1800, :end_user => "ikbear", :save_key => save_key})
+			token = pp.token(@mac)
 # @endgist
-				code, res = Qiniu::Io.PutFile(token, nil, @file_path, pe)
-        puts %Q(    result: #{code.inspect}, #{res.inspect})
+			code, res = Qiniu::Io.PutFile(token, nil, @file_path, pe)
+    		puts %Q(    result: #{code.inspect}, #{res.inspect})
 #				puts %Q(    result: #{@keys[0].inspect} => #{code.inspect}, #{res.inspect})
-				code.should == 200
+			code.should == 200
 
 			end
 		end
@@ -249,6 +249,5 @@ module Qiniu
 				code.should == 200
 			end
 		end
-
 	end
 end
