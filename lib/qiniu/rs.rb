@@ -14,8 +14,15 @@ module Qiniu
 
     StatusOK = 200
 
+    attr_accessor :access_key, :secret_key
+
     def establish_connection! opts = {}
       Qiniu::Conf.initialize_connect opts
+    end
+
+    def setup
+      yield self
+      Qiniu::Conf.initialize_connect access_key: @access_key, secret_key: @secret_key
     end
 
   end
