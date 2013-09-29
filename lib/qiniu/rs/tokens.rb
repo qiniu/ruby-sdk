@@ -59,7 +59,7 @@ module Qiniu
 
         include Utils
 
-        attr_accessor :scope, :callback_url, :callback_body, :return_url, :return_body, :async_ops, :end_user, :expires
+        attr_accessor :scope, :callback_url, :callback_body, :return_url, :return_body, :async_ops, :end_user, :expires, :save_key
 
         def initialize(opts = {})
           @scope = opts[:scope]
@@ -70,6 +70,7 @@ module Qiniu
           @async_ops = opts[:async_ops]
           @end_user = opts[:end_user]
           @expires = opts[:expires] || 3600
+          @save_key = opts[:save_key]
         end
 # @endgist
 
@@ -89,7 +90,8 @@ module Qiniu
           params[:returnUrl] = @return_url unless @return_url.nil?
           params[:returnBody] = @return_body unless @return_body.nil? 
           params[:asyncOps] = @async_ops unless @async_ops.nil?
-          params[:endUser] = 1 if @escape == 1 || @escape == true
+          params[:endUser] = @end_user unless @end_user.nil?
+          params[:saveKey] = @save_key unless @save_key.nil?
           return params.to_json
         end
 

@@ -44,8 +44,8 @@ module Qiniu
       end
 
       def generate_qbox_signature(url, params)
-        access_key = Config.settings[:access_key]
-        secret_key = Config.settings[:secret_key]
+        access_key = Qiniu::Conf.settings[:access_key]
+        secret_key = Qiniu::Conf.settings[:secret_key]
         uri = URI.parse(url)
         signature = uri.path
         query_string = uri.query
