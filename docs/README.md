@@ -76,6 +76,13 @@ title: Ruby SDK 使用指南
 
 ### 初始化环境
 
+#### 自动创建
+
+    $ rails g qiniu:init
+
+
+#### 手动创建
+
 在使用Ruby SDK之前，需要初始化环境，并且设置默认的ACCESS_KEY和SECRET_KEY：
 
     Qiniu.establish_connection! :access_key => <YOUR_APP_ACCESS_KEY>,
