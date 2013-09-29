@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
-require File.expand_path('../lib/qiniu/version', __FILE__)
+$LOAD_PATH << File.expand_path("../lib", __FILE__)
+require 'qiniu/version'
 
 Gem::Specification.new do |gem|
   gem.authors       = ["mohuafeng"]
