@@ -62,8 +62,8 @@ module Qiniu
        
     	context ".list" do
         	it "should works" do
-        		code, res = @rsf_cli.List(@bucket1, nil, nil, nil)
-	        	puts %Q( Files are: \n #{res} ) 
+        		code, res = @rsf_cli.List(@bucket1, nil, 4, nil)
+	        	puts %Q( Files are: \n #{res["items"]} ) 
 	        	code.should == 200
       		end
     	end

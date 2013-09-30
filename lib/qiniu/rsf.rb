@@ -14,7 +14,13 @@ module Qiniu
       end
 
       def List(bucket, marker, limit, prefix)
-        return @conn.call(uri_list(bucket, marker, limit, prefix), nil, nil)
+        code, res = @conn.call(uri_list(bucket, marker, limit, prefix), nil, nil)
+        begin
+          res = JSON.parse(res)
+        rescue JSON::ParserError
+          res = {:error => JSON::ParserError, :data => res}
+        end
+        return code, res
       end
 
       private
@@ -23,7 +29,7 @@ module Qiniu
       def uri_list(bucket, marker, limit, prefix)
         url = '/list?bucket=' + bucket
         url += '&marker=' + marker unless marker.nil?
-        url += '&limit=' + limit unless limit.nil?
+        url += '&limit=' + limit.to_s unless limit.nil?
         url += '&prefix' + prefix unless prefix.nil?
         url
       end
