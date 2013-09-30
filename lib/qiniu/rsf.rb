@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+require "json"
 require "qiniu/conf"
 require "qiniu/rpc"
 
