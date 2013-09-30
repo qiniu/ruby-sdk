@@ -79,10 +79,6 @@ module Qiniu
         return batch(ops)
       end
 
-      def List(bucket, marker, limit, prefix)
-        return @conn.call(uri_list(bucket, marker, limit, prefix), nil, nil)
-      end
-
       private
 
       def uri_stat(bucket, key)
@@ -104,13 +100,6 @@ module Qiniu
       def batch(ops)
         body = ops.join("&")
         return @conn.call("/batch", nil, body)
-      end
-
-      def uri_list(bucket, marker, limit, prefix)
-        url = '/list?bucket=' + bucket
-        url += '&marker=' + marker unless marker.nil?
-        url += '&limit=' + limit unless limit.nil?
-        url += '&prefix' + prefix unless prefix.nil?
       end
 
     end
