@@ -35,7 +35,7 @@ module Qiniu
 
       def generate_query_string(params)
         return params if params.is_a?(String)
-        total_param = params.map { |key, value| %Q(#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s).gsub('+', '%20')}) }
+        total_param = params.map { |key, value| %Q(#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s)}) }
         total_param.join("&")
       end
 
