@@ -2,6 +2,8 @@
 title: Ruby SDK 使用指南
 ---
 
+# Ruby SDK 使用指南
+
 **文档大纲**
 
 - [概述](#overview)
