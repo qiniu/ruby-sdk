@@ -31,7 +31,7 @@ module Qiniu
         url = '/list?bucket=' + bucket
         url += '&marker=' + marker unless marker.nil?
         url += '&limit=' + limit.to_s unless limit.nil?
-        url += '&prefix' + prefix unless prefix.nil?
+        url += '&prefix=' + prefix unless prefix.nil?
         url
       end
 
