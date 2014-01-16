@@ -1,5 +1,10 @@
 ## CHANGE LOG
 
+### v6.0.1
+ 
+ - *注意* 当前为Bata版本
+ - 将上传策略的`asyncOps`字段删除，换成`persistentOps`字段。
+
 ### v6.0.0
  
  - *注意* 当前为Bata版本
