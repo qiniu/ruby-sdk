@@ -14,9 +14,6 @@ module Qiniu
   module RS
     module UP
 
-      PROGRESS_TMP_FILE = 'progresses'
-      CHECKSUM_TMP_FILE = 'ctxes'
-
       module AbstractClass
         class ChunkProgressNotifier
           include Qiniu::RS::Abstract
@@ -32,61 +29,18 @@ module Qiniu
       end
 
       class ChunkProgressNotifier < AbstractClass::ChunkProgressNotifier
-          attr_reader :tmpdata
-          def initialize(id)
-              @tmpdata = UP::TmpData.new(id, PROGRESS_TMP_FILE)
-          end
           def notify(index, progress)
-              @tmpdata.set(index, progress)
               logmsg = "chunk #{progress[:offset]/Config.settings[:chunk_size]} in block #{index} successfully uploaded.\n" + progress.to_s
               Utils.debug(logmsg)
           end
       end
 
       class BlockProgressNotifier < AbstractClass::BlockProgressNotifier
-          attr_reader :tmpdata
-          def initialize(id)
-              @tmpdata = UP::TmpData.new(id, CHECKSUM_TMP_FILE)
-          end
           def notify(index, checksum)
-              @tmpdata.set(index, checksum)
               Utils.debug "block #{index}: {ctx: #{checksum}} successfully uploaded."
               Utils.debug "block #{index}: {checksum: #{checksum}} successfully uploaded."
           end
       end
-
-      class TmpData
-          def initialize(dir, filename)
-              @tmpdir = Config.settings[:tmpdir] + File::SEPARATOR + dir
-              FileUtils.mkdir_p(@tmpdir) unless File.directory?(@tmpdir)
-              @tmpfile = @tmpdir + File::SEPARATOR + filename
-          end
-
-          def init(values)
-              File.open(@tmpfile, "w") do |f|
-                  YAML::dump(values, f)
-                  Utils.debug %Q(Initializing tmpfile: #{@tmpfile})
-              end
-          end
-
-          def all
-              File.exist?(@tmpfile) ? YAML.load_file(@tmpfile) : []
-          end
-
-          def set(index, value)
-              values = all
-              values[index] = value
-              File.open(@tmpfile, "w") do |f|
-                  YAML::dump(values, f)
-                  Utils.debug %Q(Updating tmpfile: #{@tmpfile})
-              end
-          end
-
-          def sweep!
-              FileUtils.rm_r(@tmpdir) if File.directory?(@tmpdir)
-          end
-      end
-
 
       class << self
         include Utils
@@ -290,30 +244,29 @@ module Qiniu
         end
 
         def _resumable_upload(uptoken, fh, fsize, bucket, key, mime_type = nil, custom_meta = nil, customer = nil, callback_params = nil, rotate = nil)
+
           block_count = _block_count(fsize)
+
           chunk_notifier = ChunkProgressNotifier.new(key)
           block_notifier = BlockProgressNotifier.new(key)
-          progresses = chunk_notifier.tmpdata.all
-          if progresses.empty?
-              block_count.times{progresses << _new_block_put_progress_data}
-              chunk_notifier.tmpdata.init(progresses)
-          end
-          checksums = block_notifier.tmpdata.all
-          if checksums.empty?
-              block_count.times{checksums << ''}
-              block_notifier.tmpdata.init(checksums)
-          end
+
+          progresses = []
+          block_count.times{progresses << _new_block_put_progress_data}
+          checksums = []
+          block_count.times{checksums << ''}
+
           code, data = _resumable_put(uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
+
           if Utils.is_response_ok?(code)
             uphost = data["host"]
             entry_uri = bucket + ':' + key
             code, data = _mkfile(uphost, uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params, rotate)
           end
+
           if Utils.is_response_ok?(code)
             Utils.debug "File #{fh.path} {size: #{fsize}} successfully uploaded."
-            chunk_notifier.tmpdata.sweep!
-            block_notifier.tmpdata.sweep!
           end
+
           [code, data]
         end
 
