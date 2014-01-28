@@ -247,8 +247,8 @@ module Qiniu
 
           block_count = _block_count(fsize)
 
-          chunk_notifier = ChunkProgressNotifier.new(key)
-          block_notifier = BlockProgressNotifier.new(key)
+          chunk_notifier = ChunkProgressNotifier.new()
+          block_notifier = BlockProgressNotifier.new()
 
           progresses = []
           block_count.times{progresses << _new_block_put_progress_data}
