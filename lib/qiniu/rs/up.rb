@@ -127,6 +127,7 @@ module Qiniu
         def _resumable_put_block(uptoken, fh, block_index, block_size, chunk_size, progress, retry_times, notifier)
             code, data = 0, {}
             fpath = fh.path
+
             # this block has never been uploaded.
             if progress[:ctx] == nil || progress[:ctx].empty?
                 progress[:offset] = 0
@@ -159,6 +160,7 @@ module Qiniu
             elsif progress[:offset] + progress[:restsize] != block_size
                 raise BlockSizeNotMathchError.new(fpath, block_index, progress[:offset], progress[:restsize], block_size)
             end
+
             # loop uploading other chunks except the first one
             while progress[:restsize].to_i > 0 && progress[:restsize] < block_size
                 # choose the smaller one
@@ -213,7 +215,9 @@ module Qiniu
                     if progresses[block_index].nil?
                         progresses[block_index] = _new_block_put_progress_data
                     end
-                    code, data = _resumable_put_block(uptoken, fh, block_index, block_size, Config.settings[:chunk_size], progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
+                    #code, data = _resumable_put_block(uptoken, fh, block_index, block_size, Config.settings[:chunk_size], progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
+                    # Put the whole block as a chunk
+                    code, data = _resumable_put_block(uptoken, fh, block_index, block_size, block_size, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
                     if Utils.is_response_ok?(code)
                         #checksums[block_index] = data["checksum"]
                         checksums[block_index] = data["ctx"]
