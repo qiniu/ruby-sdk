@@ -103,6 +103,7 @@ module Qiniu
           %Q(/#{command}/#{source_encoded_entry_uri}/#{target_encoded_entry_uri})
         end
 
+=begin
         def _batch_cp_or_mv(command, *op_args)
           execs = []
           op_args.each do |e|
@@ -110,6 +111,7 @@ module Qiniu
           end
           Auth.request Config.settings[:rs_host] + "/batch?" + execs.join("&")
         end
+=end
 
       end
     end

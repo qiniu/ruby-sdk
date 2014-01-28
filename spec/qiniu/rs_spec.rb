@@ -296,6 +296,7 @@ module Qiniu
     end
 =end
 
+=begin
     context ".batch_copy" do
       it "should works" do
         result = Qiniu::RS.batch_copy [@bucket, @key, @bucket, @key2]
@@ -318,6 +319,7 @@ module Qiniu
         result3.should_not be_false
       end
     end
+=end
 
     context ".move" do
       it "should works" do
@@ -369,6 +371,7 @@ module Qiniu
       end
     end
 
+=begin
     context ".image_exif" do
       it "should works" do
         data = Qiniu::RS.get(@test_image_bucket, @test_image_key)
@@ -379,6 +382,7 @@ module Qiniu
         puts result.inspect
       end
     end
+=end
 
     context ".image_mogrify_save_as" do
       it "should works" do

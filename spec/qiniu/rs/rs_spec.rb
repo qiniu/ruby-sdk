@@ -90,6 +90,7 @@ module Qiniu
         end
       end
 
+=begin
       context ".batch_copy" do
         it "should works" do
           code, data = Qiniu::RS::RS.batch_copy [@bucket, @key, @bucket, @key2]
@@ -117,6 +118,7 @@ module Qiniu
           puts data3.inspect
         end
       end
+=end
 
 =begin
       context ".publish" do

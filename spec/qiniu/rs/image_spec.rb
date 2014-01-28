@@ -66,12 +66,14 @@ module Qiniu
         end
       end
 
+=begin
       context ".exif" do
         it "should works" do
           code, data = Qiniu::RS::Image.exif(@source_image_url)
           puts data.inspect
         end
       end
+=end
 
       context ".mogrify_preview_url" do
         it "should works" do
