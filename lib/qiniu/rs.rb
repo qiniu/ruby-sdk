@@ -28,11 +28,6 @@ module Qiniu
         Config.initialize_connect opts
       end
 
-      def login!(user, pwd)
-        code, data = Auth.exchange_by_password!(user, pwd)
-        code == StatusOK
-      end
-
       def mkbucket(bucket_name)
         code, data = RS.mkbucket(bucket_name)
         code == StatusOK
