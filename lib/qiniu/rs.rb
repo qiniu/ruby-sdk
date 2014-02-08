@@ -70,23 +70,6 @@ module Qiniu
       end
 =end
 
-      def put_auth(expires_in = nil, callback_url = nil)
-        code, data = IO.put_auth(expires_in, callback_url)
-        code == StatusOK ? data["url"] : false
-      end
-
-      def upload opts = {}
-        code, data = IO.upload_file(opts[:url],
-                                    opts[:file],
-                                    opts[:bucket],
-                                    opts[:key],
-                                    opts[:mime_type],
-                                    opts[:note],
-                                    opts[:callback_params],
-                                    opts[:enable_crc32_check])
-        code == StatusOK
-      end
-
       def put_file opts = {}
         code, data = IO.put_file(opts[:file],
                                  opts[:bucket],

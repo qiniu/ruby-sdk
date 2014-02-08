@@ -24,19 +24,6 @@ module Qiniu
         result.should_not be_false
       end
 
-      context ".upload_file" do
-        it "should works" do
-          code, data = Qiniu::RS::IO.put_auth()
-          code.should == 200
-          data["url"].should_not be_empty
-          data["expiresIn"].should_not be_zero
-          puts data.inspect
-          code2, data2 = Qiniu::RS::IO.upload_file(data["url"], __FILE__, @bucket, @key)
-          code2.should == 200
-          puts data2.inspect
-        end
-      end
-
       context ".put_file" do
         it "should works" do
           code, data = Qiniu::RS::IO.put_file(__FILE__, @bucket, @key, 'application/x-ruby', 'customMeta', true)

@@ -44,6 +44,17 @@ module Qiniu
       result2.should_not be_false
     end
 
+    context ".put_file" do
+      it "should works" do
+        result = Qiniu::RS.put_file :file =>  __FILE__,
+                                    :bucket => @bucket,
+                                    :key => @key,
+                                    :mime_type => 'application/x-ruby',
+                                    :enable_crc32_check => true
+        result.should be_true
+      end
+    end
+
     context ".buckets" do
       it "should works" do
         result = Qiniu::RS.buckets
@@ -104,42 +115,6 @@ module Qiniu
       end
     end
 =end
-
-    context ".put_auth" do
-      it "should works" do
-        result = Qiniu::RS.put_auth(10)
-        result.should_not be_false
-        result.should_not be_empty
-        puts result.inspect
-      end
-    end
-
-    context ".upload" do
-      it "should works" do
-        put_url = Qiniu::RS.put_auth(10)
-        put_url.should_not be_false
-        put_url.should_not be_empty
-        puts put_url.inspect
-        result = Qiniu::RS.upload :url => put_url,
-                                  :file =>  __FILE__,
-                                  :bucket => @bucket,
-                                  :key => @key,
-                                  :mime_type => 'application/x-ruby',
-                                  :enable_crc32_check => true
-        result.should be_true
-      end
-    end
-
-    context ".put_file" do
-      it "should works" do
-        result = Qiniu::RS.put_file :file =>  __FILE__,
-                                    :bucket => @bucket,
-                                    :key => @key,
-                                    :mime_type => 'application/x-ruby',
-                                    :enable_crc32_check => true
-        result.should be_true
-      end
-    end
 
     context ".upload_file" do
       it "should works" do

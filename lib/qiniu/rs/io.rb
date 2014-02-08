@@ -10,23 +10,6 @@ module Qiniu
       class << self
         include Utils
 
-        def put_auth(expires_in = nil, callback_url = nil)
-          url = Config.settings[:io_host] + "/put-auth/"
-          url += "#{expires_in}" if !expires_in.nil? && expires_in > 0
-          if !callback_url.nil? && !callback_url.empty?
-            encoded_callback_url = Utils.urlsafe_base64_encode(callback_url)
-            url += "/callback/#{encoded_callback_url}"
-          end
-          Auth.request(url)
-        end
-
-        def upload_file(url, local_file, bucket, key = nil, mime_type = nil, custom_meta = nil, callback_params = nil, enable_crc32_check = false)
-          action_params = _generate_action_params(local_file, bucket, key, mime_type, custom_meta, enable_crc32_check)
-          callback_params = {:bucket => bucket, :key => key, :mime_type => mime_type} if callback_params.nil?
-          callback_query_string = Utils.generate_query_string(callback_params)
-          Utils.upload_multipart_data(url, local_file, action_params, callback_query_string)
-        end
-
         def put_file(local_file, bucket, key = nil, mime_type = nil, custom_meta = nil, enable_crc32_check = false)
           action_params = _generate_action_params(local_file, bucket, key, mime_type, custom_meta, enable_crc32_check)
           url = Config.settings[:io_host] + action_params
