@@ -58,18 +58,6 @@ module Qiniu
         code == StatusOK
       end
 
-=begin
-      def set_watermark(customer_id, options = {})
-        code, data = EU.set_watermark(customer_id, options)
-        code == StatusOK
-      end
-
-      def get_watermark(customer_id = nil)
-        code, data = EU.get_watermark(customer_id)
-        code == StatusOK ? data : false
-      end
-=end
-
       def put_file opts = {}
         code, data = IO.put_file(opts[:file],
                                  opts[:bucket],

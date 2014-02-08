@@ -95,27 +95,6 @@ module Qiniu
       end
     end
 
-=begin
-    context ".set_watermark" do
-      it "should works" do
-        options = {
-          :text => "Powered by QiniuRS"
-        }
-        result = Qiniu::RS.set_watermark(1, options)
-        result.should_not be_false
-        puts result.inspect
-      end
-    end
-
-    context ".get_watermark" do
-      it "should works" do
-        result = Qiniu::RS.get_watermark(1)
-        result.should_not be_false
-        puts result.inspect
-      end
-    end
-=end
-
     context ".upload_file" do
       it "should works" do
         uptoken_opts = {:scope => @bucket, :escape => 0}
