@@ -7,12 +7,12 @@ module Qiniu
         include Utils
 
         def info(url)
-          Utils.http_request url + '/imageInfo', nil, {:method => :get}
-        end
+          Utils.http_request url + '?imageInfo', nil, {:method => :get}
+        end # info
 
         def exif(url)
           Utils.http_request url + '?exif', nil, {:method => :get}
-        end
+        end # exif
 
         def preivew_url(url, spec)
           url + '/imagePreview/' + spec.to_s
