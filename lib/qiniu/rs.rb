@@ -195,10 +195,6 @@ module Qiniu
         code == StatusOK ? data : false
       end
 
-      def image_preview_url(url, spec)
-        Image.preivew_url(url, spec)
-      end
-
       def image_mogrify_preview_url(source_image_url, options)
         Image.mogrify_preview_url(source_image_url, options)
       end

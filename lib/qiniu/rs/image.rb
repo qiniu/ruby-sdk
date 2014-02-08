@@ -14,10 +14,6 @@ module Qiniu
           Utils.http_request url + '?exif', nil, {:method => :get}
         end # exif
 
-        def preivew_url(url, spec)
-          url + '/imagePreview/' + spec.to_s
-        end
-
         def mogrify_preview_url(source_image_url, options)
           source_image_url + '?' + generate_mogrify_params_string(options)
         end
