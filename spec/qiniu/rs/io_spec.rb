@@ -42,6 +42,18 @@ module Qiniu
         end
       end
 
+      context ".upload_with_token_2" do
+        it "should works" do
+          upopts = {:scope => @bucket, :expires_in => 3600, :endUser => "why404@gmail.com"}
+          uptoken = Qiniu::RS.generate_upload_token(upopts)
+
+          code, data = Qiniu::RS::IO.upload_with_token_2(uptoken, __FILE__, @key)
+
+          code.should == 200
+          puts data.inspect
+        end
+      end # .upload_with_token_2
+
     end
   end
 end

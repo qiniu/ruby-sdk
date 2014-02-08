@@ -25,6 +25,31 @@ module Qiniu
           Utils.upload_multipart_data(url, local_file, action_params, callback_query_string, uptoken)
         end
 
+        def upload_with_token_2(uptoken, local_file, key = nil, x_vars = nil) 
+          ### 构造URL
+          url = Config.settings[:up_host]
+          url[/\/*$/] = ''
+          url += '/'
+
+          ### 构造HTTP Body
+          post_data = {
+            :file      => File.new(local_file, 'rb'),
+            :multipart => true,
+          }
+          if not uptoken.nil? then
+            post_data[:token] = uptoken
+          end
+          if not key.nil? then
+            post_data[:key] = key
+          end
+          if x_vars.is_a?(Hash) then
+            post_data.merge!(x_vars)
+          end
+
+          ### 发送请求
+          Utils.http_request url, post_data
+        end # upload_with_token_2
+
         private
         def _generate_action_params(local_file, bucket, key = nil, mime_type = nil, custom_meta = nil, enable_crc32_check = false, rotate = nil)
           raise NoSuchFileError, local_file unless File.exist?(local_file)
