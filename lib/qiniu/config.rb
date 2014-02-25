@@ -11,7 +11,6 @@
 require 'tmpdir'
 
 module Qiniu
-  module RS
     module Config
       class << self
 
@@ -58,6 +57,5 @@ module Qiniu
         end
 
       end
-    end
-  end
-end
+    end # module Config
+end # module Qiniu

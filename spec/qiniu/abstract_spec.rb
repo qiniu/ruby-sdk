@@ -1,12 +1,12 @@
 # -*- encoding: utf-8 -*-
 
 require 'spec_helper'
-require 'qiniu/rs/abstract'
+require 'qiniu/abstract'
 
-describe Qiniu::RS::Abstract do
+describe Qiniu::Abstract do
   before(:each) do
     @klass = Class.new do
-      include Qiniu::RS::Abstract
+      include Qiniu::Abstract
 
       abstract_methods :foo, :bar
     end

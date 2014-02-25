@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 module Qiniu
-  module RS
     module Abstract
       def self.included(base)
         base.extend(ClassMethods)
@@ -19,6 +18,5 @@ module Qiniu
           end
         end
       end
-    end
-  end
-end
+    end # module Abstract
+end # module Qiniu

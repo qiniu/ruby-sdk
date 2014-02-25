@@ -1,9 +1,8 @@
 # -*- encoding: utf-8 -*-
 
-require 'qiniu/rs/exceptions'
+require 'qiniu/exceptions'
 
 module Qiniu
-  module RS
     module Auth
 
       class << self
@@ -21,5 +20,4 @@ module Qiniu
       end
 
     end # module Auth
-  end # module RS
 end # module Qiniu

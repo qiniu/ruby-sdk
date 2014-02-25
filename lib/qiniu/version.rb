@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 module Qiniu
-  module RS
     module Version
       MAJOR = 3
       MINOR = 4
@@ -14,6 +13,5 @@ module Qiniu
       def self.to_s
         [MAJOR, MINOR, PATCH].join('.')
       end
-    end
-  end
-end
+    end # Version
+end # module Qiniu

@@ -3,7 +3,6 @@
 require 'logger'
 
 module Qiniu
-  module RS
     module Log
       class << self
         attr_accessor :logger
@@ -12,6 +11,5 @@ module Qiniu
           @logger ||= Logger.new(STDERR)
         end
       end
-    end
-  end
-end
+    end # module Log
+end # module Qiniu

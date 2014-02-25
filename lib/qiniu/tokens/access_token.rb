@@ -1,11 +1,10 @@
 # -*- encoding: utf-8 -*-
 
 require 'hmac-sha1'
-require 'qiniu/rs/config'
-require 'qiniu/rs/utils'
+require 'qiniu/config'
+require 'qiniu/utils'
 
 module Qiniu
-  module RS
       class AccessToken
 
         include Utils
@@ -18,6 +17,5 @@ module Qiniu
           urlsafe_base64_encode(hmac.digest)
         end
 
-      end
-  end
-end
+      end # AccessToken
+end # module Qiniu

@@ -6,23 +6,22 @@ require 'tmpdir'
 require 'fileutils'
 require 'mime/types'
 require 'digest/sha1'
-require 'qiniu/rs/abstract'
-require 'qiniu/rs/exceptions'
-require 'qiniu/rs/io'
+require 'qiniu/abstract'
+require 'qiniu/exceptions'
+require 'qiniu/io'
 
 module Qiniu
-  module RS
     module UP
 
       module AbstractClass
         class ChunkProgressNotifier
-          include Qiniu::RS::Abstract
+          include Qiniu::Abstract
           abstract_methods :notify
           # def notify(block_index, block_put_progress); end
         end
 
         class BlockProgressNotifier
-          include Qiniu::RS::Abstract
+          include Qiniu::Abstract
           abstract_methods :notify
           # def notify(block_index, checksum); end
         end
@@ -276,6 +275,5 @@ module Qiniu
 
       end
 
-    end
-  end
-end
+    end # module UP
+end # module Qiniu

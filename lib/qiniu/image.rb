@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 module Qiniu
-  module RS
     module Image
       class << self
         include Utils
@@ -33,6 +32,5 @@ module Qiniu
         end
 
       end
-    end
-  end
-end
+    end # module Image
+end # module Qiniu

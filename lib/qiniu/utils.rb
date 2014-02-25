@@ -7,10 +7,9 @@ require 'zlib'
 require 'base64'
 require 'rest_client'
 require 'hmac-sha1'
-require 'qiniu/rs/exceptions'
+require 'qiniu/exceptions'
 
 module Qiniu
-  module RS
     module Utils extend self
 
       def urlsafe_base64_encode content
@@ -145,6 +144,5 @@ module Qiniu
         %Q(#{access_key}:#{encoded_digest})
       end
 
-    end
-  end
-end
+    end # module Utils
+end # module Qiniu

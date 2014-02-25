@@ -2,10 +2,9 @@
 
 require 'mime/types'
 require 'digest/sha1'
-require 'qiniu/rs/exceptions'
+require 'qiniu/exceptions'
 
 module Qiniu
-  module RS
     module IO
       class << self
         include Utils
@@ -67,6 +66,5 @@ module Qiniu
         end
 
       end
-    end
-  end
-end
+    end # module IO
+end # module Qiniu
