@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-require File.expand_path('../lib/qiniu/rs/version', __FILE__)
+require File.expand_path('../lib/qiniu/version', __FILE__)
 
 Gem::Specification.new do |gem|
   gem.authors       = ["why404"]
@@ -14,7 +14,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "qiniu-rs"
   gem.require_paths = ["lib"]
-  gem.version       = Qiniu::RS::Version.to_s
+  gem.version       = Qiniu::Version.to_s
 
   # specify any dependencies here; for example:
   gem.add_development_dependency "rake", ">= 0.9"
