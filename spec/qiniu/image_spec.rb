@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 require 'qiniu/auth'
-require 'qiniu/rs'
+require 'qiniu'
 require 'qiniu/image'
 
 module Qiniu

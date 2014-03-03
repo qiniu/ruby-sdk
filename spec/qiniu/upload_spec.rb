@@ -87,7 +87,7 @@ module Qiniu
 
       context ".stat" do
         it "should exists" do
-          code, data = Qiniu::RS.stat(@bucket, @key1)
+          code, data = Qiniu::Storage.stat(@bucket, @key1)
           puts data.inspect
           code.should == 200
         end
@@ -95,7 +95,7 @@ module Qiniu
 
       context ".delete" do
         it "should works" do
-          code, data = Qiniu::RS.delete(@bucket, @key1)
+          code, data = Qiniu::Storage.delete(@bucket, @key1)
           puts data.inspect
           code.should == 200
         end
@@ -113,7 +113,7 @@ module Qiniu
 
       context ".stat" do
         it "should exists" do
-          code, data = Qiniu::RS.stat(@bucket, @key2)
+          code, data = Qiniu::Storage.stat(@bucket, @key2)
           puts data.inspect
           code.should == 200
         end
@@ -121,7 +121,7 @@ module Qiniu
 
       context ".delete" do
         it "should works" do
-          code, data = Qiniu::RS.delete(@bucket, @key2)
+          code, data = Qiniu::Storage.delete(@bucket, @key2)
           puts data.inspect
           code.should == 200
         end
@@ -139,7 +139,7 @@ module Qiniu
 
       context ".stat" do
         it "should exists" do
-          code, data = Qiniu::RS.stat(@bucket, @key3)
+          code, data = Qiniu::Storage.stat(@bucket, @key3)
           puts data.inspect
           code.should == 200
         end
@@ -147,7 +147,7 @@ module Qiniu
 
       context ".delete" do
         it "should works" do
-          code, data = Qiniu::RS.delete(@bucket, @key3)
+          code, data = Qiniu::Storage.delete(@bucket, @key3)
           puts data.inspect
           code.should == 200
         end
@@ -165,7 +165,7 @@ module Qiniu
 
       context ".stat" do
         it "should exists" do
-          code, data = Qiniu::RS.stat(@bucket, @key4)
+          code, data = Qiniu::Storage.stat(@bucket, @key4)
           puts data.inspect
           code.should == 200
         end
@@ -173,7 +173,7 @@ module Qiniu
 
       context ".delete" do
         it "should works" do
-          code, data = Qiniu::RS.delete(@bucket, @key4)
+          code, data = Qiniu::Storage.delete(@bucket, @key4)
           puts data.inspect
           code.should == 200
         end

@@ -8,7 +8,6 @@ require 'mime/types'
 require 'digest/sha1'
 require 'qiniu/abstract'
 require 'qiniu/exceptions'
-require 'qiniu/io'
 
 module Qiniu
     module Storage

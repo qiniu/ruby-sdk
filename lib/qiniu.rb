@@ -7,9 +7,6 @@ module Qiniu
   autoload :Config, 'qiniu/config'
   autoload :Log, 'qiniu/log'
   autoload :Exception, 'qiniu/exceptions'
-  autoload :IO, 'qiniu/io'
-  autoload :UP, 'qiniu/up'
-  autoload :RS, 'qiniu/rs'
   autoload :Pub, 'qiniu/pub'
   autoload :Image, 'qiniu/image'
   autoload :AccessToken, 'qiniu/tokens/access_token'
@@ -17,6 +14,7 @@ module Qiniu
   autoload :UploadToken, 'qiniu/tokens/upload_token'
   autoload :DownloadToken, 'qiniu/tokens/download_token'
   autoload :Abstract, 'qiniu/abstract'
+  autoload :Storage, 'qiniu/storage'
 
     class << self
 
@@ -27,12 +25,12 @@ module Qiniu
       end
 
       def mkbucket(bucket_name)
-        code, data = RS.mkbucket(bucket_name)
+        code, data = Storage.mkbucket(bucket_name)
         code == StatusOK
       end
 
       def buckets
-        code, data = RS.buckets
+        code, data = Storage.buckets
         code == StatusOK ? data : false
       end
 
@@ -57,7 +55,7 @@ module Qiniu
       end
 
       def put_file opts = {}
-        code, data = IO.put_file(opts[:file],
+        code, data = Storage.put_file(opts[:file],
                                  opts[:bucket],
                                  opts[:key],
                                  opts[:mime_type],
@@ -76,7 +74,7 @@ module Qiniu
         opts[:enable_resumable_upload] = true unless opts.has_key?(:enable_resumable_upload)
 
         if opts[:enable_resumable_upload] && File::size(source_file) > Config.settings[:block_size]
-          code, data = UP.upload_with_token(opts[:uptoken],
+          code, data = Storage.upload_with_token(opts[:uptoken],
                                             opts[:file],
                                             opts[:bucket],
                                             opts[:key],
@@ -86,7 +84,7 @@ module Qiniu
                                             opts[:callback_params],
                                             opts[:rotate])
         else
-          code, data = IO.upload_with_token(opts[:uptoken],
+          code, data = Storage.upload_with_token(opts[:uptoken],
                                             opts[:file],
                                             opts[:bucket],
                                             opts[:key],
@@ -101,62 +99,62 @@ module Qiniu
       end
 
       def stat(bucket, key)
-        code, data = RS.stat(bucket, key)
+        code, data = Storage.stat(bucket, key)
         code == StatusOK ? data : false
       end
 
       def get(bucket, key, save_as = nil, expires_in = nil, version = nil)
-        code, data = RS.get(bucket, key, save_as, expires_in, version)
+        code, data = Storage.get(bucket, key, save_as, expires_in, version)
         code == StatusOK ? data : false
       end
 
       def download(bucket, key, save_as = nil, expires_in = nil, version = nil)
-        code, data = RS.get(bucket, key, save_as, expires_in, version)
+        code, data = Storage.get(bucket, key, save_as, expires_in, version)
         code == StatusOK ? data["url"] : false
       end
 
       def copy(source_bucket, source_key, target_bucket, target_key)
-        code, data = RS.copy(source_bucket, source_key, target_bucket, target_key)
+        code, data = Storage.copy(source_bucket, source_key, target_bucket, target_key)
         code == StatusOK
       end
 
       def move(source_bucket, source_key, target_bucket, target_key)
-        code, data = RS.move(source_bucket, source_key, target_bucket, target_key)
+        code, data = Storage.move(source_bucket, source_key, target_bucket, target_key)
         code == StatusOK
       end
 
       def delete(bucket, key)
-        code, data = RS.delete(bucket, key)
+        code, data = Storage.delete(bucket, key)
         code == StatusOK
       end
 
       def batch(command, bucket, keys)
-        code, data = RS.batch(command, bucket, keys)
+        code, data = Storage.batch(command, bucket, keys)
         code == StatusOK ? data : false
       end
 
       def batch_stat(bucket, keys)
-        code, data = RS.batch_stat(bucket, keys)
+        code, data = Storage.batch_stat(bucket, keys)
         code == StatusOK ? data : false
       end
 
       def batch_get(bucket, keys)
-        code, data = RS.batch_get(bucket, keys)
+        code, data = Storage.batch_get(bucket, keys)
         code == StatusOK ? data : false
       end
 
       def batch_copy(*args)
-        code, data = RS.batch_copy(args)
+        code, data = Storage.batch_copy(args)
         code == StatusOK
       end
 
       def batch_move(*args)
-        code, data = RS.batch_move(args)
+        code, data = Storage.batch_move(args)
         code == StatusOK
       end
 
       def batch_download(bucket, keys)
-        code, data = RS.batch_get(bucket, keys)
+        code, data = Storage.batch_get(bucket, keys)
         return false unless code == StatusOK
         links = []
         data.each { |e| links << e["data"]["url"] }
@@ -164,22 +162,22 @@ module Qiniu
       end
 
       def batch_delete(bucket, keys)
-        code, data = RS.batch_delete(bucket, keys)
+        code, data = Storage.batch_delete(bucket, keys)
         code == StatusOK ? data : false
       end
 
       def publish(domain, bucket)
-        code, data = RS.publish(domain, bucket)
+        code, data = Storage.publish(domain, bucket)
         code == StatusOK
       end
 
       def unpublish(domain)
-        code, data = RS.unpublish(domain)
+        code, data = Storage.unpublish(domain)
         code == StatusOK
       end
 
       def drop(bucket)
-        code, data = RS.drop(bucket)
+        code, data = Storage.drop(bucket)
         code == StatusOK
       end
 
@@ -198,7 +196,7 @@ module Qiniu
       end
 
       def image_mogrify_save_as(bucket, key, source_image_url, options)
-        code, data = RS.image_mogrify_save_as(bucket, key, source_image_url, options)
+        code, data = Storage.image_mogrify_save_as(bucket, key, source_image_url, options)
         code == StatusOK ? data : false
       end
 

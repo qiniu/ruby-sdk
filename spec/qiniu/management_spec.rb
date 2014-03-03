@@ -3,33 +3,32 @@
 require 'digest/sha1'
 require 'spec_helper'
 require 'qiniu/auth'
-require 'qiniu/io'
+require 'qiniu/management'
 require 'qiniu'
 
 module Qiniu
-  module RS
-    describe RS do
+  module Storage
+    describe Storage do
 
       before :all do
         @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
         @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
         @key2 = @key + rand(100).to_s
-        #@domain = @bucket + '.dn.qbox.me'
 
-        code, data = Qiniu::RS.mkbucket(@bucket)
+        code, data = Storage.mkbucket(@bucket)
         puts [code, data].inspect
         code.should == 200
       end
 
       after :all do
-        code, data = Qiniu::RS.drop(@bucket)
+        code, data = Storage.drop(@bucket)
         puts [code, data].inspect
         code.should == 200
       end
 
       context ".put_file" do
         it "should works" do
-          code, data = Qiniu::IO.put_file(__FILE__, @bucket, @key, 'application/x-ruby', 'customMeta', true)
+          code, data = Storage.put_file(__FILE__, @bucket, @key, 'application/x-ruby', 'customMeta', true)
           code.should == 200
           puts data.inspect
         end
@@ -37,7 +36,7 @@ module Qiniu
 
       context ".buckets" do
         it "should works" do
-          code, data = Qiniu::RS.buckets
+          code, data = Storage.buckets
           code.should == 200
           puts data.inspect
         end
@@ -45,7 +44,7 @@ module Qiniu
 
       context ".stat" do
         it "should works" do
-          code, data = Qiniu::RS.stat(@bucket, @key)
+          code, data = Storage.stat(@bucket, @key)
           code.should == 200
           puts data.inspect
         end
@@ -53,7 +52,7 @@ module Qiniu
 
       context ".get" do
         it "should works" do
-          code, data = Qiniu::RS.get(@bucket, @key, "rs_spec.rb", 1)
+          code, data = Storage.get(@bucket, @key, "rs_spec.rb", 1)
           code.should == 200
           puts data.inspect
         end
@@ -61,7 +60,7 @@ module Qiniu
 
       context ".batch" do
         it "should works" do
-          code, data = Qiniu::RS.batch("stat", @bucket, [@key])
+          code, data = Storage.batch("stat", @bucket, [@key])
           code.should == 200
           puts data.inspect
         end
@@ -69,7 +68,7 @@ module Qiniu
 
       context ".batch_stat" do
         it "should works" do
-          code, data = Qiniu::RS.batch_stat(@bucket, [@key])
+          code, data = Storage.batch_stat(@bucket, [@key])
           code.should == 200
           puts data.inspect
         end
@@ -77,7 +76,7 @@ module Qiniu
 
       context ".batch_get" do
         it "should works" do
-          code, data = Qiniu::RS.batch_get(@bucket, [@key])
+          code, data = Storage.batch_get(@bucket, [@key])
           code.should == 200
           puts data.inspect
         end
@@ -133,15 +132,15 @@ module Qiniu
 
       context ".move" do
         it "should works" do
-          code, data = Qiniu::RS.move(@bucket, @key, @bucket, @key2)
+          code, data = Storage.move(@bucket, @key, @bucket, @key2)
           code.should == 200
           puts data.inspect
 
-          code2, data2 = Qiniu::RS.stat(@bucket, @key2)
+          code2, data2 = Storage.stat(@bucket, @key2)
           code2.should == 200
           puts data2.inspect
 
-          code3, data3 = Qiniu::RS.move(@bucket, @key2, @bucket, @key)
+          code3, data3 = Storage.move(@bucket, @key2, @bucket, @key)
           code3.should == 200
           puts data3.inspect
         end
@@ -149,7 +148,7 @@ module Qiniu
 
       context ".copy" do
         it "should works" do
-          code, data = Qiniu::RS.copy(@bucket, @key, @bucket, @key2)
+          code, data = Storage.copy(@bucket, @key, @bucket, @key2)
           code.should == 200
           puts data.inspect
 
@@ -161,7 +160,7 @@ module Qiniu
 
       context ".delete" do
         it "should works" do
-          code, data = Qiniu::RS.delete(@bucket, @key)
+          code, data = Storage.delete(@bucket, @key)
           code.should == 200
           puts data.inspect
         end
@@ -169,12 +168,12 @@ module Qiniu
 
       context ".drop" do
         it "should works" do
-          code, data = Qiniu::RS.drop(@bucket)
+          code, data = Storage.drop(@bucket)
           code.should == 200
           puts data.inspect
         end
       end
 
     end
-  end
-end
+  end # module Storage
+end # module Qiniu

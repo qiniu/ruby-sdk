@@ -2,11 +2,11 @@
 
 require 'digest/sha1'
 require 'spec_helper'
-require 'qiniu/rs'
+require 'qiniu'
 require 'qiniu/exceptions'
 
 module Qiniu
-  describe RS do
+  describe Qiniu do
 
     before :all do
       @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
