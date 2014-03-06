@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 module Qiniu
-    module Pub
+    module Misc
       class << self
         include Utils
 
@@ -30,6 +30,6 @@ module Qiniu
         end
 
       end
-    end # module Pub
+    end # module Misc
 end # module Qiniu
 

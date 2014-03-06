@@ -7,14 +7,14 @@ module Qiniu
   autoload :Config, 'qiniu/config'
   autoload :Log, 'qiniu/log'
   autoload :Exception, 'qiniu/exceptions'
-  autoload :Pub, 'qiniu/pub'
-  autoload :Image, 'qiniu/image'
   autoload :AccessToken, 'qiniu/tokens/access_token'
   autoload :QboxToken, 'qiniu/tokens/qbox_token'
   autoload :UploadToken, 'qiniu/tokens/upload_token'
   autoload :DownloadToken, 'qiniu/tokens/download_token'
   autoload :Abstract, 'qiniu/abstract'
   autoload :Storage, 'qiniu/storage'
+  autoload :Fop, 'qiniu/fop'
+  autoload :Misc, 'qiniu/misc'
 
     class << self
 
@@ -35,22 +35,22 @@ module Qiniu
       end
 
       def set_protected(bucket, protected_mode)
-        code, data = Pub.set_protected(bucket, protected_mode)
+        code, data = Misc.set_protected(bucket, protected_mode)
         code == StatusOK
       end
 
       def set_separator(bucket, separator)
-        code, data = Pub.set_separator(bucket, separator)
+        code, data = Misc.set_separator(bucket, separator)
         code == StatusOK
       end
 
       def set_style(bucket, name, style)
-        code, data = Pub.set_style(bucket, name, style)
+        code, data = Misc.set_style(bucket, name, style)
         code == StatusOK
       end
 
       def unset_style(bucket, name)
-        code, data = Pub.unset_style(bucket, name)
+        code, data = Misc.unset_style(bucket, name)
         code == StatusOK
       end
 
@@ -182,17 +182,17 @@ module Qiniu
       end
 
       def image_info(url)
-        code, data = Image.info(url)
+        code, data = Fop::Image.info(url)
         code == StatusOK ? data : false
       end
 
       def image_exif(url)
-        code, data = Image.exif(url)
+        code, data = Fop::Image.exif(url)
         code == StatusOK ? data : false
       end
 
       def image_mogrify_preview_url(source_image_url, options)
-        Image.mogrify_preview_url(source_image_url, options)
+        Fop::Image.mogrify_preview_url(source_image_url, options)
       end
 
       def image_mogrify_save_as(bucket, key, source_image_url, options)

@@ -3,11 +3,11 @@
 require 'spec_helper'
 require 'qiniu/auth'
 require 'qiniu'
-require 'qiniu/image'
+require 'qiniu/fop'
 
 module Qiniu
-    module Image
-    describe Image do
+    module Fop
+    describe Fop do
 
       before :all do
 
@@ -60,7 +60,7 @@ module Qiniu
 
       context ".info" do
         it "should works" do
-          code, data = Qiniu::Image.info(@source_image_url)
+          code, data = Qiniu::Fop::Image.info(@source_image_url)
           code.should == 200
           puts data.inspect
         end
@@ -69,7 +69,7 @@ module Qiniu
 =begin
       context ".exif" do
         it "should works" do
-          code, data = Qiniu::Image.exif(@source_image_url)
+          code, data = Qiniu::Fop::Image.exif(@source_image_url)
           puts data.inspect
         end
       end
@@ -77,11 +77,11 @@ module Qiniu
 
       context ".mogrify_preview_url" do
         it "should works" do
-          mogrify_preview_url = Qiniu::Image.mogrify_preview_url(@source_image_url, @mogrify_options)
+          mogrify_preview_url = Qiniu::Fop::Image.mogrify_preview_url(@source_image_url, @mogrify_options)
           puts mogrify_preview_url.inspect
         end
       end
 
     end
-    end # module Image
+    end # module Fop
 end # module Qiniu

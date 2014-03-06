@@ -90,7 +90,7 @@ module Qiniu
         end # save_as
 
         def image_mogrify_save_as(bucket, key, source_image_url, options)
-          mogrify_params_string = Image.generate_mogrify_params_string(options)
+          mogrify_params_string = Fop::Image.generate_mogrify_params_string(options)
           save_as(bucket, key, source_image_url, mogrify_params_string)
         end # image_mogrify_save_as
 

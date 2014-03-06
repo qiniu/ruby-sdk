@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 module Qiniu
+  module Fop
     module Image
       class << self
         include Utils
@@ -33,4 +34,5 @@ module Qiniu
 
       end
     end # module Image
+  end # module Fop
 end # module Qiniu
