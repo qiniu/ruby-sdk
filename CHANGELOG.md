@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v6.0.1
+
+- 重新划分命名空间，存储相关归入Qiniu::Storage，数据处理相关归入Qiniu::Fop，杂项相关归入Qiniu::Misc。
+
 ### v3.4.6
 
 - `Qiniu::RS.generate_download_token()` 方法的 `:pattern` 调整为必选项。
@@ -7,13 +11,13 @@
 ### v3.4.5
 
 - `Qiniu::RS.generate_upload_token()` 方法新增 `:callback_body` 和 `return_url` 选项。
-- 选项含义参考: <http://docs.qiniu.com/api/v6/put.html#uploadToken-args>
+- 选项含义参考: <http://developer.qiniu.com/docs/v6/api/reference/security/put-policy.html#put-policy-callback-body>
 
 ### v3.4.2
 
 - `Qiniu::RS.generate_upload_token()` 方法新增 `:return_body` 选项。
 
-该选项（`:return_body`）可设置文件上传成功后，执行七牛云存储规定的回调API，并以 JSON 响应格式返回其执行结果。参考 [uploadToken 之 returnBody 说明](http://docs.qiniu.com/api/v6/put.html#uploadToken-returnBody)。
+该选项（`:return_body`）可设置文件上传成功后，执行七牛云存储规定的回调API，并以 JSON 响应格式返回其执行结果。参考 [uploadToken 之 returnBody 说明](http://developer.qiniu.com/docs/v6/api/reference/security/put-policy.html#put-policy-return-body)。
 
 ### v3.4.1
 
@@ -44,9 +48,9 @@ Ruby 宿主环境如下
 
 ### v3.3.0
 
-私有资源下载新版实现，添加 Qiniu::RS.generate_download_token() 方法。参考 [downloadToken](http://docs.qiniutek.com/v3/api/io/#get)
+私有资源下载新版实现，添加 Qiniu::RS.generate_download_token() 方法。参考 [downloadToken](http://developer.qiniu.com/docs/v6/api/reference/security/download-token.html)
 
-详见 [Ruby SDK 使用文档之私有资源下载](http://docs.qiniutek.com/v3/sdk/ruby/#download-private-files)
+详见 [Ruby SDK 使用文档之私有资源下载](http://developer.qiniu.com/docs/v6/api/overview/dn/security.html)
 
 ### v3.2.2
 
