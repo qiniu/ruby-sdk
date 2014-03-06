@@ -1,8 +1,13 @@
 # Qiniu Resource (Cloud) Storage SDK for Ruby
 
+# 版本说明
+
+此版本不再进行技术升级，仅做Bug修正维护。  
+请移步 [https://github.com/qiniu/ruby-sdk](https://github.com/qiniu/ruby-sdk) 查看最新版本。  
+
 # 关于
 
-此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](http://docs.qiniutek.com/v3/api/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
+此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](http://developer.qiniu.com/docs/v6/index.html) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
 ## 安装
 
@@ -20,7 +25,7 @@
 
 ## 使用
 
-参考文档：[七牛云存储 Ruby SDK 使用指南](http://docs.qiniutek.com/v3/sdk/ruby/)
+参考文档：[七牛云存储 Ruby SDK 使用指南](http://developer.qiniu.com/docs/v6/sdk/ruby-sdk.html)
 
 ## 贡献代码
 
