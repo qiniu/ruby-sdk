@@ -5,14 +5,14 @@ require File.expand_path('../lib/qiniu/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["why404"]
   gem.email         = ["why404@gmail.com"]
-  gem.description   = %q{Qiniu Resource (Cloud) Storage SDK for Ruby. See: http://docs.qiniu.com/ruby-sdk/}
+  gem.description   = %q{Qiniu Resource (Cloud) Storage SDK for Ruby. See: http://developer.qiniu.com/docs/v6/sdk/ruby-sdk.html}
   gem.summary       = %q{Qiniu Resource (Cloud) Storage SDK for Ruby}
   gem.homepage      = "https://github.com/qiniu/ruby-sdk"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.name          = "qiniu-rs"
+  gem.name          = "qiniu"
   gem.require_paths = ["lib"]
   gem.version       = Qiniu::Version.to_s
 
