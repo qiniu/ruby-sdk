@@ -59,7 +59,7 @@ module Qiniu
             encoded_uri = encode_entry_uri(bucket, key)
             execs << "op=/#{command}/#{encoded_uri}"
           end
-          Auth.request Config.settings[:rs_host] + "/batch?" + execs.join("&")
+          Auth.request Config.settings[:rs_host] + "/batch", execs.join("&"), {:mime => "application/x-www-form-urlencoded" }
         end # batch
 
         def batch_get(bucket, keys)
@@ -101,6 +101,14 @@ module Qiniu
           target_encoded_entry_uri = encode_entry_uri(target_bucket, target_key)
           %Q(/#{command}/#{source_encoded_entry_uri}/#{target_encoded_entry_uri})
         end # _generate_cp_or_mv_opstr
+
+        def _batch_cp_or_mv(command, *op_args)
+          execs = []
+          op_args.each do |e| 
+            execs << 'op=' + _generate_cp_or_mv_opstr(command, e[0], e[1], e[2], e[3]) if e.size == 4
+          end 
+          Auth.request Config.settings[:rs_host] + "/batch", execs.join("&"), {:mime => "application/x-www-form-urlencoded" }
+        end # _batch_cp_or_mv
       end
     end # module Storage
 end # module Qiniu

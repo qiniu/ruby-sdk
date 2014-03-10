@@ -82,22 +82,25 @@ module Qiniu
         end
       end
 
-=begin
       context ".batch_copy" do
         it "should works" do
-          code, data = Qiniu.batch_copy [@bucket, @key, @bucket, @key2]
+          code, data = Storage.batch_copy @bucket, @key, @bucket, @key2
           code.should == 200
           puts data.inspect
 
           #code2, data2 = Qiniu.stat(@bucket, @key2)
           #code2.should == 200
           #puts data2.inspect
+
+          code, data = Storage.delete @bucket, @key2
+          code.should == 200
+          puts data.inspect
         end
       end
 
       context ".batch_move" do
         it "should works" do
-          code, data = Qiniu.batch_move [@bucket, @key, @bucket, @key2]
+          code, data = Storage.batch_move @bucket, @key, @bucket, @key2
           code.should == 200
           puts data.inspect
 
@@ -105,12 +108,11 @@ module Qiniu
           #code2.should == 200
           #puts data2.inspect
 
-          code3, data3 = Qiniu.batch_move [@bucket, @key2, @bucket, @key]
+          code3, data3 = Storage.batch_move @bucket, @key2, @bucket, @key
           code3.should == 200
           puts data3.inspect
         end
       end
-=end
 
 =begin
       context ".publish" do
