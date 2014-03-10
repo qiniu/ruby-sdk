@@ -92,19 +92,24 @@ module Qiniu
 
       context ".batch_copy" do
         it "should works" do
-          code, data = Qiniu::RS::RS.batch_copy [@bucket, @key, @bucket, @key2]
+          code, data = Qiniu::RS::RS.batch_copy @bucket, @key, @bucket, @key2
           code.should == 200
           puts data.inspect
 
           #code2, data2 = Qiniu::RS::RS.stat(@bucket, @key2)
           #code2.should == 200
           #puts data2.inspect
+          #
+          code, data = Qiniu::RS::RS.delete(@bucket, @key2)
+          code.should == 200
+          puts data.inspect
+
         end
       end
 
       context ".batch_move" do
         it "should works" do
-          code, data = Qiniu::RS::RS.batch_move [@bucket, @key, @bucket, @key2]
+          code, data = Qiniu::RS::RS.batch_move @bucket, @key, @bucket, @key2
           code.should == 200
           puts data.inspect
 
@@ -112,7 +117,7 @@ module Qiniu
           #code2.should == 200
           #puts data2.inspect
 
-          code3, data3 = Qiniu::RS::RS.batch_move [@bucket, @key2, @bucket, @key]
+          code3, data3 = Qiniu::RS::RS.batch_move @bucket, @key2, @bucket, @key
           code3.should == 200
           puts data3.inspect
         end

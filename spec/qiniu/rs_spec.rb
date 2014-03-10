@@ -298,23 +298,26 @@ module Qiniu
 
     context ".batch_copy" do
       it "should works" do
-        result = Qiniu::RS.batch_copy [@bucket, @key, @bucket, @key2]
+        result = Qiniu::RS.batch_copy @bucket, @key, @bucket, @key2
         result.should_not be_false
 
         #result2 = Qiniu::RS.stat(@bucket, @key2)
         #result2.should_not be_false
+
+        result = Qiniu::RS.delete @bucket, @key2
+        result.should_not be_false
       end
     end
 
     context ".batch_move" do
       it "should works" do
-        result = Qiniu::RS::RS.batch_move [@bucket, @key, @bucket, @key2]
+        result = Qiniu::RS.batch_move @bucket, @key, @bucket, @key2
         result.should_not be_false
 
         #result2 = Qiniu::RS.stat(@bucket, @key2)
         #result2.should_not be_false
 
-        result3 = Qiniu::RS.batch_move [@bucket, @key2, @bucket, @key]
+        result3 = Qiniu::RS.batch_move @bucket, @key2, @bucket, @key
         result3.should_not be_false
       end
     end
