@@ -4,10 +4,10 @@ rvm:
   - 1.9.2
   - 1.9.3
   - 2.0.0
-  - 2.1.1
   - jruby-18mode
   - jruby-19mode
   - jruby-head
   - ree
-env:
-  - secure: "LfXCEEnHNUOCCo4eat/XA+CZvj4Uchi+j4NAuJs14MEASEj8t4t9fU8cQd/tux93iEpNgVL1C6JiWGYu7T+Hs/nzagKFuLw+gfCdwUm1FKa1CH/GQw4fcOcY1sPSaTeL6Ocm1LEPTlR3wWrbu89zIyXakklSPYl0bCArLVH/82o="
+before_script:
+  - secure: "R/AC4kBD2IMCqWjIsSjNtlIGxINnFE6eckCbvpUJxEg31TU6Vajd9np/anwxe5iLbiNqbVi/EOEBULx54EdofFFuKuffYZUhG1k1arHCPJ/bCrDuN6RqYlxLmPppS9A3BaxYCr7Hrk7ZLcyvzBA7GnQis8vF4pwIE369uvj1lg0="
+  - secure: "NRixf81XvESlaOYoODzf20Ewgtx2/6uJhB1HCsoOH6XgXo80jBg6xp9s1YZRMiBUYnNRQaV6PCWZ/DAWeN01bgaksHcE+mprFYEsukJpkUotamBb+XazPZAWAIi5UBpEFyD5UtnfwgkAZcEe7iUNn8w8ySIPBayE9GRpnN4zsXA="
