@@ -127,7 +127,7 @@ module Qiniu
         File.open(filepath, "rb") { |f| Zlib.crc32 f.read }
       end
 
-      def generate_qbox_signature(url, params)
+      def generate_qbox_signature(url, params, mime = nil)
         access_key = Config.settings[:access_key]
         secret_key = Config.settings[:secret_key]
         uri = URI.parse(url)
@@ -138,6 +138,9 @@ module Qiniu
         if params.is_a?(Hash)
             params_string = generate_query_string(params)
             signature += params_string
+        end
+        if mime.is_a?(String) && mime == "application/x-www-form-urlencoded" && params.is_a?(String)
+            signature += params
         end
         hmac = HMAC::SHA1.new(secret_key)
         hmac.update(signature)

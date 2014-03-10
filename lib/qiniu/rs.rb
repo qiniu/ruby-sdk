@@ -182,12 +182,12 @@ module Qiniu
       end
 
       def batch_copy(*args)
-        code, data = RS.batch_copy(args)
+        code, data = RS.batch_copy(*args)
         code == StatusOK
       end
 
       def batch_move(*args)
-        code, data = RS.batch_move(args)
+        code, data = RS.batch_move(*args)
         code == StatusOK
       end
 
