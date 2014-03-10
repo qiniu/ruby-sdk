@@ -9,6 +9,5 @@ rvm:
   - jruby-19mode
   - jruby-head
   - ree
-before_script:
-  - export QINIU_ACCESS_KEY=LGRqJsjX7LAvtdtX6hhyxs861lS57HwnOQmJsOuX
-  - export QINIU_SECRET_KEY=g_OxhuN5iJ1O7BoA6YdXyF6zSszk34UZFKDfdIIW
+env:
+  - secure: "LfXCEEnHNUOCCo4eat/XA+CZvj4Uchi+j4NAuJs14MEASEj8t4t9fU8cQd/tux93iEpNgVL1C6JiWGYu7T+Hs/nzagKFuLw+gfCdwUm1FKa1CH/GQw4fcOcY1sPSaTeL6Ocm1LEPTlR3wWrbu89zIyXakklSPYl0bCArLVH/82o="
