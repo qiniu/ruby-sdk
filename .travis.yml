@@ -8,6 +8,5 @@ rvm:
   - jruby-19mode
   - jruby-head
   - ree
-before_script:
-  - secure: "R/AC4kBD2IMCqWjIsSjNtlIGxINnFE6eckCbvpUJxEg31TU6Vajd9np/anwxe5iLbiNqbVi/EOEBULx54EdofFFuKuffYZUhG1k1arHCPJ/bCrDuN6RqYlxLmPppS9A3BaxYCr7Hrk7ZLcyvzBA7GnQis8vF4pwIE369uvj1lg0="
-  - secure: "NRixf81XvESlaOYoODzf20Ewgtx2/6uJhB1HCsoOH6XgXo80jBg6xp9s1YZRMiBUYnNRQaV6PCWZ/DAWeN01bgaksHcE+mprFYEsukJpkUotamBb+XazPZAWAIi5UBpEFyD5UtnfwgkAZcEe7iUNn8w8ySIPBayE9GRpnN4zsXA="
+env:
+  secure: SR6Dxc5BYr/L718FItWa0Q0ZxSdGQ9WuDJDdWSqwE1hqVKYtVkQIXUUCTW1kh/qKcMVVTL2stK+6RkzXFRiVjzIh+yluv9bRMR2mWTbMnDGrtnpTI+mUghaRWq9ttpBmarcP+xyPmBzpWWiPqYUCW9/fjDTriLmd2nOD/4RYol4=
