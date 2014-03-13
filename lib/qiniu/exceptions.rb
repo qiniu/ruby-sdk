@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 module Qiniu
-  module RS
 
     class Exception < RuntimeError
     end
@@ -118,5 +117,4 @@ module Qiniu
       end
     end
 
-  end
-end
+end # module Qiniu

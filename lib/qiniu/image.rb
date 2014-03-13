@@ -1,22 +1,18 @@
 # -*- encoding: utf-8 -*-
 
 module Qiniu
-  module RS
+  module Fop
     module Image
       class << self
         include Utils
 
         def info(url)
-          Utils.http_request url + '/imageInfo', nil, {:method => :get}
-        end
+          Utils.http_request url + '?imageInfo', nil, {:method => :get}
+        end # info
 
         def exif(url)
           Utils.http_request url + '?exif', nil, {:method => :get}
-        end
-
-        def preivew_url(url, spec)
-          url + '/imagePreview/' + spec.to_s
-        end
+        end # exif
 
         def mogrify_preview_url(source_image_url, options)
           source_image_url + '?' + generate_mogrify_params_string(options)
@@ -37,6 +33,6 @@ module Qiniu
         end
 
       end
-    end
-  end
-end
+    end # module Image
+  end # module Fop
+end # module Qiniu

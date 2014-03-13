@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 require 'fakeweb'
-require 'qiniu/rs/utils'
+require 'qiniu/utils'
 
 module Qiniu
   module RS

@@ -2,10 +2,9 @@
 
 require 'json'
 require 'qiniu/tokens/access_token'
-require 'qiniu/rs/utils'
+require 'qiniu/utils'
 
 module Qiniu
-  module RS
       class UploadToken < AccessToken
 
         include Utils
@@ -44,6 +43,5 @@ module Qiniu
           %Q(#{@access_key}:#{encoded_digest}:#{signature})
         end
 
-      end
-  end
-end
+      end # module UploadToken
+end # module Qiniu

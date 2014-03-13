@@ -5,7 +5,6 @@ require 'json'
 require 'qiniu/tokens/access_token'
 
 module Qiniu
-  module RS
       class QboxToken < AccessToken
 
         include Utils
@@ -35,6 +34,5 @@ module Qiniu
           %Q(#{@access_key}:#{encoded_digest})
         end
 
-      end
-  end
-end
+      end # module QboxToken
+end # module Qiniu

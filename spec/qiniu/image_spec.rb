@@ -1,20 +1,20 @@
 # -*- encoding: utf-8 -*-
 
 require 'spec_helper'
-require 'qiniu/rs/auth'
-require 'qiniu/rs'
-require 'qiniu/rs/image'
+require 'qiniu/auth'
+require 'qiniu'
+require 'qiniu/fop'
 
 module Qiniu
-  module RS
-    describe Image do
+    module Fop
+    describe Fop do
 
       before :all do
 
         @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
         @key = "image_logo_for_test.png"
 
-        result = Qiniu::RS.mkbucket(@bucket)
+        result = Qiniu.mkbucket(@bucket)
         puts result.inspect
         result.should be_true
 
@@ -27,8 +27,8 @@ module Qiniu
             :async_options => "imageView/1/w/120/h/120",
             :return_body => '{"size":$(fsize), "hash":$(etag), "width":$(imageInfo.width), "height":$(imageInfo.height)}'
         }
-        uptoken = Qiniu::RS.generate_upload_token(upopts)
-        data = Qiniu::RS.upload_file :uptoken => uptoken, :file => local_file, :bucket => @bucket, :key => @key
+        uptoken = Qiniu.generate_upload_token(upopts)
+        data = Qiniu.upload_file :uptoken => uptoken, :file => local_file, :bucket => @bucket, :key => @key
         puts data.inspect
 
         data["size"].should_not be_zero
@@ -36,7 +36,7 @@ module Qiniu
         data["width"].should_not be_zero
         data["height"].should_not be_zero
 
-        result = Qiniu::RS.get(@bucket, @key)
+        result = Qiniu.get(@bucket, @key)
         result["url"].should_not be_empty
         puts result.inspect
         @source_image_url = result["url"]
@@ -53,33 +53,35 @@ module Qiniu
       end
 
       after :all do
-        result = Qiniu::RS.drop(@bucket)
+        result = Qiniu.drop(@bucket)
         puts result.inspect
         result.should_not be_false
       end
 
       context ".info" do
         it "should works" do
-          code, data = Qiniu::RS::Image.info(@source_image_url)
+          code, data = Qiniu::Fop::Image.info(@source_image_url)
           code.should == 200
           puts data.inspect
         end
       end
 
+=begin
       context ".exif" do
         it "should works" do
-          code, data = Qiniu::RS::Image.exif(@source_image_url)
+          code, data = Qiniu::Fop::Image.exif(@source_image_url)
           puts data.inspect
         end
       end
+=end
 
       context ".mogrify_preview_url" do
         it "should works" do
-          mogrify_preview_url = Qiniu::RS::Image.mogrify_preview_url(@source_image_url, @mogrify_options)
+          mogrify_preview_url = Qiniu::Fop::Image.mogrify_preview_url(@source_image_url, @mogrify_options)
           puts mogrify_preview_url.inspect
         end
       end
 
     end
-  end
-end
+    end # module Fop
+end # module Qiniu

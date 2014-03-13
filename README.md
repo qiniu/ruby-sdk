@@ -1,14 +1,19 @@
 # Qiniu Resource (Cloud) Storage SDK for Ruby
 
-# 关于
+## 关于
 
-此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](http://docs.qiniutek.com/v3/api/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
+此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, 2.0.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](http://developer.qiniu.com/docs/v6/index.html) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
+
+## 状态
+
+集成测试：[![Build Status](https://api.travis-ci.org/qiniu/ruby-sdk.png?branch=master)](https://travis-ci.org/qiniu/ruby-sdk)
+版本：[![Gem Version](https://badge.fury.io/rb/qiniu-rs.png)](http://badge.fury.io/rb/qiniu-rs)
 
 ## 安装
 
 在您 Ruby 应用程序的 `Gemfile` 文件中，添加如下一行代码：
 
-    gem 'qiniu-rs'
+    gem 'qiniu'
 
 然后，在应用程序所在的目录下，可以运行 `bundle` 安装依赖包：
 
@@ -16,11 +21,11 @@
 
 或者，可以使用 Ruby 的包管理器 `gem` 进行安装：
 
-    $ gem install qiniu-rs
+    $ gem install qiniu
 
 ## 使用
 
-参考文档：[七牛云存储 Ruby SDK 使用指南](http://docs.qiniutek.com/v3/sdk/ruby/)
+参考文档：[七牛云存储 Ruby SDK 使用指南](http://developer.qiniu.com/docs/v6/sdk/ruby-sdk.html)
 
 ## 贡献代码
 
@@ -32,7 +37,7 @@
 
 ## 许可证
 
-Copyright (c) 2012-2013 qiniutek.com
+Copyright (c) 2012-2014 qiniu.com
 
 基于 MIT 协议发布:
 
