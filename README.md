@@ -7,7 +7,7 @@
 ## 状态
 
 集成测试：[![Build Status](https://api.travis-ci.org/qiniu/ruby-sdk.png?branch=master)](https://travis-ci.org/qiniu/ruby-sdk)
-版本：[![Gem Version](https://badge.fury.io/rb/qiniu-rs.png)](http://badge.fury.io/rb/qiniu-rs)
+版本：[![Gem Version](https://badge.fury.io/rb/qiniu.png)](http://badge.fury.io/rb/qiniu)
 
 ## 安装
 
