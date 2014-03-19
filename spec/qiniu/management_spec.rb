@@ -12,12 +12,15 @@ module Qiniu
 
       before :all do
         @bucket = 'RubySDK-Test-Management'
+        @bucket = make_unique_bucket(@bucket)
 
         ### 尝试创建Bucket
         result = Qiniu.mkbucket(@bucket)
         puts result.inspect
 
         @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
+        @key = make_unique_key_in_bucket(@key)
+
         @key2 = @key + rand(100).to_s
       end
 

@@ -12,6 +12,7 @@ module Qiniu
       before :all do
         ### 复用RubySDK-Test-Management空间
         @bucket = 'RubySDK-Test-Management'
+        @bucket = make_unique_bucket(@bucket)
 
         result = Qiniu.mkbucket(@bucket)
         puts result.inspect

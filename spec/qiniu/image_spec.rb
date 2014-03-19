@@ -13,14 +13,16 @@ module Qiniu
 
         ### 复用RubySDK-Test-Storage空间
         @bucket = 'RubySDK-Test-Storage'
+        @bucket = make_unique_bucket(@bucket)
 
         ### 尝试创建空间
         result = Qiniu.mkbucket(@bucket)
         puts result.inspect
 
-        @key = "image_logo_for_test.png"
+        pic_fname = "image_logo_for_test.png"
+        @key = make_unique_key_in_bucket(pic_fname)
 
-        local_file = File.expand_path('../' + @key, __FILE__)
+        local_file = File.expand_path('../' + pic_fname, __FILE__)
 
         upopts = {
             :scope => @bucket,

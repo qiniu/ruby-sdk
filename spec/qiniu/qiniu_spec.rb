@@ -10,6 +10,8 @@ module Qiniu
 
     before :all do
       @bucket = 'RubySDK-Test'
+      @bucket = make_unique_bucket(@bucket)
+
       @test_image_bucket = @bucket
 
       ### 尝试创建Bucket
@@ -17,6 +19,8 @@ module Qiniu
       puts result.inspect
 
       @key = Digest::SHA1.hexdigest Time.now.to_s
+      @key = make_unique_key_in_bucket(@key)
+
       @key2 = @key + rand(100).to_s
       #@domain = @bucket + '.dn.qbox.me'
 

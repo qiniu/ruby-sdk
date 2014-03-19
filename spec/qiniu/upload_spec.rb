@@ -11,28 +11,34 @@ module Qiniu
 
       before :all do
         @bucket = 'RubySDK-Test-Storage'
+        @bucket = make_unique_bucket(@bucket)
 
         ### 尝试创建Bucket
         result = Qiniu.mkbucket(@bucket)
         puts result.inspect
 
         @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
+        @key = make_unique_key_in_bucket(@key)
 
         @localfile_5m = "5M.txt"
         File.open(@localfile_5m, "w"){|f| 5242888.times{ f.write(rand(9).to_s) }}
         @key_5m = Digest::SHA1.hexdigest(@localfile_5m+Time.now.to_s)
+        @key_5m = make_unique_key_in_bucket(@key_5m)
 
         @localfile_4m = "4M.txt"
         File.open(@localfile_4m, "w"){|f| (1 << 22).times{ f.write(rand(9).to_s) }}
         @key_4m = Digest::SHA1.hexdigest(@localfile_4m+Time.now.to_s)
+        @key_4m = make_unique_key_in_bucket(@key_4m)
 
         @localfile_8m = "8M.txt"
         File.open(@localfile_8m, "w"){|f| (1 << 23).times{ f.write(rand(9).to_s) }}
         @key_8m = Digest::SHA1.hexdigest(@localfile_8m+Time.now.to_s)
+        @key_8m = make_unique_key_in_bucket(@key_8m)
 
         @localfile_1m = "1M.txt"
         File.open(@localfile_1m, "w"){|f| (1 << 20).times{ f.write(rand(9).to_s) }}
         @key_1m = Digest::SHA1.hexdigest(@localfile_1m+Time.now.to_s)
+        @key_1m = make_unique_key_in_bucket(@key_1m)
       end
 
       after :all do
