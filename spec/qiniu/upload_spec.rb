@@ -11,6 +11,11 @@ module Qiniu
 
       before :all do
         @bucket = 'RubySDK-Test-Storage'
+
+        ### 尝试创建Bucket
+        result = Qiniu.mkbucket(@bucket)
+        puts result.inspect
+
         @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
 
         @localfile_5m = "5M.txt"
@@ -28,10 +33,6 @@ module Qiniu
         @localfile_1m = "1M.txt"
         File.open(@localfile_1m, "w"){|f| (1 << 20).times{ f.write(rand(9).to_s) }}
         @key_1m = Digest::SHA1.hexdigest(@localfile_1m+Time.now.to_s)
-
-        ### 尝试创建Bucket
-        result = Qiniu.mkbucket(@bucket)
-        puts result.inspect
       end
 
       after :all do

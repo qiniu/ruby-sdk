@@ -12,9 +12,13 @@ module Qiniu
       before :all do
         ### 复用RubySDK-Test-Management空间
         @bucket = 'RubySDK-Test-Management'
+
+        result = Qiniu.mkbucket(@bucket)
+        puts result.inspect
       end
 
       after :all do
+        ### 不删除Bucket以备下次使用
       end
 
       context ".set_protected" do

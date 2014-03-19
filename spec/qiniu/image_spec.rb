@@ -11,12 +11,14 @@ module Qiniu
 
       before :all do
 
-        @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
-        @key = "image_logo_for_test.png"
+        ### 复用RubySDK-Test-Storage空间
+        @bucket = 'RubySDK-Test-Storage'
 
+        ### 尝试创建空间
         result = Qiniu.mkbucket(@bucket)
         puts result.inspect
-        result.should be_true
+
+        @key = "image_logo_for_test.png"
 
         local_file = File.expand_path('../' + @key, __FILE__)
 
@@ -53,9 +55,7 @@ module Qiniu
       end
 
       after :all do
-        result = Qiniu.drop(@bucket)
-        puts result.inspect
-        result.should_not be_false
+        ### 不删除Bucket以备下次使用
       end
 
       context ".info" do

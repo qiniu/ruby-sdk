@@ -12,13 +12,13 @@ module Qiniu
 
       before :all do
         @bucket = 'RubySDK-Test-Management'
-        @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
-        @key2 = @key + rand(100).to_s
 
         ### 尝试创建Bucket
-        code, data = Storage.mkbucket(@bucket)
-        puts [code, data].inspect
-        code.should == 200
+        result = Qiniu.mkbucket(@bucket)
+        puts result.inspect
+
+        @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
+        @key2 = @key + rand(100).to_s
       end
 
       after :all do
