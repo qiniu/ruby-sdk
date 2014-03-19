@@ -53,7 +53,7 @@ module Qiniu
 
       context ".get" do
         it "should works" do
-          code, data = Storage.get(@bucket, @key, "management_spec.rb", 1)
+          code, data = Storage.get(@bucket, @key)
           code.should == 200
           puts data.inspect
         end
