@@ -9,18 +9,20 @@ module Qiniu
   describe Qiniu do
 
     before :all do
-      @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
+      @bucket = 'RubySDK-Test'
+      @bucket = make_unique_bucket(@bucket)
+
+      @test_image_bucket = @bucket
+
+      ### 尝试创建Bucket
+      result = Qiniu.mkbucket(@bucket)
+      puts result.inspect
+
       @key = Digest::SHA1.hexdigest Time.now.to_s
+      @key = make_unique_key_in_bucket(@key)
+
       @key2 = @key + rand(100).to_s
       #@domain = @bucket + '.dn.qbox.me'
-
-      result = Qiniu.mkbucket(@bucket)
-      result.should_not be_false
-
-      @test_image_bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
-      result2 = Qiniu.mkbucket(@test_image_bucket)
-      puts result2.inspect
-      result2.should be_true
 
       @test_image_key = 'image_logo_for_test.png'
       local_file = File.expand_path('./' + @test_image_key, File.dirname(__FILE__))
@@ -32,16 +34,7 @@ module Qiniu
     end
 
     after :all do
-      #result = Qiniu.unpublish(@domain)
-      #result.should_not be_false
-
-      result1 = Qiniu.drop(@bucket)
-      puts result1.inspect
-      result1.should_not be_false
-
-      result2 = Qiniu.drop(@test_image_bucket)
-      puts result2.inspect
-      result2.should_not be_false
+      ### 不删除Bucket以备下次使用
     end
 
     context ".put_file" do
@@ -180,7 +173,7 @@ module Qiniu
 
     context ".get" do
       it "should works" do
-        result = Qiniu.get(@bucket, @key, "rs_spec.rb", 10)
+        result = Qiniu.get(@bucket, @key, "qiniu_spec.rb", 10)
         result.should_not be_false
         result.should_not be_empty
         puts result.inspect
@@ -233,24 +226,6 @@ module Qiniu
     end
 
 =begin
-    context ".publish" do
-      it "should works" do
-        result = Qiniu.publish(@domain, @bucket)
-        result.should_not be_false
-      end
-    end
-=end
-
-=begin
-    context ".unpublish" do
-      it "should works" do
-        result = Qiniu.unpublish(@domain)
-        result.should_not be_false
-      end
-    end
-=end
-
-=begin
     context ".batch_copy" do
       it "should works" do
         result = Qiniu.batch_copy [@bucket, @key, @bucket, @key2]
@@ -293,21 +268,14 @@ module Qiniu
         result = Qiniu.copy(@bucket, @key, @bucket, @key2)
         result.should_not be_false
 
-        #result2 = Qiniu.stat(@bucket, @key2)
-        #result2.should_not be_false
+        result3 = Qiniu.delete(@bucket, @key2)
+        result3.should_not be_false
       end
     end
 
     context ".delete" do
       it "should works" do
         result = Qiniu.delete(@bucket, @key)
-        result.should_not be_false
-      end
-    end
-
-    context ".drop" do
-      it "should works" do
-        result = Qiniu.drop(@bucket)
         result.should_not be_false
       end
     end
@@ -324,19 +292,6 @@ module Qiniu
         puts result.inspect
       end
     end
-
-=begin
-    context ".image_exif" do
-      it "should works" do
-        data = Qiniu.get(@test_image_bucket, @test_image_key)
-        data.should_not be_false
-        data.should_not be_empty
-        puts data.inspect
-        result = Qiniu.image_exif(data["url"])
-        puts result.inspect
-      end
-    end
-=end
 
     context ".image_mogrify_save_as" do
       it "should works" do

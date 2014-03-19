@@ -10,16 +10,16 @@ module Qiniu
     describe Misc do
 
       before :all do
-        @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
+        ### 复用RubySDK-Test-Management空间
+        @bucket = 'RubySDK-Test-Management'
+        @bucket = make_unique_bucket(@bucket)
+
         result = Qiniu.mkbucket(@bucket)
         puts result.inspect
-        result.should_not be_false
       end
 
       after :all do
-        result = Qiniu.drop(@bucket)
-        puts result.inspect
-        result.should_not be_false
+        ### 不删除Bucket以备下次使用
       end
 
       context ".set_protected" do

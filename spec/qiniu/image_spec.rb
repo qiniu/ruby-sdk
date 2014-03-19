@@ -11,14 +11,18 @@ module Qiniu
 
       before :all do
 
-        @bucket = 'RubySdkTest' + (Time.now.to_i+rand(1000)).to_s
-        @key = "image_logo_for_test.png"
+        ### 复用RubySDK-Test-Storage空间
+        @bucket = 'RubySDK-Test-Storage'
+        @bucket = make_unique_bucket(@bucket)
 
+        ### 尝试创建空间
         result = Qiniu.mkbucket(@bucket)
         puts result.inspect
-        result.should be_true
 
-        local_file = File.expand_path('../' + @key, __FILE__)
+        pic_fname = "image_logo_for_test.png"
+        @key = make_unique_key_in_bucket(pic_fname)
+
+        local_file = File.expand_path('../' + pic_fname, __FILE__)
 
         upopts = {
             :scope => @bucket,
@@ -53,9 +57,7 @@ module Qiniu
       end
 
       after :all do
-        result = Qiniu.drop(@bucket)
-        puts result.inspect
-        result.should_not be_false
+        ### 不删除Bucket以备下次使用
       end
 
       context ".info" do
