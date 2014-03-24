@@ -65,7 +65,7 @@ module Qiniu
             @key,
             'application/x-ruby',
             'customMeta',
-            true,
+            true
           )
           code.should == 200
           puts data.inspect
@@ -101,7 +101,7 @@ module Qiniu
             nil,
             nil,
             nil,
-            true,
+            true
           )
           code.should == 200
           puts data.inspect
@@ -133,7 +133,7 @@ module Qiniu
           code, data, raw_headers = Qiniu::Storage.upload_with_token_2(
             uptoken,
             __FILE__,
-            @key,
+            @key
           )
 
           code.should == 200
@@ -167,7 +167,7 @@ module Qiniu
             uptoken,
             @localfile_5m,
             @bucket,
-            @key_5m,
+            @key_5m
           )
           (code/100).should == 2
           puts data.inspect
@@ -200,7 +200,7 @@ module Qiniu
             uptoken,
             @localfile_4m,
             @bucket,
-            @key_4m,
+            @key_4m
           )
           (code/100).should == 2
           puts data.inspect
@@ -233,7 +233,7 @@ module Qiniu
             uptoken,
             @localfile_8m,
             @bucket,
-            @key_8m,
+            @key_8m
           )
           (code/100).should == 2
           puts data.inspect
@@ -266,7 +266,7 @@ module Qiniu
             uptoken,
             @localfile_1m,
             @bucket,
-            @key_1m,
+            @key_1m
           )
           (code/100).should == 2
           puts data.inspect
