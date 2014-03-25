@@ -1,6 +1,6 @@
 ## CHANGE LOG
 
-### v6.0.2
+### v6.1.0
 
 - Qiniu::Storage所有上传接口返回第三个值raw_headers，类型为Hash，包含已解析的HTTP响应报文中的所有Header信息。
 

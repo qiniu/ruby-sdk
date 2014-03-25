@@ -6,14 +6,15 @@
 
 ## 状态
 
-集成测试：[![Build Status](https://api.travis-ci.org/qiniu/ruby-sdk.png?branch=master)](https://travis-ci.org/qiniu/ruby-sdk)
-版本：[![Gem Version](https://badge.fury.io/rb/qiniu.png)](http://badge.fury.io/rb/qiniu)
+[![Build Status](https://api.travis-ci.org/qiniu/ruby-sdk.png?branch=master)](https://travis-ci.org/qiniu/ruby-sdk)
+[![Gem Version](https://badge.fury.io/rb/qiniu.png)](http://badge.fury.io/rb/qiniu)
+[![Dependency Status](https://gemnasium.com/qiniu/ruby-sdk.png)](https://gemnasium.com/qiniu/ruby-sdk)
 
 ## 安装
 
 在您 Ruby 应用程序的 `Gemfile` 文件中，添加如下一行代码：
 
-    gem 'qiniu'
+    gem 'qiniu', '~> 6.0.0'
 
 然后，在应用程序所在的目录下，可以运行 `bundle` 安装依赖包：
 
