@@ -9,9 +9,20 @@ module Qiniu
           Auth.request Config.settings[:rs_host] + '/buckets'
         end # buckets
 
-        def mkbucket(bucket_name)
-          Auth.request Config.settings[:rs_host] + '/mkbucket/' + bucket_name
+        PRIVATE_BUCKET = 0
+        PUBLIC_BUCKET  = 1
+
+        def mkbucket(bucket_name, is_public = PUBLIC_BUCKET)
+          Auth.request Config.settings[:rs_host] + '/mkbucket2/' + bucket_name + '/public/' + is_public.to_s
         end # mkbucket
+
+        def make_a_private_bucket(bucket_name)
+            return mkbucket(bucket_name, PRIVATE_BUCKET)
+        end # make_a_private_bucket
+
+        def make_a_public_bucket(bucket_name)
+            return mkbucket(bucket_name, PUBLIC_BUCKET)
+        end # make_a_public_bucket
 
         def stat(bucket, key)
           Auth.request Config.settings[:rs_host] + '/stat/' + encode_entry_uri(bucket, key)
