@@ -37,17 +37,6 @@ module Qiniu
       ### 不删除Bucket以备下次使用
     end
 
-    context ".put_file" do
-      it "should works" do
-        result = Qiniu.put_file :file =>  __FILE__,
-                                    :bucket => @bucket,
-                                    :key => @key,
-                                    :mime_type => 'application/x-ruby',
-                                    :enable_crc32_check => true
-        result.should be_true
-      end
-    end
-
     context ".buckets" do
       it "should works" do
         result = Qiniu.buckets

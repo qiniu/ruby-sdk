@@ -5,27 +5,6 @@ module Qiniu
     class << self
       include Utils
 
-      def put_file(local_file,
-                   bucket,
-                   key = nil,
-                   mime_type = nil,
-                   custom_meta = nil,
-                   enable_crc32_check = false)
-        action_params = _generate_action_params(
-          local_file,
-          bucket,
-          key,
-          mime_type,
-          custom_meta,
-          enable_crc32_check
-        )
-
-        url = Config.settings[:io_host] + action_params
-        options = {:content_type => 'application/octet-stream'}
-
-        Auth.request url, ::IO.read(local_file), options
-      end # put_file
-
       def upload_with_token(uptoken,
                             local_file,
                             bucket,
