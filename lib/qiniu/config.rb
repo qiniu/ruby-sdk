@@ -20,7 +20,6 @@ module Qiniu
           :content_type    => 'application/x-www-form-urlencoded',
           :auth_url        => "https://acc.qbox.me/oauth2/token",
           :rs_host         => "http://rs.qiniu.com",
-          :io_host         => "http://iovip.qbox.me",
           :up_host         => "http://up.qiniu.com",
           :pub_host        => "http://pu.qbox.me:10200",
           :eu_host         => "http://eu.qbox.me",

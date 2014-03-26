@@ -54,16 +54,6 @@ module Qiniu
         code == StatusOK
       end
 
-      def put_file opts = {}
-        code, data = Storage.put_file(opts[:file],
-                                 opts[:bucket],
-                                 opts[:key],
-                                 opts[:mime_type],
-                                 opts[:note],
-                                 opts[:enable_crc32_check])
-        code == StatusOK
-      end
-
       def upload_file opts = {}
         uncontained_opts = [:uptoken, :file, :bucket, :key] - opts.keys
         raise MissingArgsError, uncontained_opts unless uncontained_opts.empty?
