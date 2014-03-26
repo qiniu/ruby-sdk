@@ -26,15 +26,8 @@ module Qiniu
         ### 生成下载授权URL
         def authorize_download_url(url, args = EMPTY_ARGS)
           ### 提取AK/SK信息
-          access_key = args[:access_key]
-          if access_key.nil? then
-            access_key = Config.settings[:access_key]
-          end
-
-          secret_key = args[:secret_key]
-          if secret_key.nil? then
-            secret_key = Config.settings[:secret_key]
-          end
+          access_key = Config.settings[:access_key]
+          secret_key = Config.settings[:secret_key]
 
           ### 授权期计算
           if args[:expires].is_a?(Integer) && args[:expires] > 0 then
