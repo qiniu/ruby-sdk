@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
+# vim: sw=2 ts=2
 
 require 'hmac-sha1'
+require 'uri'
 
 require 'qiniu/exceptions'
 
@@ -12,8 +14,11 @@ module Qiniu
         include Utils
 
         def call_with_signature(url, data, retry_times = 0, options = {})
-          code, data, raw_headers = http_request url, data, options.merge({:qbox_signature_token => generate_qbox_signature(url, data, options[:mime])})
-          [code, data, raw_headers]
+          return Utils.http_request(
+            url,
+            data,
+            options.merge({:qbox_signature_token => generate_acctoken(url, data)})
+          )
         end # call_with_signature
 
         def request(url, data = nil, options = {})
@@ -60,6 +65,41 @@ module Qiniu
           ### 返回下载授权URL
           return "#{download_url}&token=#{dntoken}"
         end # authorize_download_url
+
+        def generate_acctoken(url, body = '')
+          ### 提取AK/SK信息
+          access_key = Config.settings[:access_key]
+          secret_key = Config.settings[:secret_key]
+
+          ### 解析URL，生成待签名字符串
+          uri = URI.parse(url)
+          signing_str = uri.path
+
+          # 如有QueryString部分，则需要加上
+          query_string = uri.query
+          if query_string.is_a?(String) && !query_string.empty?
+            singin_str += '?' + query_string
+          end
+
+          # 追加换行符
+          signing_str += "\n"
+
+          # 如果有Body，则也加上
+          # （仅限于mime == "application/x-www-form-urlencoded"的情况）
+          if body.is_a?(String) && !body.empty?
+              signing_str += body 
+          end
+
+          ### 生成数字签名
+          sign = HMAC::SHA1.new(secret_key).update(signing_str).digest
+          encoded_sign = Utils.urlsafe_base64_encode(sign)
+
+          ### 生成管理授权凭证
+          acctoken = "#{access_key}:#{encoded_sign}"
+
+          ### 返回管理授权凭证
+          return acctoken
+        end # generate_acctoken
 
       end # class << self
 
