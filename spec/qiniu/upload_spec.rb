@@ -57,38 +57,6 @@ module Qiniu
       end
 
       ### 测试单文件直传
-      context ".put_file" do
-        it "should works" do
-          code, data, raw_headers = Qiniu::Storage.put_file(
-            __FILE__,
-            @bucket,
-            @key,
-            'application/x-ruby',
-            'customMeta',
-            true
-          )
-          code.should == 200
-          puts data.inspect
-          puts raw_headers.inspect
-        end
-      end
-
-      context ".stat" do
-        it "should exists" do
-          code, data = Qiniu::Storage.stat(@bucket, @key)
-          puts data.inspect
-          code.should == 200
-        end
-      end
-
-      context ".delete" do
-        it "should works" do
-          code, data = Qiniu::Storage.delete(@bucket, @key)
-          puts data.inspect
-          code.should == 200
-        end
-      end
-
       context ".upload_with_token" do
         it "should works" do
           upopts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com"}

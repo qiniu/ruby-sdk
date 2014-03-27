@@ -29,9 +29,16 @@ module Qiniu
       end
 
       ### 准备数据
-      context ".put_file" do
+      context ".upload_with_token_2" do
         it "should works" do
-          code, data = Storage.put_file(__FILE__, @bucket, @key, 'application/x-ruby', 'customMeta', true)
+          upopts = {:scope => @bucket, :expires_in => 3600, :endUser => "why404@gmail.com"}
+          uptoken = Qiniu.generate_upload_token(upopts)
+
+          code, data, raw_headers = Qiniu::Storage.upload_with_token_2(
+            uptoken,
+            __FILE__,
+            @key
+          )
           code.should == 200
           puts data.inspect
         end

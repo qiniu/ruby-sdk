@@ -8,6 +8,10 @@
 
 - 更新Qiniu::Storage所有上传接口的测试用例，打印HTTP响应Header信息。
 
+- 删除过时的Qiniu::Storage#put_file方法和相关测试用例。
+
+该方法调用的API已过时并逐步废弃，建议用户尽快迁移到Qiniu::Storage#upload_with_token_2方法上。
+
 ### v6.0.1
 
 - 重新划分命名空间，存储相关归入Qiniu::Storage，数据处理相关归入Qiniu::Fop，杂项相关归入Qiniu::Misc。

@@ -74,8 +74,8 @@ module Qiniu
         else
           data = {}
           body = response.respond_to?(:body) ? response.body : {}
+          raw_headers = response.respond_to?(:raw_headers) ? response.raw_headers : {}
           data = safe_json_parse(body) unless body.empty?
-          raw_headers = response.raw_headers
         end
         [code, data, raw_headers]
       end # send_request_with
@@ -100,8 +100,8 @@ module Qiniu
             res = e.response
             code = res.code.to_i if res.respond_to? :code
             body = res.respond_to?(:body) ? res.body : ""
+            raw_headers = res.respond_to?(:raw_headers) ? res.raw_headers : {}
             data = safe_json_parse(body) unless body.empty?
-            raw_headers = response.raw_headers
           end
           [code, data, raw_headers]
         end
