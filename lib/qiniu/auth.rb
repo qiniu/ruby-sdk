@@ -57,8 +57,8 @@ module Qiniu
           ### 生成下载授权凭证
           dntoken = "#{access_key}:#{encoded_sign}"
 
-          ### 返回下载授权URL及相关参数
-          return "#{download_url}&token=#{dntoken}", e, dntoken
+          ### 返回下载授权URL
+          return "#{download_url}&token=#{dntoken}"
         end # authorize_download_url
 
       end # class << self
