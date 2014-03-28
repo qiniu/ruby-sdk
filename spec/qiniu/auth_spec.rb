@@ -31,13 +31,10 @@ module Qiniu
           puts "key=#{key}"
 
           ### 上传测试文件
-          upopts = {:scope => @bucket, :expires_in => 3600, :endUser => "why404@gmail.com"}
-          uptoken = Qiniu.generate_upload_token(upopts)
-
-          code, data, raw_headers = Qiniu::Storage.upload_with_token_2(
-            uptoken,
-            __FILE__,
-            key
+          pp = Auth::PutPolicy.new(@bucket, key)
+          code, data, raw_headers = Qiniu::Storage.upload_with_put_policy(
+            pp,
+            __FILE__
           )
           code.should == 200
           puts data.inspect
