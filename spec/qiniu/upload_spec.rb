@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+# vim: sw=2 ts=2
 
 require 'spec_helper'
 require 'qiniu/auth'
@@ -109,6 +110,49 @@ module Qiniu
           puts raw_headers.inspect
         end
       end # .upload_with_token_2
+
+      context ".stat" do
+        it "should exists" do
+          code, data = Qiniu::Storage.stat(@bucket, @key)
+          puts data.inspect
+          code.should == 200
+        end
+      end
+
+      context ".delete" do
+        it "should works" do
+          code, data = Qiniu::Storage.delete(@bucket, @key)
+          puts data.inspect
+          code.should == 200
+        end
+      end
+
+      context ".upload_with_put_policy" do
+        it "should works" do
+          pp = Qiniu::Auth::PutPolicy.new(@bucket, @key)
+          pp.end_user = "why404@gmail.com"
+          puts 'put_policy=' + pp.to_json
+
+          code, data, raw_headers = Qiniu::Storage.upload_with_put_policy(
+            pp,
+            __FILE__,
+            @key + '-not-equal'
+          )
+          code.should_not == 200
+          puts data.inspect
+          puts raw_headers.inspect
+
+          code, data, raw_headers = Qiniu::Storage.upload_with_put_policy(
+            pp,
+            __FILE__,
+            @key
+          )
+
+          code.should == 200
+          puts data.inspect
+          puts raw_headers.inspect
+        end
+      end # .upload_with_put_policy
 
       context ".stat" do
         it "should exists" do

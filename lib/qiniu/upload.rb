@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+# vim: sw=2 ts=2
 
 module Qiniu
   module Storage
@@ -60,6 +61,27 @@ module Qiniu
         ### 发送请求
         Utils.http_request url, post_data
       end # upload_with_token_2
+
+      ### 授权举例
+      # put_policy.bucket | put_policy.key | key     | 语义 | 授权
+      # :---------------- | :------------- | :------ | :--- | :---
+      # trivial_bucket    | <nil>          | <nil>   | 新增 | 允许，最终key为1)使用put_policy.save_key生成的值或2)资源内容的Hash值
+      # trivial_bucket    | <nil>          | foo.txt | 新增 | 允许
+      # trivial_bucket    | <nil>          | bar.jpg | 新增 | 允许
+      # trivial_bucket    | foo.txt        | <nil>   | 覆盖 | 允许，由SDK将put_policy.key赋值给key实现
+      # trivial_bucket    | foo.txt        | foo.txt | 覆盖 | 允许
+      # trivial_bucket    | foo.txt        | bar.jpg | 覆盖 | 禁止，put_policy.key与key不一致
+      def upload_with_put_policy(put_policy,
+                                 local_file,
+                                 key = nil,
+                                 x_vars = nil)
+        uptoken = Auth.generate_uptoken(put_policy)
+        if key.nil? then
+          key = put_policy.key
+        end
+
+        return upload_with_token_2(uptoken, local_file, key, x_vars)
+      end # upload_with_put_policy
 
       private
       def _generate_action_params(local_file,

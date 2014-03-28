@@ -8,6 +8,113 @@ require 'qiniu/exceptions'
 
 module Qiniu
     module Auth
+      class << self
+        def calculate_deadline(expires_in, deadline = nil)
+          ### 授权期计算
+          if expires_in.is_a?(Integer) && expires_in > 0 then
+            # 指定相对时间，单位：秒
+            return Time.now.to_i + expires_in
+          elsif deadline.is_a?(Integer) then
+            # 指定绝对时间，常用于调试和单元测试
+            return deadline
+          end
+
+          # 默认授权期1小时
+          return Time.now.to_i + 3600
+        end # calculate_deadline
+      end # class << self
+
+      class PutPolicy
+        private
+        def initialize(bucket, key = nil, expires_in = 3600, deadline = nil)
+          ### 设定scope参数（必填项目）
+          self.scope!(bucket, key)
+
+          ### 设定deadline参数（必填项目）
+          @expires_in = expires_in
+          @deadline   = Auth.calculate_deadline(expires_in, deadline)
+        end # initialize
+
+        PARAMS = {
+          :scope                  => "scope"               ,
+          :save_key               => "saveKey"             ,
+          :end_user               => "endUser"             ,
+          :return_url             => "returnUrl"           ,
+          :return_body            => "returnBody"          ,
+          :callback_url           => "callbackUrl"         ,
+          :callback_body          => "callbackBody"        ,
+          :persistent_ops         => "persistentOps"       ,
+          :persistent_notify_url  => "persistentNotifyUrl" ,
+          :transform              => "transform"           ,
+
+          :deadline               => "deadline"            ,
+          :insert_only            => "insertOnly"          ,
+          :fsize_limit            => "fsizeLimit"          ,
+          :detect_mime            => "detectMime"          ,
+          :mime_limit             => "mimeLimit"           ,
+          :fop_timeout            => "fopTimeout"
+        }
+
+        public
+        attr_reader :bucket, :key
+
+        def scope!(bucket, key = nil)
+          @bucket = bucket
+          @key    = key
+
+          if key.nil? then
+            # 新增语义，文件已存在则失败
+            @scope = bucket
+          else
+            # 覆盖语义，文件已存在则直接覆盖
+            @scope = "#{bucket}:#{key}"
+          end
+        end # scope!
+
+        def expires_in!(seconds)
+          if !seconds.nil? then
+            return @expires_in
+          end
+
+          @epires_in = seconds
+          @deadline  = Auth.calculate_deadline(seconds)
+
+          return @expires_in
+        end # expires_in!
+
+        def allow_mime_list! (list)
+          @mime_limit = list
+        end # allow_mime_list!
+
+        def deny_mime_list! (list)
+          @mime_limit = "!#{list}"
+        end # deny_mime_list!
+
+        def insert_only!
+          @insert_only = 1
+        end # insert_only!
+
+        def detect_mime!
+          @detect_mime = 1
+        end # detect_mime!
+
+        def to_json
+          args = {}
+
+          PARAMS.each_pair do |key, fld|
+            val = self.public_send(key)
+            if !val.nil? then
+              args[fld] = val
+            end
+          end
+
+          return args.to_json
+        end # to_json
+
+        PARAMS.each_pair do |key, fld|
+          attr_accessor key
+        end
+      end # class PutPolicy
 
       class << self
 
@@ -101,6 +208,21 @@ module Qiniu
           return acctoken
         end # generate_acctoken
 
+        def generate_uptoken(put_policy)
+          ### 提取AK/SK信息
+          access_key = Config.settings[:access_key]
+          secret_key = Config.settings[:secret_key]
+
+          ### 生成待签名字符串
+          encoded_put_policy = Utils.urlsafe_base64_encode(put_policy.to_json)
+
+          ### 生成数字签名
+          sign = HMAC::SHA1.new(secret_key).update(encoded_put_policy).digest
+          encoded_sign = Utils.urlsafe_base64_encode(sign)
+
+          ### 生成上传授权凭证
+          uptoken = "#{access_key}:#{encoded_sign}:#{encoded_put_policy}"
+        end # generate_uptoken
       end # class << self
 
     end # module Auth
