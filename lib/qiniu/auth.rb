@@ -8,6 +8,8 @@ require 'qiniu/exceptions'
 
 module Qiniu
     module Auth
+      DEFAULT_AUTH_SECONDS = 3600
+
       class << self
         def calculate_deadline(expires_in, deadline = nil)
           ### 授权期计算
@@ -20,13 +22,16 @@ module Qiniu
           end
 
           # 默认授权期1小时
-          return Time.now.to_i + 3600
+          return Time.now.to_i + DEFAULT_AUTH_SECONDS
         end # calculate_deadline
       end # class << self
 
       class PutPolicy
         private
-        def initialize(bucket, key = nil, expires_in = 3600, deadline = nil)
+        def initialize(bucket,
+                       key = nil,
+                       expires_in = DEFAULT_AUTH_SECONDS,
+                       deadline = nil)
           ### 设定scope参数（必填项目）
           self.scope!(bucket, key)
 
@@ -81,6 +86,14 @@ module Qiniu
 
           return @expires_in
         end # expires_in!
+
+        def expires_in=(seconds)
+          return expires_in!(seconds)
+        end # expires_in=
+
+        def expires_in
+          return @expires_in
+        end # expires_in
 
         def allow_mime_list! (list)
           @mime_limit = list
