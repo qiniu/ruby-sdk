@@ -115,7 +115,7 @@ module Qiniu
           args = {}
 
           PARAMS.each_pair do |key, fld|
-            val = self.public_send(key)
+            val = self.__send__(key)
             if !val.nil? then
               args[fld] = val
             end
@@ -189,7 +189,7 @@ module Qiniu
           # 如有QueryString部分，则需要加上
           query_string = uri.query
           if query_string.is_a?(String) && !query_string.empty?
-            singin_str += '?' + query_string
+            signing_str += '?' + query_string
           end
 
           # 追加换行符
