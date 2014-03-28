@@ -142,16 +142,7 @@ module Qiniu
           secret_key = Config.settings[:secret_key]
 
           ### 授权期计算
-          if args[:expires].is_a?(Integer) && args[:expires] > 0 then
-            # 指定相对时间，单位：秒
-            e = Time.now.to_i + args[:expires]
-          elsif args[:deadline].is_a?(Integer) then
-            # 指定绝对时间，常用于调试和单元测试
-            e = args[:deadline]
-          else
-            # 默认授权期1小时
-            e = Time.now.to_i + 3600
-          end
+          e = Auth.calculate_deadline(args[:expires_in], args[:deadline])
 
           ### URL变换：追加授权期参数
           if url.index('?').is_a?(Fixnum) then
