@@ -41,6 +41,7 @@ module Qiniu
         end # initialize
 
         PARAMS = {
+          # 字符串类型参数
           :scope                  => "scope"               ,
           :save_key               => "saveKey"             ,
           :end_user               => "endUser"             ,
@@ -52,13 +53,14 @@ module Qiniu
           :persistent_notify_url  => "persistentNotifyUrl" ,
           :transform              => "transform"           ,
 
+          # 数值类型参数
           :deadline               => "deadline"            ,
           :insert_only            => "insertOnly"          ,
           :fsize_limit            => "fsizeLimit"          ,
           :detect_mime            => "detectMime"          ,
           :mime_limit             => "mimeLimit"           ,
           :fop_timeout            => "fopTimeout"
-        }
+        } # PARAMS
 
         public
         attr_reader :bucket, :key
@@ -226,6 +228,9 @@ module Qiniu
 
           ### 生成上传授权凭证
           uptoken = "#{access_key}:#{encoded_sign}:#{encoded_put_policy}"
+
+          ### 返回上传授权凭证
+          return uptoken
         end # generate_uptoken
       end # class << self
 
