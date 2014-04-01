@@ -3,7 +3,7 @@
 module Qiniu
     module Version
       MAJOR = 6
-      MINOR = 1
+      MINOR = 2
       PATCH = 0
       # Returns a version string by joining <tt>MAJOR</tt>, <tt>MINOR</tt>, and <tt>PATCH</tt> with <tt>'.'</tt>
       #
