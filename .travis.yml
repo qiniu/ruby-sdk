@@ -7,7 +7,6 @@ rvm:
   - 2.1.1
   - jruby-18mode
   - jruby-19mode
-  - jruby-head
   - ree
 before_script:
   - export QINIU_ACCESS_KEY=LGRqJsjX7LAvtdtX6hhyxs861lS57HwnOQmJsOuX
