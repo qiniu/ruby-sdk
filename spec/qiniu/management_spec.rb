@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+# vim: sw=2 ts=2
 
 require 'digest/sha1'
 require 'spec_helper'
@@ -29,15 +30,12 @@ module Qiniu
       end
 
       ### 准备数据
-      context ".upload_with_token_2" do
+      context ".prepare_file" do
         it "should works" do
-          upopts = {:scope => @bucket, :expires_in => 3600, :endUser => "why404@gmail.com"}
-          uptoken = Qiniu.generate_upload_token(upopts)
-
-          code, data, raw_headers = Qiniu::Storage.upload_with_token_2(
-            uptoken,
-            __FILE__,
-            @key
+          pp = Auth::PutPolicy.new(@bucket, @key)
+          code, data, raw_headers = Qiniu::Storage.upload_with_put_policy(
+            pp,
+            __FILE__
           )
           code.should == 200
           puts data.inspect

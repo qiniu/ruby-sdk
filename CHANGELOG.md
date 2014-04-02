@@ -1,5 +1,11 @@
 ## CHANGE LOG
 
+### v6.2.0
+
+- 重写与授权相关的函数并归入Qiniu::Auth空间，原授权凭证生成类维持不变。
+
+- 添加Qiniu::Storage::PutPolicy类和Qiniu::Storage#upload_with_put_policy方法，并推荐使用两者组合实现单文件上传。
+
 ### v6.1.0
 
 - Qiniu::Storage所有上传接口返回第三个值raw_headers，类型为Hash，包含已解析的HTTP响应报文中的所有Header信息。
