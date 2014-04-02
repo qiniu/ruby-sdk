@@ -28,10 +28,20 @@ module Qiniu
         if callback_params.nil?
           callback_params = {:bucket => bucket, :key => key, :mime_type => mime_type}
         end
-        callback_query_string = Utils.generate_query_string(callback_params)
-        url = Config.settings[:up_host] + '/upload'
+        callback_query_string = HTTP.generate_query_string(callback_params)
 
-        Utils.upload_multipart_data(url, local_file, action_params, callback_query_string, uptoken)
+        url = Config.settings[:up_host] + '/upload'
+        post_data = {
+          :params     => callback_query_string,
+          :action     => action_params,
+          :file       => File.new(local_file, 'rb'),
+          :multipart  => true
+        }
+        if !uptoken.nil? then
+          post_data[:auth] = uptoken unless uptoken.nil?
+        end
+
+        return HTTP.api_post(url, post_data)
       end # upload_with_token
 
       def upload_with_token_2(uptoken,
@@ -59,7 +69,7 @@ module Qiniu
         end
 
         ### 发送请求
-        Utils.http_request url, post_data
+        HTTP.api_post(url, post_data)
       end # upload_with_token_2
 
       ### 授权举例

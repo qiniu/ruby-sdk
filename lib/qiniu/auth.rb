@@ -132,22 +132,6 @@ module Qiniu
       end # class PutPolicy
 
       class << self
-
-        include Utils
-
-        def call_with_signature(url, data, retry_times = 0, options = {})
-          return Utils.http_request(
-            url,
-            data,
-            options.merge({:qbox_signature_token => generate_acctoken(url, data)})
-          )
-        end # call_with_signature
-
-        def request(url, data = nil, options = {})
-          code, data, raw_headers = Auth.call_with_signature(url, data, 0, options)
-          [code, data, raw_headers]
-        end # request
-
         EMPTY_ARGS = {}
 
         ### 生成下载授权URL

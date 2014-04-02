@@ -1,31 +1,38 @@
 # -*- encoding: utf-8 -*-
+# vim: sw=2 ts=2
+
+require 'qiniu/http'
 
 module Qiniu
     module Storage
       class << self
         include Utils
 
+        public
         def buckets
-          Auth.request Config.settings[:rs_host] + '/buckets'
+          url = Config.settings[:rs_host] + '/buckets'
+          return HTTP.management_post(url)
         end # buckets
 
         PRIVATE_BUCKET = 0
         PUBLIC_BUCKET  = 1
 
         def mkbucket(bucket_name, is_public = PUBLIC_BUCKET)
-          Auth.request Config.settings[:rs_host] + '/mkbucket2/' + bucket_name + '/public/' + is_public.to_s
+          url = Config.settings[:rs_host] + '/mkbucket2/' + bucket_name + '/public/' + is_public.to_s
+          return HTTP.management_post(url)
         end # mkbucket
 
         def make_a_private_bucket(bucket_name)
-            return mkbucket(bucket_name, PRIVATE_BUCKET)
+          return mkbucket(bucket_name, PRIVATE_BUCKET)
         end # make_a_private_bucket
 
         def make_a_public_bucket(bucket_name)
-            return mkbucket(bucket_name, PUBLIC_BUCKET)
+          return mkbucket(bucket_name, PUBLIC_BUCKET)
         end # make_a_public_bucket
 
         def stat(bucket, key)
-          Auth.request Config.settings[:rs_host] + '/stat/' + encode_entry_uri(bucket, key)
+          url = Config.settings[:rs_host] + '/stat/' + encode_entry_uri(bucket, key)
+          return HTTP.management_post(url)
         end # stat
 
         def get(bucket, key, save_as = nil, expires_in = nil, version = nil)
@@ -33,35 +40,41 @@ module Qiniu
           url += '/base/' + version unless version.nil?
           url += '/attName/' + Utils.urlsafe_base64_encode(save_as) unless save_as.nil?
           url += '/expires/' + expires_in.to_s if !expires_in.nil? && expires_in > 0
-          Auth.request url
+          return HTTP.management_post(url)
         end # get
 
         def copy(source_bucket, source_key, target_bucket, target_key)
           uri = _generate_cp_or_mv_opstr('copy', source_bucket, source_key, target_bucket, target_key)
-          Auth.request Config.settings[:rs_host] + uri
+          url = Config.settings[:rs_host] + uri
+          return HTTP.management_post(url)
         end # copy
 
         def move(source_bucket, source_key, target_bucket, target_key)
           uri = _generate_cp_or_mv_opstr('move', source_bucket, source_key, target_bucket, target_key)
-          Auth.request Config.settings[:rs_host] + uri
+          url = Config.settings[:rs_host] + uri
+          return HTTP.management_post(url)
         end # move
 
         def delete(bucket, key)
-          Auth.request Config.settings[:rs_host] + '/delete/' + encode_entry_uri(bucket, key)
+          url = Config.settings[:rs_host] + '/delete/' + encode_entry_uri(bucket, key)
+          return HTTP.management_post(url)
         end # delete
 
         def publish(domain, bucket)
           encoded_domain = Utils.urlsafe_base64_encode(domain)
-          Auth.request Config.settings[:rs_host] + "/publish/#{encoded_domain}/from/#{bucket}"
+          url = Config.settings[:rs_host] + "/publish/#{encoded_domain}/from/#{bucket}"
+          return HTTP.management_post(url)
         end # publish
 
         def unpublish(domain)
           encoded_domain = Utils.urlsafe_base64_encode(domain)
-          Auth.request Config.settings[:rs_host] + "/unpublish/#{encoded_domain}"
+          url = Config.settings[:rs_host] + "/unpublish/#{encoded_domain}"
+          return HTTP.management_post(url)
         end # unpublish
 
         def drop(bucket)
-          Auth.request Config.settings[:rs_host] + "/drop/#{bucket}"
+          url = Config.settings[:rs_host] + "/drop/#{bucket}"
+          return HTTP.management_post(url)
         end # drop
 
         def batch(command, bucket, keys)
@@ -70,7 +83,8 @@ module Qiniu
             encoded_uri = encode_entry_uri(bucket, key)
             execs << "op=/#{command}/#{encoded_uri}"
           end
-          Auth.request Config.settings[:rs_host] + "/batch", execs.join("&"), {:mime => "application/x-www-form-urlencoded" }
+          url = Config.settings[:rs_host] + "/batch"
+          return HTTP.management_post(url, execs.join("&"))
         end # batch
 
         def batch_get(bucket, keys)
@@ -97,7 +111,7 @@ module Qiniu
           encoded_uri = encode_entry_uri(bucket, key)
           save_as_string = '/save-as/' + encoded_uri
           new_url = source_url + '?' + op_params_string + save_as_string
-          Auth.request new_url
+          return HTTP.management_post(new_url)
         end # save_as
 
         def image_mogrify_save_as(bucket, key, source_image_url, options)
@@ -118,7 +132,8 @@ module Qiniu
           op_args.each do |e| 
             execs << 'op=' + _generate_cp_or_mv_opstr(command, e[0], e[1], e[2], e[3]) if e.size == 4
           end 
-          Auth.request Config.settings[:rs_host] + "/batch", execs.join("&"), {:mime => "application/x-www-form-urlencoded" }
+          url = Config.settings[:rs_host] + "/batch"
+          return HTTP.management_post(url, execs.join("&"))
         end # _batch_cp_or_mv
       end
     end # module Storage
