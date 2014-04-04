@@ -31,20 +31,13 @@ module Qiniu
         {}
       end
 
-      def is_response_ok?(status_code)
-          status_code/100 == 2
-      end
-
-      def response_error(status_code, errmsg)
-          [status_code, {"error" => errmsg}]
-      end
-
       def debug(msg)
           if Config.settings[:enable_debug]
               Log.logger.debug(msg)
           end
       end
 
+      ### 已过时，仅作为兼容接口保留
       def send_request_with url, data = nil, options = {}
         options[:method] = Config.settings[:method] unless options[:method]
         options[:content_type] = Config.settings[:content_type] unless options[:content_type]
@@ -69,7 +62,7 @@ module Qiniu
           response = RestClient.post(url, data, header_options)
         end
         code = response.respond_to?(:code) ? response.code.to_i : 0
-        unless is_response_ok?(code)
+        unless HTTP.is_response_ok?(code)
           raise RequestFailed.new("Request Failed", response)
         else
           data = {}
@@ -80,6 +73,7 @@ module Qiniu
         [code, data, raw_headers]
       end # send_request_with
 
+      ### 已过时，仅作为兼容接口保留
       def http_request url, data = nil, options = {}
         retry_times = 0
         begin
@@ -105,23 +99,6 @@ module Qiniu
           end
           [code, data, raw_headers]
         end
-      end
-
-      def upload_multipart_data(url, filepath, action_string, callback_query_string = '', uptoken = nil)
-          post_data = {
-            :params => callback_query_string,
-            :action => action_string,
-            :file => File.new(filepath, 'rb'),
-            :multipart => true
-          }
-          post_data[:auth] = uptoken unless uptoken.nil?
-          http_request url, post_data
-      end
-
-      def generate_query_string(params)
-        return params if params.is_a?(String)
-        total_param = params.map { |key, value| %Q(#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s).gsub('+', '%20')}) }
-        total_param.join("&")
       end
 
       def crc32checksum(filepath)
