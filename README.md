@@ -9,6 +9,7 @@
 [![Build Status](https://api.travis-ci.org/qiniu/ruby-sdk.png?branch=master)](https://travis-ci.org/qiniu/ruby-sdk)
 [![Gem Version](https://badge.fury.io/rb/qiniu.png)](http://badge.fury.io/rb/qiniu)
 [![Dependency Status](https://gemnasium.com/qiniu/ruby-sdk.png)](https://gemnasium.com/qiniu/ruby-sdk)
+[![Code Climate](https://codeclimate.com/github/qiniu/ruby-sdk.png)](https://codeclimate.com/github/qiniu/ruby-sdk)
 
 ## 安装
 
