@@ -7,11 +7,11 @@ module Qiniu
         include Utils
 
         def info(url)
-          Utils.http_request url + '?imageInfo', nil, {:method => :get}
+          return HTTP.api_get(url + '?imageInfo')
         end # info
 
         def exif(url)
-          Utils.http_request url + '?exif', nil, {:method => :get}
+          return HTTP.api_get(url + '?exif')
         end # exif
 
         def mogrify_preview_url(source_image_url, options)

@@ -3,33 +3,31 @@
 module Qiniu
     module Misc
       class << self
-        include Utils
-
         def set_protected(bucket, protected_mode)
-          host = Config.settings[:pub_host]
-          Auth.request %Q(#{host}/accessMode/#{bucket}/mode/#{protected_mode})
-        end
+          url = Config.settings[:pub_host] + %Q(/accessMode/#{bucket}/mode/#{protected_mode})
+          return HTTP.management_post(url)
+        end # set_protected
 
         def set_separator(bucket, separator)
-          host = Config.settings[:pub_host]
           encoded_separator = Utils.urlsafe_base64_encode(separator)
-          Auth.request %Q(#{host}/separator/#{bucket}/sep/#{encoded_separator})
-        end
+          url = Config.settings[:pub_host] + %Q(/separator/#{bucket}/sep/#{encoded_separator})
+          return HTTP.management_post(url)
+        end # set_separator
 
         def set_style(bucket, name, style)
-          host = Config.settings[:pub_host]
           encoded_name = Utils.urlsafe_base64_encode(name)
           encoded_style = Utils.urlsafe_base64_encode(style)
-          Auth.request %Q(#{host}/style/#{bucket}/name/#{encoded_name}/style/#{encoded_style})
-        end
+          url = Config.settings[:pub_host] + %Q(/style/#{bucket}/name/#{encoded_name}/style/#{encoded_style})
+          return HTTP.management_post(url)
+        end # set_style
 
         def unset_style(bucket, name)
-          host = Config.settings[:pub_host]
           encoded_name = Utils.urlsafe_base64_encode(name)
-          Auth.request %Q(#{host}/unstyle/#{bucket}/name/#{encoded_name})
-        end
+          url = Config.settings[:pub_host] + %Q(/unstyle/#{bucket}/name/#{encoded_name})
+          return HTTP.management_post(url)
+        end # unset_style
+      end # class << self
 
-      end
     end # module Misc
 end # module Qiniu
 

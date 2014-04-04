@@ -97,13 +97,17 @@ module Qiniu
 
         def _call_binary_with_token(uptoken, url, data, content_type = nil, retry_times = 0)
           options = {
-              :method => :post,
-              :content_type => 'application/octet-stream',
-              :upload_signature_token => uptoken
+              :headers => {
+                  :content_type   => 'application/octet-stream',
+                  'Authorization' => 'UpToken ' + uptoken
+              }
           }
-          options[:content_type] = content_type if !content_type.nil? && !content_type.empty?
-          code, data = http_request url, data, options
-          unless Utils.is_response_ok?(code)
+          if !content_type.nil? && !content_type.empty? then
+              options[:headers][:content_type] = content_type 
+          end
+
+          code, data = HTTP.api_post(url, data, options)
+          unless HTTP.is_response_ok?(code)
               retry_times += 1
               if Config.settings[:auto_reconnect] && retry_times < Config.settings[:max_retry_times]
                   return _call_binary_with_token(uptoken, url, data, options[:content_type], retry_times)
@@ -148,7 +152,7 @@ module Qiniu
                     end
                     code, data = _mkblock(uptoken, block_size, body)
                     body_crc32 = Zlib.crc32(body)
-                    if Utils.is_response_ok?(code) && data["crc32"] == body_crc32
+                    if HTTP.is_response_ok?(code) && data["crc32"] == body_crc32
                         progress[:ctx] = data["ctx"]
                         progress[:offset] = body_length
                         progress[:restsize] = block_size - body_length
@@ -179,7 +183,7 @@ module Qiniu
                     end
                     code, data = _putblock(progress[:host], uptoken, progress[:ctx], progress[:offset], body)
                     body_crc32 = Zlib.crc32(body)
-                    if Utils.is_response_ok?(code) && data["crc32"] == body_crc32
+                    if HTTP.is_response_ok?(code) && data["crc32"] == body_crc32
                         progress[:ctx] = data["ctx"]
                         progress[:offset] += body_length
                         progress[:restsize] -= body_length
@@ -228,7 +232,7 @@ module Qiniu
                     #code, data = _resumable_put_block(uptoken, fh, block_index, block_size, Config.settings[:chunk_size], progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
                     # Put the whole block as a chunk
                     code, data = _resumable_put_block(uptoken, fh, block_index, block_size, block_size, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
-                    if Utils.is_response_ok?(code)
+                    if HTTP.is_response_ok?(code)
                         #checksums[block_index] = data["checksum"]
                         checksums[block_index] = data["ctx"]
                         if !block_notifier.nil? && block_notifier.respond_to?("notify")
@@ -254,7 +258,7 @@ module Qiniu
           path += '/mimeType/' + Utils.urlsafe_base64_encode(mime_type) if !mime_type.nil? && !mime_type.empty?
           path += '/meta/' + Utils.urlsafe_base64_encode(custom_meta) if !custom_meta.nil? && !custom_meta.empty?
           path += '/customer/' + customer if !customer.nil? && !customer.empty?
-          callback_query_string = Utils.generate_query_string(callback_params) if !callback_params.nil? && !callback_params.empty?
+          callback_query_string = HTTP.generate_query_string(callback_params) if !callback_params.nil? && !callback_params.empty?
           path += '/params/' + Utils.urlsafe_base64_encode(callback_query_string) if !callback_query_string.nil? && !callback_query_string.empty?
           path += '/rotate/' + rotate if !rotate.nil? && rotate.to_i >= 0
           url = uphost + path
@@ -289,13 +293,13 @@ module Qiniu
 
           code, data = _resumable_put(uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
 
-          if Utils.is_response_ok?(code)
+          if HTTP.is_response_ok?(code)
             uphost = data["host"]
             entry_uri = bucket + ':' + key
             code, data = _mkfile(uphost, uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params, rotate)
           end
 
-          if Utils.is_response_ok?(code)
+          if HTTP.is_response_ok?(code)
             Utils.debug "File #{fh.path} {size: #{fsize}} successfully uploaded."
           end
 
