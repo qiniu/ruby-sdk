@@ -1,8 +1,6 @@
 # -*- encoding: utf-8 -*-
 # vim: sw=2 ts=2
 
-require 'json'
-
 module Qiniu
   module HTTP
 
@@ -11,12 +9,6 @@ module Qiniu
       def is_response_ok?(http_code)
           return 200 <= http_code && http_code <= 299
       end # is_response_ok?
-
-      def safe_json_parse(data)
-        JSON.parse(data)
-      rescue JSON::ParserError
-        {}
-      end # safe_json_parse
 
       def generate_query_string(params)
         if params.is_a?(Hash)
@@ -71,7 +63,7 @@ module Qiniu
         content_type = resp_headers["content-type"][0]
         if !content_type.nil? && content_type == API_RESULT_MIMETYPE then
           # 如果是JSON格式，则反序列化
-          resp_body = safe_json_parse(resp_body)
+          resp_body = Utils.safe_json_parse(resp_body)
         end
 
         return resp_code, resp_body, resp_headers
@@ -119,7 +111,7 @@ module Qiniu
         content_type = resp_headers["content-type"][0]
         if !content_type.nil? && content_type == API_RESULT_MIMETYPE then
           # 如果是JSON格式，则反序列化
-          resp_body = safe_json_parse(resp_body)
+          resp_body = Utils.safe_json_parse(resp_body)
         end
 
         return resp_code, resp_body, resp_headers

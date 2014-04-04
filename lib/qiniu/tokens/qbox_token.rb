@@ -23,7 +23,7 @@ module Qiniu
           signature += '?' + query_string if !query_string.nil? && !query_string.empty?
           signature += "\n"
           if @params.is_a?(Hash)
-              params_string = Utils.generate_query_string(@params)
+              params_string = HTTP.generate_query_string(@params)
               signature += params_string
           end
           signature
