@@ -22,6 +22,7 @@ module Qiniu
       def get (url, opts = {})
         ### 配置请求Header
         req_headers = {
+          :connection => 'close',
           :accept     => '*/*',
           :user_agent => Config.settings[:user_agent]
         }
@@ -36,6 +37,9 @@ module Qiniu
         return response.code.to_i, response.body, response.raw_headers
       rescue => e
         Log.logger.warn "#{e.message} => Qiniu::HTTP.get('#{url}')"
+        if e.respond_to?(:response) && e.response.respond_to?(:code) then
+          return e.response.code, e.response.body, e.response.raw_headers
+        end
         return nil, nil, nil
       end # get
 
@@ -72,6 +76,7 @@ module Qiniu
       def post (url, req_body = nil, opts = {})
         ### 配置请求Header
         req_headers = {
+          :connection => 'close',
           :accept     => '*/*',
           :user_agent => Config.settings[:user_agent]
         }
@@ -86,6 +91,9 @@ module Qiniu
         return response.code.to_i, response.body, response.raw_headers
       rescue => e
         Log.logger.warn "#{e.message} => Qiniu::HTTP.post('#{url}')"
+        if e.respond_to?(:response) && e.response.respond_to?(:code) then
+          return e.response.code, e.response.body, e.response.raw_headers
+        end
         return nil, nil, nil
       end # post
 
