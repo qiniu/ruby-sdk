@@ -230,6 +230,8 @@ module Qiniu
                         break
                     elsif i == retry_times && data["crc32"] != body_crc32
                         Log.logger.error %Q(Uploading block error. Expected crc32: #{body_crc32}, but got: #{data["crc32"]})
+                        # 上传重试达到上限，直接返回错误
+                        return [code, data]
                     end
                 end
             end
