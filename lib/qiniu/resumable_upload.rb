@@ -106,14 +106,14 @@ module Qiniu
               options[:headers][:content_type] = content_type 
           end
 
-          code, data = HTTP.api_post(url, data, options)
+          code, data, raw_headers = HTTP.api_post(url, data, options)
           unless HTTP.is_response_ok?(code)
               retry_times += 1
               if Config.settings[:auto_reconnect] && retry_times < Config.settings[:max_retry_times]
                   return _call_binary_with_token(uptoken, url, data, options[:content_type], retry_times)
               end
           end
-          [code, data]
+          return code, data, raw_headers
         end # _call_binary_with_token
 
         def _mkblock(uptoken, block_size, body)
@@ -150,7 +150,10 @@ module Qiniu
                     if result_length != body_length
                         raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length)
                     end
-                    code, data = _mkblock(uptoken, block_size, body)
+
+                    code, data, raw_headers = _mkblock(uptoken, block_size, body)
+                    Utils.debug "Mkblk : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
+
                     body_crc32 = Zlib.crc32(body)
                     if HTTP.is_response_ok?(code) && data["crc32"] == body_crc32
                         progress[:ctx] = data["ctx"]
@@ -164,6 +167,7 @@ module Qiniu
                         break
                     elsif i == retry_times && data["crc32"] != body_crc32
                         Log.logger.error %Q(Uploading block error. Expected crc32: #{body_crc32}, but got: #{data["crc32"]})
+                        return code, data, raw_headers
                     end
                 end
             elsif progress[:offset] + progress[:restsize] != block_size
@@ -181,7 +185,10 @@ module Qiniu
                     if result_length != body_length
                         raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length)
                     end
-                    code, data = _putblock(progress[:host], uptoken, progress[:ctx], progress[:offset], body)
+
+                    code, data, raw_headers = _putblock(progress[:host], uptoken, progress[:ctx], progress[:offset], body)
+                    Utils.debug "Bput : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
+
                     body_crc32 = Zlib.crc32(body)
                     if HTTP.is_response_ok?(code) && data["crc32"] == body_crc32
                         progress[:ctx] = data["ctx"]
@@ -195,11 +202,12 @@ module Qiniu
                         break
                     elsif i == retry_times && data["crc32"] != body_crc32
                         Log.logger.error %Q(Uploading block error. Expected crc32: #{body_crc32}, but got: #{data["crc32"]})
+                        return code, data, raw_headers
                     end
                 end
             end
             # return
-            return [code, data]
+            return code, data, raw_headers
         end # _resumable_put_block
 
         def _block_count(fsize)
@@ -291,19 +299,20 @@ module Qiniu
           checksums = []
           block_count.times{checksums << ''}
 
-          code, data = _resumable_put(uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
+          code, data, raw_headers = _resumable_put(uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
 
           if HTTP.is_response_ok?(code)
             uphost = data["host"]
             entry_uri = bucket + ':' + key
-            code, data = _mkfile(uphost, uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params, rotate)
+            code, data, raw_headers = _mkfile(uphost, uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params, rotate)
+            Utils.debug "Mkfile : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
           end
 
           if HTTP.is_response_ok?(code)
             Utils.debug "File #{fh.path} {size: #{fsize}} successfully uploaded."
           end
 
-          [code, data]
+          return code, data, raw_headers
         end # _resumable_upload
       end # self class
     end # module Storage
