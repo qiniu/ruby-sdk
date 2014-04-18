@@ -2,7 +2,7 @@
 
 ### v3.4.9
 
-- 去掉publish和unpublish接口的封装函数。 (#8143)
+- 去掉publish和unpublish接口的封装函数。 [https://github.com/qiniu/ruby-sdk/pull/89](https://github.com/qiniu/ruby-sdk/pull/89) (#8143)
 
 ### v3.4.8
 
