@@ -204,16 +204,6 @@ module Qiniu
         code == StatusOK ? data : false
       end
 
-      def publish(domain, bucket)
-        code, data = RS.publish(domain, bucket)
-        code == StatusOK
-      end
-
-      def unpublish(domain)
-        code, data = RS.unpublish(domain)
-        code == StatusOK
-      end
-
       def drop(bucket)
         code, data = RS.drop(bucket)
         code == StatusOK

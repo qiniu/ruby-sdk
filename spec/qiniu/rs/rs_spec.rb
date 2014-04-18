@@ -123,24 +123,6 @@ module Qiniu
         end
       end
 
-=begin
-      context ".publish" do
-        it "should works" do
-          code, data = Qiniu::RS::RS.publish(@domain, @bucket)
-          code.should == 200
-          puts data.inspect
-        end
-      end
-
-      context ".unpublish" do
-        it "should works" do
-          code, data = Qiniu::RS::RS.unpublish(@domain)
-          code.should == 200
-          puts data.inspect
-        end
-      end
-=end
-
       context ".move" do
         it "should works" do
           code, data = Qiniu::RS::RS.move(@bucket, @key, @bucket, @key2)

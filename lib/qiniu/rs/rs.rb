@@ -40,16 +40,6 @@ module Qiniu
           Auth.request Config.settings[:rs_host] + '/delete/' + encode_entry_uri(bucket, key)
         end
 
-        def publish(domain, bucket)
-          encoded_domain = Utils.urlsafe_base64_encode(domain)
-          Auth.request Config.settings[:rs_host] + "/publish/#{encoded_domain}/from/#{bucket}"
-        end
-
-        def unpublish(domain)
-          encoded_domain = Utils.urlsafe_base64_encode(domain)
-          Auth.request Config.settings[:rs_host] + "/unpublish/#{encoded_domain}"
-        end
-
         def drop(bucket)
           Auth.request Config.settings[:rs_host] + "/drop/#{bucket}"
         end

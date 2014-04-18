@@ -32,9 +32,6 @@ module Qiniu
     end
 
     after :all do
-      #result = Qiniu::RS.unpublish(@domain)
-      #result.should_not be_false
-
       result1 = Qiniu::RS.drop(@bucket)
       puts result1.inspect
       result1.should_not be_false
@@ -277,24 +274,6 @@ module Qiniu
         puts result.inspect
       end
     end
-
-=begin
-    context ".publish" do
-      it "should works" do
-        result = Qiniu::RS.publish(@domain, @bucket)
-        result.should_not be_false
-      end
-    end
-=end
-
-=begin
-    context ".unpublish" do
-      it "should works" do
-        result = Qiniu::RS.unpublish(@domain)
-        result.should_not be_false
-      end
-    end
-=end
 
     context ".batch_copy" do
       it "should works" do

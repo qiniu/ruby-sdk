@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v3.4.9
+
+- 去掉publish和unpublish接口的封装函数。 (#8143)
+
 ### v3.4.8
 
 - 修复断点续上传功能中一直重试上传出错片的Bug。[https://github.com/qiniu/ruby-sdk/pull/87](https://github.com/qiniu/ruby-sdk/pull/87) (#7205)
