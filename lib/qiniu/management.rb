@@ -60,18 +60,6 @@ module Qiniu
           return HTTP.management_post(url)
         end # delete
 
-        def publish(domain, bucket)
-          encoded_domain = Utils.urlsafe_base64_encode(domain)
-          url = Config.settings[:rs_host] + "/publish/#{encoded_domain}/from/#{bucket}"
-          return HTTP.management_post(url)
-        end # publish
-
-        def unpublish(domain)
-          encoded_domain = Utils.urlsafe_base64_encode(domain)
-          url = Config.settings[:rs_host] + "/unpublish/#{encoded_domain}"
-          return HTTP.management_post(url)
-        end # unpublish
-
         def drop(bucket)
           url = Config.settings[:rs_host] + "/drop/#{bucket}"
           return HTTP.management_post(url)
