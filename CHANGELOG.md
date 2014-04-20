@@ -2,6 +2,8 @@
 
 ### v6.2.1
 
+- 去除已废弃的publish/unpublish接口。 [https://github.com/qiniu/ruby-sdk/pull/90](https://github.com/qiniu/ruby-sdk/pull/90) (#8143)
+
 ### v6.2.0
 
 - 重写与授权相关的函数并归入Qiniu::Auth空间，原授权凭证生成类维持不变。
