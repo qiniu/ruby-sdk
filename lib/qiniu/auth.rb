@@ -51,15 +51,13 @@ module Qiniu
           :callback_body          => "callbackBody"        ,
           :persistent_ops         => "persistentOps"       ,
           :persistent_notify_url  => "persistentNotifyUrl" ,
-          :transform              => "transform"           ,
 
           # 数值类型参数
           :deadline               => "deadline"            ,
           :insert_only            => "insertOnly"          ,
           :fsize_limit            => "fsizeLimit"          ,
           :detect_mime            => "detectMime"          ,
-          :mime_limit             => "mimeLimit"           ,
-          :fop_timeout            => "fopTimeout"
+          :mime_limit             => "mimeLimit"
         } # PARAMS
 
         public
