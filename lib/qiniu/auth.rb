@@ -51,15 +51,13 @@ module Qiniu
           :callback_body          => "callbackBody"        ,
           :persistent_ops         => "persistentOps"       ,
           :persistent_notify_url  => "persistentNotifyUrl" ,
-          :transform              => "transform"           ,
 
           # 数值类型参数
           :deadline               => "deadline"            ,
           :insert_only            => "insertOnly"          ,
           :fsize_limit            => "fsizeLimit"          ,
           :detect_mime            => "detectMime"          ,
-          :mime_limit             => "mimeLimit"           ,
-          :fop_timeout            => "fopTimeout"
+          :mime_limit             => "mimeLimit"
         } # PARAMS
 
         public
@@ -184,7 +182,7 @@ module Qiniu
           # 如果有Body，则也加上
           # （仅限于mime == "application/x-www-form-urlencoded"的情况）
           if body.is_a?(String) && !body.empty?
-              signing_str += body 
+              signing_str += body
           end
 
           ### 生成数字签名
