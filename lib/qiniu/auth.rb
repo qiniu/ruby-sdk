@@ -195,7 +195,7 @@ module Qiniu
           # 如果有Body，则也加上
           # （仅限于mime == "application/x-www-form-urlencoded"的情况）
           if body.is_a?(String) && !body.empty?
-              signing_str += body 
+              signing_str += body
           end
 
           ### 生成数字签名
