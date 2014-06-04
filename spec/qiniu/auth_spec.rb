@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+# vim: sw=2 ts=2
 
 require 'spec_helper'
 require 'qiniu/auth'
@@ -56,7 +57,12 @@ module Qiniu
           result.body.should_not be_empty
 
           ### 授权下载地址（带参数）
-          download_url = Qiniu::Auth.authorize_download_url(url + '?download/a.m3u8')
+          download_url = Qiniu::Auth.authorize_download_url(
+            url,
+            {
+              :fop => 'download/a.m3u8'
+            }
+          )
           puts "download_url=#{download_url}"
 
           result = RestClient.get(download_url)
