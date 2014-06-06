@@ -51,6 +51,7 @@ module Qiniu
           :callback_body          => "callbackBody"        ,
           :persistent_ops         => "persistentOps"       ,
           :persistent_notify_url  => "persistentNotifyUrl" ,
+          :persistent_pipeline    => "persistentPipeline"  ,
 
           # 数值类型参数
           :deadline               => "deadline"            ,
