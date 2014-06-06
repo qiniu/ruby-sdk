@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v6.2.3
+
+- 为上传策略添加`persistentPipeline`参数，用于指明使用哪个命名转码队列。  [https://github.com/qiniu/ruby-sdk/pull/93](https://github.com/qiniu/ruby-sdk/pull/93)
+
 ### v6.2.2
 
 - 为/pfop接口添加`pipeline`参数，用于指明使用哪个命名转码队列。  [https://github.com/qiniu/ruby-sdk/pull/92](https://github.com/qiniu/ruby-sdk/pull/92)
