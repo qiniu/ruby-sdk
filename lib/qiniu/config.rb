@@ -15,7 +15,7 @@ module Qiniu
       class << self
 
         DEFAULT_OPTIONS = {
-          :user_agent      => 'QiniuRuby/' + Version.to_s + '('+RUBY_PLATFORM+')' + ' Ruby/'+ RUBY_VERSION,
+          :user_agent      => 'QiniuRuby/' + Version.to_s + ' ('+RUBY_PLATFORM+')' + ' Ruby/'+ RUBY_VERSION,
           :method          => :post,
           :content_type    => 'application/x-www-form-urlencoded',
           :auth_url        => "https://acc.qbox.me/oauth2/token",
