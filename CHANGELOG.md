@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v6.2.4
+
+- 调整User agent [https://github.com/qiniu/ruby-sdk/pull/94](https://github.com/qiniu/ruby-sdk/pull/94)
+
 ### v6.2.3
 
 - 为上传策略添加`persistentPipeline`参数，用于指明使用哪个命名转码队列。  [https://github.com/qiniu/ruby-sdk/pull/93](https://github.com/qiniu/ruby-sdk/pull/93)
