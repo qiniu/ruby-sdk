@@ -177,8 +177,16 @@ module Qiniu
         end # authorize_download_url
 
         def authorize_download_url_2(domain, key, args = EMPTY_ARGS)
-          url_encoded_key = key.split('/').map{|x| CGI::escape(x)}.join("/")
-          download_url = "http://#{domain}/#{url_encoded_key}"
+          url_encoded_key = CGI::escape(key)
+
+          schema = args[:schema] || "http"
+          port   = args[:port]
+
+          if port.nil? then
+            download_url = "#{schema}://#{domain}/#{url_encoded_key}"
+          else
+            download_url = "#{schema}://#{domain}:#{port}/#{url_encoded_key}"
+          end
           return authorize_download_url(download_url, args)
         end # authorize_download_url_2
 
