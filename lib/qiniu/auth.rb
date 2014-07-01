@@ -3,6 +3,7 @@
 
 require 'hmac-sha1'
 require 'uri'
+require 'cgi'
 
 require 'qiniu/exceptions'
 
@@ -174,6 +175,21 @@ module Qiniu
           ### 返回下载授权URL
           return "#{download_url}&token=#{dntoken}"
         end # authorize_download_url
+
+        ### 对包含中文或其它 utf-8 字符的 Key 做下载授权
+        def authorize_download_url_2(domain, key, args = EMPTY_ARGS)
+          url_encoded_key = CGI::escape(key)
+
+          schema = args[:schema] || "http"
+          port   = args[:port]
+
+          if port.nil? then
+            download_url = "#{schema}://#{domain}/#{url_encoded_key}"
+          else
+            download_url = "#{schema}://#{domain}:#{port}/#{url_encoded_key}"
+          end
+          return authorize_download_url(download_url, args)
+        end # authorize_download_url_2
 
         def generate_acctoken(url, body = '')
           ### 提取AK/SK信息

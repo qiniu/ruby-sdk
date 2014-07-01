@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v6.3.0
+
+- 添加 authorize_download_url_2 方法，对包含中文或其它 utf-8 字符的 Key 做下载授权。 [https://github.com/qiniu/ruby-sdk/pull/95](https://github.com/qiniu/ruby-sdk/pull/95)
+
 ### v6.2.4
 
 - 调整User Agent。 [https://github.com/qiniu/ruby-sdk/pull/94](https://github.com/qiniu/ruby-sdk/pull/94)
