@@ -4,6 +4,8 @@ require 'hmac-sha1'
 require 'qiniu/config'
 require 'qiniu/utils'
 
+### AccessToken 类已经过时，请改用 Qiniu::Auth.generate_acctoken 方法 ###
+
 module Qiniu
       class AccessToken
 

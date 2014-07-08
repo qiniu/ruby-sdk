@@ -4,6 +4,8 @@ require 'json'
 require 'qiniu/tokens/access_token'
 require 'qiniu/utils'
 
+### UploadToken 类已经过时，请改用 Qiniu::Auth.generate_uptoken 方法 ###
+
 module Qiniu
       class UploadToken < AccessToken
 

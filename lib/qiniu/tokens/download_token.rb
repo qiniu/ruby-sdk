@@ -4,6 +4,9 @@ require 'json'
 require 'qiniu/tokens/access_token'
 require 'qiniu/utils'
 
+### DownloadToken 类已经过时，请改用 Qiniu::Auth.authorize_download_url 方法 ###
+### 或 Qiniu::Auth.authorize_download_url_2 方法                             ###
+
 module Qiniu
       class DownloadToken < AccessToken
 
