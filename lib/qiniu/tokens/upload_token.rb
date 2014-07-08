@@ -21,7 +21,9 @@ module Qiniu
           @callback_body_type = opts[:callback_body_type]
           @customer = opts[:customer]
           @escape = opts[:escape]
-          @async_options = opts[:async_options]
+          @persistent_ops = opts[:persistent_ops]
+          @persistent_notify_url = opts[:persistent_notify_url]
+          @persistent_pipeline = opts[:persistent_pipeline]
           @return_body = opts[:return_body]
           @return_url = opts[:return_url]
         end
@@ -33,9 +35,13 @@ module Qiniu
           params[:callbackBodyType] = @callback_body_type if !@callback_body_type.nil? && !@callback_body_type.empty?
           params[:customer] = @customer if !@customer.nil? && !@customer.empty?
           params[:escape] = 1 if @escape == 1 || @escape == true
-          params[:asyncOps] = @async_options if !@async_options.nil? && !@async_options.empty?
           params[:returnBody] = @return_body if !@return_body.nil? && !@return_body.empty?
           params[:returnUrl] = @return_url if !@return_url.nil? && !@return_url.empty?
+
+          params[:persistent_ops] = @persistent_ops if !@persistent_ops.nil? && !@persistent_ops.empty?
+          params[:persistent_notify_url] = @persistent_notify_url if !@persistent_notify_url.nil? && !@persistent_notify_url.empty?
+          params[:persistent_pipeline] = @persistent_pipeline if !@persistent_pipeline.nil? && !@persistent_pipeline.empty?
+
           Utils.urlsafe_base64_encode(params.to_json)
         end
 
