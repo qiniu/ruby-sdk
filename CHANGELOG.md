@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v6.3.1
+
+- 为过期方法添加说明。 [https://github.com/qiniu/ruby-sdk/pull/98](https://github.com/qiniu/ruby-sdk/pull/98)
+
 ### v6.3.0
 
 - 添加 authorize_download_url_2 方法，对包含中文或其它 utf-8 字符的 Key 做下载授权。 [https://github.com/qiniu/ruby-sdk/pull/95](https://github.com/qiniu/ruby-sdk/pull/95)
