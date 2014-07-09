@@ -38,9 +38,9 @@ module Qiniu
           params[:returnBody] = @return_body if !@return_body.nil? && !@return_body.empty?
           params[:returnUrl] = @return_url if !@return_url.nil? && !@return_url.empty?
 
-          params[:persistent_ops] = @persistent_ops if !@persistent_ops.nil? && !@persistent_ops.empty?
-          params[:persistent_notify_url] = @persistent_notify_url if !@persistent_notify_url.nil? && !@persistent_notify_url.empty?
-          params[:persistent_pipeline] = @persistent_pipeline if !@persistent_pipeline.nil? && !@persistent_pipeline.empty?
+          params[:persistentOps] = @persistent_ops if !@persistent_ops.nil? && !@persistent_ops.empty?
+          params[:persistentNotifyUrl] = @persistent_notify_url if !@persistent_notify_url.nil? && !@persistent_notify_url.empty?
+          params[:persistentPipeline] = @persistent_pipeline if !@persistent_pipeline.nil? && !@persistent_pipeline.empty?
 
           Utils.urlsafe_base64_encode(params.to_json)
         end
