@@ -3,6 +3,8 @@
 ### v6.3.1
 
 - 为过期方法添加说明。 [https://github.com/qiniu/ruby-sdk/pull/98](https://github.com/qiniu/ruby-sdk/pull/98)
+- 修改上传域名。 [https://github.com/qiniu/ruby-sdk/pull/99](https://github.com/qiniu/ruby-sdk/pull/99)
+- 增加pfop参数。 [https://github.com/qiniu/ruby-sdk/pull/100](https://github.com/qiniu/ruby-sdk/pull/100)
 
 ### v6.3.0
 
