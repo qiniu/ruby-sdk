@@ -5,5 +5,5 @@ rvm:
   - 2.1.1
   - jruby-19mode
 before_script:
-  - export QINIU_ACCESS_KEY=LGRqJsjX7LAvtdtX6hhyxs861lS57HwnOQmJsOuX
-  - export QINIU_SECRET_KEY=g_OxhuN5iJ1O7BoA6YdXyF6zSszk34UZFKDfdIIW
+  - export QINIU_ACCESS_KEY=QWYn5TFQsLLU1pL5MFEmX3s5DmHdUThav9WyOWOm
+  - export QINIU_SECRET_KEY=Bxckh6FA-Fbs9Yt3i3cbKVK22UPBmAOHJcL95pGz

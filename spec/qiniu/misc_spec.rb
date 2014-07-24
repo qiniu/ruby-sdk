@@ -10,16 +10,10 @@ module Qiniu
     describe Misc do
 
       before :all do
-        ### 复用RubySDK-Test-Management空间
-        @bucket = 'RubySDK-Test-Management'
-        @bucket = make_unique_bucket(@bucket)
-
-        result = Qiniu.mkbucket(@bucket)
-        puts result.inspect
+        @bucket = 'rubysdk'
       end
 
       after :all do
-        ### 不删除Bucket以备下次使用
       end
 
       context ".set_protected" do
