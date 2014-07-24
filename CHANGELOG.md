@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v6.3.2
+
+- 调整上传host。 [https://github.com/qiniu/ruby-sdk/pull/103](https://github.com/qiniu/ruby-sdk/pull/103)
+
 ### v6.3.1
 
 - 为过期方法添加说明。 [https://github.com/qiniu/ruby-sdk/pull/98](https://github.com/qiniu/ruby-sdk/pull/98)
