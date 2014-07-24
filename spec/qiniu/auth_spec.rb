@@ -7,20 +7,13 @@ require 'qiniu/storage'
 require 'digest/sha1'
 
 module Qiniu
-  module Auth 
+  module Auth
     describe Auth do
 
       before :all do
-        @bucket = 'RubySDK-Test-Private'
-        @bucket = make_unique_bucket(@bucket)
-
-        ### 尝试创建Bucket
-        result = Qiniu::Storage.make_a_private_bucket(@bucket)
-        puts result.inspect
+        @bucket = 'rubysdk'
       end
-
       after :all do
-        ### 不删除Bucket以备下次使用
       end
 
       ### 测试私有资源下载
