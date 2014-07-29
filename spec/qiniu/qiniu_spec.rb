@@ -9,14 +9,9 @@ module Qiniu
   describe Qiniu do
 
     before :all do
-      @bucket = 'RubySDK-Test'
-      @bucket = make_unique_bucket(@bucket)
+      @bucket = 'rubysdk'
 
       @test_image_bucket = @bucket
-
-      ### 尝试创建Bucket
-      result = Qiniu.mkbucket(@bucket)
-      puts result.inspect
 
       @key = Digest::SHA1.hexdigest Time.now.to_s
       @key = make_unique_key_in_bucket(@key)
@@ -34,7 +29,6 @@ module Qiniu
     end
 
     after :all do
-      ### 不删除Bucket以备下次使用
     end
 
     context ".buckets" do

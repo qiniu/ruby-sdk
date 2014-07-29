@@ -30,6 +30,7 @@ module Qiniu
           :key        =>  "key",
           :fops       =>  "fops",
           :notify_url =>  "notifyURL",
+          :pipeline   =>  "pipeline",
 
           # 数值类型参数
           :force      =>  "force"

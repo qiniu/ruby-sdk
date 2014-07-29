@@ -3,6 +3,7 @@
 
 require 'hmac-sha1'
 require 'uri'
+require 'cgi'
 
 require 'qiniu/exceptions'
 
@@ -51,6 +52,7 @@ module Qiniu
           :callback_body          => "callbackBody"        ,
           :persistent_ops         => "persistentOps"       ,
           :persistent_notify_url  => "persistentNotifyUrl" ,
+          :persistent_pipeline    => "persistentPipeline"  ,
 
           # 数值类型参数
           :deadline               => "deadline"            ,
@@ -138,16 +140,29 @@ module Qiniu
           access_key = Config.settings[:access_key]
           secret_key = Config.settings[:secret_key]
 
+          download_url = url
+
+          ### URL变换：追加FOP指令
+          if args[:fop].is_a?(String) && args[:fop] != '' then
+            if download_url.index('?').is_a?(Fixnum) then
+              # 已有参数
+              download_url = "#{download_url}&#{args[:fop]}"
+            else
+              # 尚无参数
+              download_url = "#{download_url}?#{args[:fop]}"
+            end
+          end
+
           ### 授权期计算
           e = Auth.calculate_deadline(args[:expires_in], args[:deadline])
 
           ### URL变换：追加授权期参数
-          if url.index('?').is_a?(Fixnum) then
+          if download_url.index('?').is_a?(Fixnum) then
             # 已有参数
-            download_url = "#{url}&e=#{e}"
+            download_url = "#{download_url}&e=#{e}"
           else
             # 尚无参数
-            download_url = "#{url}?e=#{e}"
+            download_url = "#{download_url}?e=#{e}"
           end
 
           ### 生成数字签名
@@ -160,6 +175,21 @@ module Qiniu
           ### 返回下载授权URL
           return "#{download_url}&token=#{dntoken}"
         end # authorize_download_url
+
+        ### 对包含中文或其它 utf-8 字符的 Key 做下载授权
+        def authorize_download_url_2(domain, key, args = EMPTY_ARGS)
+          url_encoded_key = CGI::escape(key)
+
+          schema = args[:schema] || "http"
+          port   = args[:port]
+
+          if port.nil? then
+            download_url = "#{schema}://#{domain}/#{url_encoded_key}"
+          else
+            download_url = "#{schema}://#{domain}:#{port}/#{url_encoded_key}"
+          end
+          return authorize_download_url(download_url, args)
+        end # authorize_download_url_2
 
         def generate_acctoken(url, body = '')
           ### 提取AK/SK信息
@@ -182,7 +212,7 @@ module Qiniu
           # 如果有Body，则也加上
           # （仅限于mime == "application/x-www-form-urlencoded"的情况）
           if body.is_a?(String) && !body.empty?
-              signing_str += body 
+              signing_str += body
           end
 
           ### 生成数字签名

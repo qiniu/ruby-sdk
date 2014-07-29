@@ -1,5 +1,32 @@
 ## CHANGE LOG
 
+### v6.3.2
+
+- 调整上传host。 [https://github.com/qiniu/ruby-sdk/pull/103](https://github.com/qiniu/ruby-sdk/pull/103)
+
+### v6.3.1
+
+- 为过期方法添加说明。 [https://github.com/qiniu/ruby-sdk/pull/98](https://github.com/qiniu/ruby-sdk/pull/98)
+- 修改上传域名。 [https://github.com/qiniu/ruby-sdk/pull/99](https://github.com/qiniu/ruby-sdk/pull/99)
+- 增加pfop参数。 [https://github.com/qiniu/ruby-sdk/pull/100](https://github.com/qiniu/ruby-sdk/pull/100)
+
+### v6.3.0
+
+- 添加 authorize_download_url_2 方法，对包含中文或其它 utf-8 字符的 Key 做下载授权。 [https://github.com/qiniu/ruby-sdk/pull/95](https://github.com/qiniu/ruby-sdk/pull/95)
+
+### v6.2.4
+
+- 调整User Agent。 [https://github.com/qiniu/ruby-sdk/pull/94](https://github.com/qiniu/ruby-sdk/pull/94)
+
+### v6.2.3
+
+- 为上传策略添加`persistentPipeline`参数，用于指明使用哪个命名转码队列。  [https://github.com/qiniu/ruby-sdk/pull/93](https://github.com/qiniu/ruby-sdk/pull/93)
+
+### v6.2.2
+
+- 为/pfop接口添加`pipeline`参数，用于指明使用哪个命名转码队列。  [https://github.com/qiniu/ruby-sdk/pull/92](https://github.com/qiniu/ruby-sdk/pull/92)
+- 为authorize_download_url()添加`:fop`参数，用于生成含数据处理指令的授权下载URL。  
+
 ### v6.2.1
 
 - 去除已废弃的publish/unpublish接口。 [https://github.com/qiniu/ruby-sdk/pull/90](https://github.com/qiniu/ruby-sdk/pull/90) (#8143)

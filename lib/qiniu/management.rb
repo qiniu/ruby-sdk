@@ -52,22 +52,6 @@ module Qiniu
           return HTTP.management_post(url)
         end # buckets
 
-        PRIVATE_BUCKET = 0
-        PUBLIC_BUCKET  = 1
-
-        def mkbucket(bucket_name, is_public = PUBLIC_BUCKET)
-          url = Config.settings[:rs_host] + '/mkbucket2/' + bucket_name + '/public/' + is_public.to_s
-          return HTTP.management_post(url)
-        end # mkbucket
-
-        def make_a_private_bucket(bucket_name)
-          return mkbucket(bucket_name, PRIVATE_BUCKET)
-        end # make_a_private_bucket
-
-        def make_a_public_bucket(bucket_name)
-          return mkbucket(bucket_name, PUBLIC_BUCKET)
-        end # make_a_public_bucket
-
         def stat(bucket, key)
           url = Config.settings[:rs_host] + '/stat/' + encode_entry_uri(bucket, key)
           return HTTP.management_post(url)
@@ -97,11 +81,6 @@ module Qiniu
           url = Config.settings[:rs_host] + '/delete/' + encode_entry_uri(bucket, key)
           return HTTP.management_post(url)
         end # delete
-
-        def drop(bucket)
-          url = Config.settings[:rs_host] + "/drop/#{bucket}"
-          return HTTP.management_post(url)
-        end # drop
 
         def batch(command, bucket, keys)
           execs = []
@@ -175,9 +154,9 @@ module Qiniu
 
         def _batch_cp_or_mv(command, *op_args)
           execs = []
-          op_args.each do |e| 
+          op_args.each do |e|
             execs << 'op=' + _generate_cp_or_mv_opstr(command, e[0], e[1], e[2], e[3]) if e.size == 4
-          end 
+          end
           url = Config.settings[:rs_host] + "/batch"
           return HTTP.management_post(url, execs.join("&"))
         end # _batch_cp_or_mv

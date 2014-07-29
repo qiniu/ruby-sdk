@@ -15,17 +15,14 @@ module Qiniu
       class << self
 
         DEFAULT_OPTIONS = {
-          :user_agent      => 'Qiniu-RS-Ruby-SDK-' + Version.to_s + '()',
+          :user_agent      => 'QiniuRuby/' + Version.to_s + ' ('+RUBY_PLATFORM+')' + ' Ruby/'+ RUBY_VERSION,
           :method          => :post,
           :content_type    => 'application/x-www-form-urlencoded',
           :auth_url        => "https://acc.qbox.me/oauth2/token",
           :rs_host         => "http://rs.qiniu.com",
-          :rsf_host        => "http://rsf.qbox.me",
-          :up_host         => "http://up.qiniu.com",
+          :up_host         => "http://upload.qiniu.com",
           :pub_host        => "http://pu.qbox.me:10200",
           :eu_host         => "http://eu.qbox.me",
-          :client_id       => "a75604760c4da4caaa456c0c5895c061c3065c5a",
-          :client_secret   => "75df554a39f58accb7eb293b550fa59618674b7d",
           :access_key      => "",
           :secret_key      => "",
           :auto_reconnect  => true,
@@ -33,7 +30,7 @@ module Qiniu
           :block_size      => 1024*1024*4,
           :chunk_size      => 1024*256,
           :enable_debug    => true,
-          :tmpdir          => Dir.tmpdir + File::SEPARATOR + 'Qiniu-RS-Ruby-SDK'
+          :tmpdir          => Dir.tmpdir + File::SEPARATOR + 'QiniuRuby'
         }
 
         REQUIRED_OPTION_KEYS = [:access_key, :secret_key]

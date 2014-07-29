@@ -11,12 +11,7 @@ module Qiniu
     describe Storage do
 
       before :all do
-        @bucket = 'RubySDK-Test-Storage'
-        @bucket = make_unique_bucket(@bucket)
-
-        ### 尝试创建Bucket
-        result = Qiniu.mkbucket(@bucket)
-        puts result.inspect
+        @bucket = 'rubysdk'
 
         @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
         @key = make_unique_key_in_bucket(@key)
@@ -53,8 +48,6 @@ module Qiniu
         File.unlink(@localfile_4m) if File.exists?(@localfile_4m)
         File.unlink(@localfile_8m) if File.exists?(@localfile_8m)
         File.unlink(@localfile_1m) if File.exists?(@localfile_1m)
-
-        ### 不删除Bucket以备下次使用
       end
 
       ### 测试单文件直传

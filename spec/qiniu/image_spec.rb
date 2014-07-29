@@ -10,15 +10,7 @@ module Qiniu
     describe Fop do
 
       before :all do
-
-        ### 复用RubySDK-Test-Storage空间
-        @bucket = 'RubySDK-Test-Storage'
-        @bucket = make_unique_bucket(@bucket)
-
-        ### 尝试创建空间
-        result = Qiniu.mkbucket(@bucket)
-        puts result.inspect
-
+        @bucket = 'rubysdk'
         pic_fname = "image_logo_for_test.png"
         @key = make_unique_key_in_bucket(pic_fname)
 
@@ -57,7 +49,6 @@ module Qiniu
       end
 
       after :all do
-        ### 不删除Bucket以备下次使用
       end
 
       context ".info" do

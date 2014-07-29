@@ -12,15 +12,7 @@ module Qiniu
       describe Persistance do
 
         before :all do
-          ### 复用RubySDK-Test-Storage空间
-          @bucket = 'RubySDK-Test-Storage'
-          @bucket = make_unique_bucket(@bucket)
-
-          ### 尝试创建空间
-          code, data, headers = Qiniu::Storage.make_a_public_bucket(@bucket)
-          puts code.inspect
-          puts data.inspect
-          puts headers.inspect
+          @bucket = 'rubysdk'
 
           pic_fname = "image_logo_for_test.png"
           @key = make_unique_key_in_bucket(pic_fname)
@@ -44,7 +36,6 @@ module Qiniu
         end
 
         after :all do
-          ### 不删除Bucket以备下次使用
         end
 
         context ".pfop" do
