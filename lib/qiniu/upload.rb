@@ -86,9 +86,6 @@ module Qiniu
                                  key = nil,
                                  x_vars = nil)
         uptoken = Auth.generate_uptoken(put_policy)
-        if key.nil? then
-          key = put_policy.key
-        end
 
         return upload_with_token_2(uptoken, local_file, key, x_vars)
       end # upload_with_put_policy
