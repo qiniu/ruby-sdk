@@ -49,6 +49,7 @@ module Qiniu
           @settings = DEFAULT_OPTIONS.merge(options)
           REQUIRED_OPTION_KEYS.each do |opt|
             raise MissingArgsError, [opt] unless @settings.has_key?(opt)
+            raise BlankArgsError, [opt] unless @settings[opt] && !@settings[opt].strip.empty?
           end
         end
 
