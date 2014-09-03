@@ -80,6 +80,13 @@ module Qiniu
       end
     end
 
+    class BlankArgsError < Exception
+      def initialize(blank_args_keys)
+        key_list = blank_args_keys.map {|key| key.to_s}.join(' and the ')
+        super("Required args provided by you are blank. Please provide the correct #{key_list}.")
+      end
+    end
+
     class MissingAccessToken < MissingArgsError
       def initialize
         super([:access_token])
