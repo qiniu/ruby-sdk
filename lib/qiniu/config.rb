@@ -9,6 +9,7 @@
 #
 
 require 'tmpdir'
+require 'qiniu/exceptions'
 
 module Qiniu
     module Config
@@ -23,8 +24,6 @@ module Qiniu
           :up_host         => "http://upload.qiniu.com",
           :pub_host        => "http://pu.qbox.me:10200",
           :eu_host         => "http://eu.qbox.me",
-          :access_key      => "",
-          :secret_key      => "",
           :auto_reconnect  => true,
           :max_retry_times => 3,
           :block_size      => 1024*1024*4,
@@ -50,6 +49,7 @@ module Qiniu
           @settings = DEFAULT_OPTIONS.merge(options)
           REQUIRED_OPTION_KEYS.each do |opt|
             raise MissingArgsError, [opt] unless @settings.has_key?(opt)
+            raise BlankArgsError, [opt] unless @settings[opt] && !@settings[opt].strip.empty?
           end
         end
 
