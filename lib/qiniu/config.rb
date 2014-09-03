@@ -9,6 +9,7 @@
 #
 
 require 'tmpdir'
+require 'qiniu/exceptions'
 
 module Qiniu
     module Config
