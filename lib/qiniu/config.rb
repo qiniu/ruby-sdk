@@ -24,8 +24,6 @@ module Qiniu
           :up_host         => "http://upload.qiniu.com",
           :pub_host        => "http://pu.qbox.me:10200",
           :eu_host         => "http://eu.qbox.me",
-          :access_key      => "",
-          :secret_key      => "",
           :auto_reconnect  => true,
           :max_retry_times => 3,
           :block_size      => 1024*1024*4,
