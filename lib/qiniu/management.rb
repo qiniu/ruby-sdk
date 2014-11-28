@@ -1,10 +1,48 @@
 # -*- encoding: utf-8 -*-
 # vim: sw=2 ts=2
 
+require 'qiniu/adt'
 require 'qiniu/http'
 
 module Qiniu
     module Storage
+      class ListPolicy
+        include ADT::Policy
+
+        private
+        def initialize(bucket,
+                       limit = 1000,
+                       prefix = '',
+                       delimiter = '')
+          @bucket     = bucket
+          @limit      = limit
+          @prefix     = prefix
+          @delimiter  = delimiter
+        end # initialize
+
+        public
+        PARAMS = {
+          # 字符串类型参数
+          :bucket     =>  "bucket",
+          :prefix     =>  "prefix",
+          :delimiter  =>  "delimiter",
+          :marker     =>  "marker",
+
+          # 数值类型参数
+          :limit      =>  "limit"
+        } # PARAMS
+
+        PARAMS.each_pair do |key, fld|
+          attr_accessor key
+        end
+
+        def params
+          return PARAMS
+        end # params
+
+        alias :to_s :to_query_string
+      end # class ListPolicy
+
       class << self
         include Utils
 
@@ -86,6 +124,26 @@ module Qiniu
           save_as(bucket, key, source_image_url, mogrify_params_string)
         end # image_mogrify_save_as
 
+        def list(list_policy)
+          url = Config.settings[:rsf_host] + '/list?' + list_policy.to_query_string()
+
+          resp_code, resp_body, resp_headers = HTTP.management_post(url)
+          if resp_code == 0 || resp_code > 299 then
+            has_more = false
+            return resp_code, resp_body, resp_headers, has_more, list_policy
+          end
+
+          has_more = (resp_body['marker'].is_a?(String) && resp_body['marker'] != '')
+          if has_more then
+            new_list_policy = list_policy.clone()
+            new_list_policy.marker = resp_body['marker']
+          else
+            new_list_policy = list_policy
+          end
+
+          return resp_code, resp_body, resp_headers, has_more, new_list_policy
+        end # list
+
         private
 
         def _generate_cp_or_mv_opstr(command, source_bucket, source_key, target_bucket, target_key)
@@ -102,6 +160,7 @@ module Qiniu
           url = Config.settings[:rs_host] + "/batch"
           return HTTP.management_post(url, execs.join("&"))
         end # _batch_cp_or_mv
-      end
+
+      end # class << self
     end # module Storage
 end # module Qiniu

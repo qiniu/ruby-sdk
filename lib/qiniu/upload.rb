@@ -47,15 +47,23 @@ module Qiniu
       def upload_with_token_2(uptoken,
                               local_file,
                               key = nil,
-                              x_vars = nil)
+                              x_vars = nil,
+                              opts = {})
         ### 构造URL
         url = Config.settings[:up_host]
         url[/\/*$/] = ''
         url += '/'
 
         ### 构造HTTP Body
+        file = File.new(local_file, 'rb')
+        if not opts[:content_type].nil?
+          file.define_singleton_method("content_type") do
+            opts[:content_type]
+          end
+        end
+
         post_data = {
-          :file      => File.new(local_file, 'rb'),
+          :file      => file,
           :multipart => true,
         }
         if not uptoken.nil?
@@ -84,13 +92,14 @@ module Qiniu
       def upload_with_put_policy(put_policy,
                                  local_file,
                                  key = nil,
-                                 x_vars = nil)
+                                 x_vars = nil,
+                                 opts = {})
         uptoken = Auth.generate_uptoken(put_policy)
         if key.nil? then
           key = put_policy.key
         end
 
-        return upload_with_token_2(uptoken, local_file, key, x_vars)
+        return upload_with_token_2(uptoken, local_file, key, x_vars, opts)
       end # upload_with_put_policy
 
       private
