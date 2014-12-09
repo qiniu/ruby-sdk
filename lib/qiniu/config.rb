@@ -41,6 +41,7 @@ module Qiniu
         def load config_file
           if File.exist?(config_file)
             config_options = YAML.load_file(config_file)
+            config_options.symbolize_keys!
             initialize_connect(config_options)
           else
             raise MissingConfError, config_file
