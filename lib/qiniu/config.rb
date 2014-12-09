@@ -34,7 +34,7 @@ module Qiniu
           :tmpdir          => Dir.tmpdir + File::SEPARATOR + 'QiniuRuby'
         }
 
-        REQUIRED_OPTION_KEYS = [:access_key, :secret_key]
+        REQUIRED_OPTION_KEYS = [:access_key, :secret_key, :up_host]
 
         attr_reader :settings, :default_params
 
