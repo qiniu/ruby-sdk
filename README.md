@@ -4,6 +4,7 @@
 (个人陈述)此ruby sdk从七牛官方fork过来，修改了七牛的upload—host，这样可以从海外上传到七牛的海外服务器，速度挺快。
 配合：carrierwave-qiniu插件一块使用，效果不错。
 
+Qiniu海外接口：up.qiniug.com
 
 此 Ruby SDK 适用于 Ruby 1.9.x, 2.0.x, 2.1.x, jruby版本，基于 [七牛云存储官方API](http://developer.qiniu.com/docs/v6/index.html) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
