@@ -49,7 +49,7 @@ module Qiniu
         end
 
         def initialize_connect options = {}
-          @settings = DEFAULT_OPTIONS.merge(options)
+          @settings = DEFAULT_OPTIONS.merge!(options)
           REQUIRED_OPTION_KEYS.each do |opt|
             raise MissingArgsError, [opt] unless @settings.has_key?(opt)
           end
