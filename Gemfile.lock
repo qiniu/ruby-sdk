@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    qiniu (6.4.0)
+    qiniu (6.4.1)
       json (~> 1.7)
-      mime-types (~> 1.19)
+      mime-types (~> 2.4.3)
       rest-client (~> 1.6)
       ruby-hmac (~> 0.4)
 
