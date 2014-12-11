@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v6.4.1
+
+- 将 mime-types 的依赖版本升级到 2.4.3 。 [https://github.com/qiniu/ruby-sdk/pull/113](https://github.com/qiniu/ruby-sdk/pull/113)
+
 ### v6.4.0
 
 - 为 put_with_put_policy() 添加 opts 参数，允许使用 :content_type 键指定上传文件的 mime type。 [https://github.com/qiniu/ruby-sdk/pull/111](https://github.com/qiniu/ruby-sdk/pull/111)
