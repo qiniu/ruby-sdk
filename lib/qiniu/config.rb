@@ -34,13 +34,14 @@ module Qiniu
           :tmpdir          => Dir.tmpdir + File::SEPARATOR + 'QiniuRuby'
         }
 
-        REQUIRED_OPTION_KEYS = [:access_key, :secret_key]
+        REQUIRED_OPTION_KEYS = [:access_key, :secret_key, :up_host]
 
         attr_reader :settings, :default_params
 
         def load config_file
           if File.exist?(config_file)
             config_options = YAML.load_file(config_file)
+            config_options.symbolize_keys!
             initialize_connect(config_options)
           else
             raise MissingConfError, config_file
@@ -48,7 +49,7 @@ module Qiniu
         end
 
         def initialize_connect options = {}
-          @settings = DEFAULT_OPTIONS.merge(options)
+          @settings = DEFAULT_OPTIONS.merge!(options)
           REQUIRED_OPTION_KEYS.each do |opt|
             raise MissingArgsError, [opt] unless @settings.has_key?(opt)
           end
