@@ -49,7 +49,9 @@ module Qiniu
           :return_url             => "returnUrl"           ,
           :return_body            => "returnBody"          ,
           :callback_url           => "callbackUrl"         ,
+          :callback_host          => "callbackHost"        ,
           :callback_body          => "callbackBody"        ,
+          :callback_body_type     => "callbackBodyType"    ,
           :persistent_ops         => "persistentOps"       ,
           :persistent_notify_url  => "persistentNotifyUrl" ,
           :persistent_pipeline    => "persistentPipeline"  ,
@@ -58,6 +60,7 @@ module Qiniu
           :deadline               => "deadline"            ,
           :insert_only            => "insertOnly"          ,
           :fsize_limit            => "fsizeLimit"          ,
+          :callback_fetch_key     => "callbackFetchKey"    ,
           :detect_mime            => "detectMime"          ,
           :mime_limit             => "mimeLimit"
         } # PARAMS
