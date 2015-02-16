@@ -26,8 +26,8 @@ module Qiniu
       end
 
       def safe_json_parse(data)
-        MultiJson.load(data)
-      rescue MultiJson::ParseError
+        ::MultiJson.load(data)
+      rescue ::MultiJson::ParseError
         {}
       end
 

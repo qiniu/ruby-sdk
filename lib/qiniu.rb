@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+require 'multi_json'
 
 module Qiniu
   autoload :Version, 'qiniu/version'
@@ -206,4 +207,18 @@ module Qiniu
 
     end
 
+    module MultiJson
+      def to_json
+        ::MultiJson.dump(self)
+      end
+
+      def as_json
+        ::MultiJson.load(self)
+      end
+    end
 end # module Qiniu
+
+unless Hash.method_defined?(:to_json)
+  Hash.send :include, Qiniu::MultiJson
+  puts '_' * 88 + 'Qiniu::Json'
+end

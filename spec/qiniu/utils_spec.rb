@@ -33,12 +33,12 @@ module Qiniu
 
         [400, 500].each do |code|
           context "upstream return http #{code}" do
-            it "should raise RestClient::RequestFailed" do
+            it "should raise ::Faraday::Error" do
               FakeWeb.allow_net_connect = false
               FakeWeb.register_uri(:get, "http://develoepr.qiniu.com/", :status => code)
               lambda {
                 res = Utils.send_request_with 'http://develoepr.qiniu.com/', nil, :method => :get
-              }.should raise_error RestClient::RequestFailed
+              }.should raise_error ::Faraday::Error
             end
           end
         end

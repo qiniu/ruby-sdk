@@ -4,7 +4,7 @@
 require 'hmac-sha1'
 require 'uri'
 require 'cgi'
-
+require 'multi_json'
 require 'qiniu/exceptions'
 
 module Qiniu

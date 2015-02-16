@@ -34,11 +34,11 @@ module Qiniu
 
         ### 发送请求
         response = connection.get(url, req_headers)
-        return response.status, response.body, response.env[:request_headers]
+        return response.status, response.body, response.headers
       rescue => e
         Log.logger.warn "#{e.message} => Qiniu::HTTP.get('#{url}')"
-        if e.respond_to?(:response) && e.response.respond_to?(:code) then
-          return e.response.code, e.response.body, e.response.env[:request_headers]
+        if e.respond_to?(:response) && e.response.respond_to?(:status) then
+          return e.response.status, e.response.body, e.response.headers
         end
         return nil, nil, nil
       end # get
@@ -64,7 +64,7 @@ module Qiniu
           return 0, {}, {}
         end
 
-        content_type = resp_headers["content-type"][0]
+        content_type = resp_headers["content-type"]
         if !content_type.nil? && content_type == API_RESULT_MIMETYPE then
           # 如果是JSON格式，则反序列化
           resp_body = Utils.safe_json_parse(resp_body)
@@ -79,9 +79,7 @@ module Qiniu
           :connection => 'close',
           :accept     => '*/*',
           :user_agent => Config.settings[:user_agent],
-          :content_type => 'multipart/form-data',
-          "Accept"=>"*/*",
-          "Content-Type"=>"multipart/form-data"
+          :content_type => 'multipart/form-data'
         }
 
         # 优先使用外部Header，覆盖任何特定Header
@@ -90,11 +88,11 @@ module Qiniu
         end
         ### 发送请求
         response = connection.post(url, req_body, req_headers)        
-        return response.status, response.body, response.env[:request_headers]
+        return response.status, response.body, response.headers
       rescue => e
         Log.logger.warn "#{e.message} => Qiniu::HTTP.post('#{url}')"
         if e.respond_to?(:response) && e.response.respond_to?(:status) then
-          return e.response.status, e.response.body, e.response.env[:request_headers]
+          return e.response.status, e.response.body, e.response.headers
         end
         return nil, nil, nil
       end # post
@@ -117,8 +115,8 @@ module Qiniu
         if resp_code.nil? then
           return 0, {}, {}
         end
-
-        content_type = resp_headers["content-type"][0]
+        debugger
+        content_type = resp_headers["content-type"]
         if !content_type.nil? && content_type == API_RESULT_MIMETYPE then
           # 如果是JSON格式，则反序列化
           resp_body = Utils.safe_json_parse(resp_body)
