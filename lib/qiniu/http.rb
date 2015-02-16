@@ -115,7 +115,6 @@ module Qiniu
         if resp_code.nil? then
           return 0, {}, {}
         end
-        debugger
         content_type = resp_headers["content-type"]
         if !content_type.nil? && content_type == API_RESULT_MIMETYPE then
           # 如果是JSON格式，则反序列化
