@@ -5,7 +5,7 @@ require 'cgi'
 require 'json'
 require 'zlib'
 require 'base64'
-require 'rest_client'
+require 'faraday'
 require 'hmac-sha1'
 require 'qiniu/exceptions'
 

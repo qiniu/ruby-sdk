@@ -55,7 +55,7 @@ module Qiniu
         url += '/'
 
         ### 构造HTTP Body
-        file = File.new(local_file, 'rb')
+        file = ::Faraday::UploadIO.new(local_file, '*/*')
         if not opts[:content_type].nil?
           file.define_singleton_method("content_type") do
             opts[:content_type]
