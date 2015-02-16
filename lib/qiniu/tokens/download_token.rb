@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-require 'json'
+require 'multi_json'
 require 'qiniu/tokens/access_token'
 require 'qiniu/utils'
 

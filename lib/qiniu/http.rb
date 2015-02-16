@@ -93,8 +93,8 @@ module Qiniu
         return response.status, response.body, response.env[:request_headers]
       rescue => e
         Log.logger.warn "#{e.message} => Qiniu::HTTP.post('#{url}')"
-        if e.respond_to?(:response) && e.response.respond_to?(:code) then
-          return e.response.code, e.response.body, e.response.raw_headers
+        if e.respond_to?(:response) && e.response.respond_to?(:status) then
+          return e.response.status, e.response.body, e.response.env[:request_headers]
         end
         return nil, nil, nil
       end # post

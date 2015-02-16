@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 require 'cgi'
-require 'json'
+require 'multi_json'
 require 'qiniu/tokens/access_token'
 
 module Qiniu

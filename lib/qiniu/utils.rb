@@ -2,7 +2,7 @@
 
 require 'uri'
 require 'cgi'
-require 'json'
+require 'multi_json'
 require 'zlib'
 require 'base64'
 require 'faraday'
@@ -26,8 +26,8 @@ module Qiniu
       end
 
       def safe_json_parse(data)
-        JSON.parse(data)
-      rescue JSON::ParserError
+        MultiJson.load(data)
+      rescue MultiJson::ParseError
         {}
       end
 
@@ -56,12 +56,12 @@ module Qiniu
         header_options.merge!('Authorization' => auth_token) unless auth_token.nil?
         case options[:method]
         when :get
-          response = RestClient.get(url, header_options)
+          response = connection.get(url, header_options)
         when :post
           header_options.merge!(:content_type => options[:content_type])
-          response = RestClient.post(url, data, header_options)
+          response = connection.post(url, data, header_options)
         end
-        code = response.respond_to?(:code) ? response.code.to_i : 0
+        code = response.respond_to?(:status) ? response.status.to_i : 0
         unless HTTP.is_response_ok?(code)
           raise RequestFailed.new("Request Failed", response)
         else
@@ -104,6 +104,15 @@ module Qiniu
       def crc32checksum(filepath)
         File.open(filepath, "rb") { |f| Zlib.crc32 f.read }
       end
+      private # 私有
+      def connection(options={})
+        @connection ||= ::Faraday.new(nil) do |conn|
+          # POST/PUT params encoders:
+          conn.request :multipart
+          conn.request :url_encoded
+          conn.adapter ::Faraday.default_adapter
+        end
+      end # The http connection object
 
     end # module Utils
 end # module Qiniu
