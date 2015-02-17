@@ -32,9 +32,9 @@ module Qiniu
       end
 
       def debug(msg)
-          if Config.settings[:enable_debug]
-              Log.logger.debug(msg)
-          end
+        if Config.settings[:enable_debug]
+          Log.logger.debug(msg)
+        end
       end
 
       ### 已过时，仅作为兼容接口保留
@@ -42,7 +42,7 @@ module Qiniu
         options[:method] = Config.settings[:method] unless options[:method]
         options[:content_type] = Config.settings[:content_type] unless options[:content_type]
         header_options = {
-          :accept => :json,
+          :accept => 'application/json',
           :user_agent => Config.settings[:user_agent]
         }
         auth_token = nil
@@ -56,7 +56,7 @@ module Qiniu
         header_options.merge!('Authorization' => auth_token) unless auth_token.nil?
         case options[:method]
         when :get
-          response = connection.get(url, header_options)
+          response = connection.get(url, {}, header_options)
         when :post
           header_options.merge!(:content_type => options[:content_type])
           response = connection.post(url, data, header_options)
@@ -67,7 +67,7 @@ module Qiniu
         else
           data = {}
           body = response.respond_to?(:body) ? response.body : {}
-          raw_headers = response.respond_to?(:raw_headers) ? response.raw_headers : {}
+          raw_headers = response.respond_to?(:headers) ? response.headers : {}
           data = safe_json_parse(body) unless body.empty?
         end
         [code, data, raw_headers]
