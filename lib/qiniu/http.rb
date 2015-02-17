@@ -86,7 +86,6 @@ module Qiniu
         if opts[:headers].is_a?(Hash) then
           req_headers.merge!(opts[:headers])
         end
-        debugger
         ### 发送请求
         response = connection.post(url, req_body, req_headers)        
         return response.status, response.body, response.headers
@@ -126,11 +125,10 @@ module Qiniu
       end # api_post
 
       def management_post (url, body = '')
-        debugger
         ### 授权并执行管理操作
         return HTTP.api_post(url, body, {
           :headers => { 
-            'authorization' => 'QBox ' + Auth.generate_acctoken(url, body),
+            :authorization => 'QBox ' + Auth.generate_acctoken(url, body),
             :content_type => 'application/x-www-form-urlencoded'
           }
         })
