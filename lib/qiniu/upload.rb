@@ -34,7 +34,7 @@ module Qiniu
         post_data = {
           :params     => callback_query_string,
           :action     => action_params,
-          :file       => File.new(local_file, 'rb'),
+          :file       => ::Faraday::UploadIO.new(local_file, 'application/octet-stream'),
           :multipart  => true
         }
         if !uptoken.nil? then
@@ -55,7 +55,7 @@ module Qiniu
         url += '/'
 
         ### 构造HTTP Body
-        file = File.new(local_file, 'rb')
+        file = ::Faraday::UploadIO.new(local_file, 'application/octet-stream')
         if not opts[:content_type].nil?
           file.define_singleton_method("content_type") do
             opts[:content_type]

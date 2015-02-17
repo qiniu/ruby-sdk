@@ -45,8 +45,8 @@ module Qiniu
           download_url = Qiniu::Auth.authorize_download_url(url)
           puts "download_url=#{download_url}"
 
-          result = RestClient.get(download_url)
-          result.code.should == 200
+          result = Faraday.get(download_url)
+          result.status.should == 200
           result.body.should_not be_empty
 
           ### 授权下载地址（带参数）
@@ -58,8 +58,8 @@ module Qiniu
           )
           puts "download_url=#{download_url}"
 
-          result = RestClient.get(download_url)
-          result.code.should == 200
+          result = Faraday.get(download_url)
+          result.status.should == 200
           result.body.should_not be_empty
 
           ### 删除文件

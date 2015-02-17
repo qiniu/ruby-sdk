@@ -2,10 +2,10 @@
 
 require 'uri'
 require 'cgi'
-require 'json'
+require 'multi_json'
 require 'zlib'
 require 'base64'
-require 'rest_client'
+require 'faraday'
 require 'hmac-sha1'
 require 'qiniu/exceptions'
 
@@ -26,15 +26,15 @@ module Qiniu
       end
 
       def safe_json_parse(data)
-        JSON.parse(data)
-      rescue JSON::ParserError
+        ::MultiJson.load(data)
+      rescue ::MultiJson::ParseError
         {}
       end
 
       def debug(msg)
-          if Config.settings[:enable_debug]
-              Log.logger.debug(msg)
-          end
+        if Config.settings[:enable_debug]
+          Log.logger.debug(msg)
+        end
       end
 
       ### 已过时，仅作为兼容接口保留
@@ -42,7 +42,7 @@ module Qiniu
         options[:method] = Config.settings[:method] unless options[:method]
         options[:content_type] = Config.settings[:content_type] unless options[:content_type]
         header_options = {
-          :accept => :json,
+          :accept => 'application/json',
           :user_agent => Config.settings[:user_agent]
         }
         auth_token = nil
@@ -56,18 +56,18 @@ module Qiniu
         header_options.merge!('Authorization' => auth_token) unless auth_token.nil?
         case options[:method]
         when :get
-          response = RestClient.get(url, header_options)
+          response = connection.get(url, {}, header_options)
         when :post
           header_options.merge!(:content_type => options[:content_type])
-          response = RestClient.post(url, data, header_options)
+          response = connection.post(url, data, header_options)
         end
-        code = response.respond_to?(:code) ? response.code.to_i : 0
+        code = response.respond_to?(:status) ? response.status.to_i : 0
         unless HTTP.is_response_ok?(code)
           raise RequestFailed.new("Request Failed", response)
         else
           data = {}
           body = response.respond_to?(:body) ? response.body : {}
-          raw_headers = response.respond_to?(:raw_headers) ? response.raw_headers : {}
+          raw_headers = response.respond_to?(:headers) ? response.headers : {}
           data = safe_json_parse(body) unless body.empty?
         end
         [code, data, raw_headers]
@@ -104,6 +104,15 @@ module Qiniu
       def crc32checksum(filepath)
         File.open(filepath, "rb") { |f| Zlib.crc32 f.read }
       end
+      private # 私有
+      def connection(options={})
+        @connection ||= ::Faraday.new(nil) do |conn|
+          # POST/PUT params encoders:
+          conn.request :multipart
+          conn.request :url_encoded
+          conn.adapter ::Faraday.default_adapter
+        end
+      end # The http connection object
 
     end # module Utils
 end # module Qiniu

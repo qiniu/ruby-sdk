@@ -14,7 +14,7 @@ module Qiniu
       end
 
       def http_code
-        @response.code.to_i if @response
+        @response.status.to_i if @response
       end
 
       def http_body

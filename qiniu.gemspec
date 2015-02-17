@@ -18,12 +18,13 @@ Gem::Specification.new do |gem|
   gem.license       = "MIT"
 
   # specify any dependencies here; for example:
+  gem.add_development_dependency "pry", ">= 0.10.1"
   gem.add_development_dependency "rake", ">= 0.9"
   gem.add_development_dependency "rspec", ">= 2.11"
   gem.add_development_dependency "fakeweb", "~> 1.3"
-  gem.add_runtime_dependency "json", "~> 1.7"
-  gem.add_runtime_dependency "rest-client", "~> 1.6"
-  gem.add_runtime_dependency "mime-types", "~> 2.4.3"
+  gem.add_runtime_dependency 'multi_json', '~> 1.0'
+  gem.add_runtime_dependency 'faraday',   ['>= 0.8', '< 0.10']
+  gem.add_runtime_dependency "mime-types", ['>= 1.19', '< 2.4.3']
   gem.add_runtime_dependency "ruby-hmac", "~> 0.4"
   gem.add_runtime_dependency "jruby-openssl", "~> 0.7" if RUBY_PLATFORM == "java"
 end
