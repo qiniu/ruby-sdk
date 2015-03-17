@@ -1,4 +1,0 @@
-source 'https://rubygems.org'
-
-# Specify your gem's dependencies in qiniu_for_rails3.gemspec
-gemspec :name => 'qiniu_for_rails3'
