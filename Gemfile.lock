@@ -2,9 +2,9 @@ PATH
   remote: .
   specs:
     qiniu (6.4.1)
-      json (~> 1.7)
+      json (~> 1.8)
       mime-types (~> 1.19)
-      rest-client (~> 1.6)
+      rest-client (~> 1.7.3)
       ruby-hmac (~> 0.4)
 
 GEM
