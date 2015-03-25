@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+require 'qiniu/http'
+
 module Qiniu
     module Misc
       class << self
