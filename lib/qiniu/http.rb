@@ -65,7 +65,7 @@ module Qiniu
         end
 
         content_type = resp_headers["content-type"][0]
-        if !content_type.nil? && content_type == API_RESULT_MIMETYPE then
+        if !content_type.nil? && !content_type.downcase.index(API_RESULT_MIMETYPE).nil? then
           # 如果是JSON格式，则反序列化
           resp_body = Utils.safe_json_parse(resp_body)
         end
@@ -117,7 +117,7 @@ module Qiniu
         end
 
         content_type = resp_headers["content-type"][0]
-        if !content_type.nil? && content_type == API_RESULT_MIMETYPE then
+        if !content_type.nil? && !content_type.downcase.index(API_RESULT_MIMETYPE).nil? then
           # 如果是JSON格式，则反序列化
           resp_body = Utils.safe_json_parse(resp_body)
         end
