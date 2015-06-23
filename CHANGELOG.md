@@ -1,5 +1,11 @@
 ## CHANGE LOG
 
+### v6.4.2
+
+- gem 兼容性调整 。 [https://github.com/qiniu/ruby-sdk/pull/122](https://github.com/qiniu/ruby-sdk/pull/122)
+
+- 上传策略参数调整 。 [https://github.com/qiniu/ruby-sdk/pull/120](https://github.com/qiniu/ruby-sdk/pull/120)
+
 ### v6.4.1
 
 - 将 mime-types 的依赖版本升级到 2.4.3 。 [https://github.com/qiniu/ruby-sdk/pull/113](https://github.com/qiniu/ruby-sdk/pull/113)
@@ -33,7 +39,7 @@
 ### v6.2.2
 
 - 为/pfop接口添加`pipeline`参数，用于指明使用哪个命名转码队列。  [https://github.com/qiniu/ruby-sdk/pull/92](https://github.com/qiniu/ruby-sdk/pull/92)
-- 为authorize_download_url()添加`:fop`参数，用于生成含数据处理指令的授权下载URL。  
+- 为authorize_download_url()添加`:fop`参数，用于生成含数据处理指令的授权下载URL。
 
 ### v6.2.1
 
