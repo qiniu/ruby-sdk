@@ -2,7 +2,7 @@
 
 ### v6.5.0
 
-- 为 Qiniu::Auth 添加一个异常处理逻辑，在 Access Key 和 Secret Key 未正常设置（nil 值）的情况下给出正确提示。[https://github.com/qiniu/ruby-sdk/pull/124](https://github.com/qiniu/ruby-sdk/pull/124)
+- 为 Qiniu::Auth 添加一个异常处理逻辑，在 Access Key 和 Secret Key 未正常设置（nil 值）的情况下给出正确提示。[https://github.com/qiniu/ruby-sdk/pull/126](https://github.com/qiniu/ruby-sdk/pull/126)
 
 ### v6.4.2
 
