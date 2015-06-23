@@ -25,6 +25,18 @@ module Qiniu
           # 默认授权期1小时
           return Time.now.to_i + DEFAULT_AUTH_SECONDS
         end # calculate_deadline
+
+        def calculate_hmac_sha1_digest(sk, str)
+          begin
+            sign = HMAC::SHA1.new(sk).update(str).digest
+          rescue RuntimeError => e
+            raise RuntimeError, "Please set Qiniu's access_key and secret_key before authorize any tokens."
+          rescue
+            raise
+          else
+            return sign
+          end
+        end
       end # class << self
 
       class PutPolicy
@@ -169,7 +181,7 @@ module Qiniu
           end
 
           ### 生成数字签名
-          sign = HMAC::SHA1.new(secret_key).update(download_url).digest
+          sign = calculate_hmac_sha1_digest(secret_key, download_url)
           encoded_sign = Utils.urlsafe_base64_encode(sign)
 
           ### 生成下载授权凭证
@@ -219,7 +231,7 @@ module Qiniu
           end
 
           ### 生成数字签名
-          sign = HMAC::SHA1.new(secret_key).update(signing_str).digest
+          sign = calculate_hmac_sha1_digest(secret_key, signing_str)
           encoded_sign = Utils.urlsafe_base64_encode(sign)
 
           ### 生成管理授权凭证
@@ -238,7 +250,7 @@ module Qiniu
           encoded_put_policy = Utils.urlsafe_base64_encode(put_policy.to_json)
 
           ### 生成数字签名
-          sign = HMAC::SHA1.new(secret_key).update(encoded_put_policy).digest
+          sign = calculate_hmac_sha1_digest(secret_key, encoded_put_policy)
           encoded_sign = Utils.urlsafe_base64_encode(sign)
 
           ### 生成上传授权凭证
