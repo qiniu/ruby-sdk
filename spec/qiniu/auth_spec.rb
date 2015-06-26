@@ -68,7 +68,41 @@ module Qiniu
           puts data.inspect
         end
       end
-
     end
-  end # module Storage
+  end # module Auth
+
+  module Exception_Auth
+    describe Exception_Auth, :not_set_ak_sk => true do
+      ### 测试未设置 ak/sk 的异常抛出情况
+      context ".not_set_ak_sk" do
+        it "should works" do
+          puts Qiniu::Config.instance_variable_get("@settings").inspect
+
+          begin
+            uptoken = Qiniu::Auth.generate_uptoken({})
+          rescue => e
+            e.message.should == "Please set Qiniu's access_key and secret_key before authorize any tokens."
+          else
+            fail "Not raise any exception."
+          end
+
+          begin
+            download_url = Qiniu::Auth.authorize_download_url("http://test.qiniudn.com/a_private_file")
+          rescue => e
+            e.message.should == "Please set Qiniu's access_key and secret_key before authorize any tokens."
+          else
+            fail "Not raise any exception."
+          end
+
+          begin
+            acctoken = Qiniu::Auth.generate_acctoken("http://rsf.qbox.me/list")
+          rescue => e
+            e.message.should == "Please set Qiniu's access_key and secret_key before authorize any tokens."
+          else
+            fail "Not raise any exception."
+          end
+        end
+      end
+    end
+  end # module Exception_Auth
 end # module Qiniu

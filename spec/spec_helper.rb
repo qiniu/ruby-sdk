@@ -8,6 +8,9 @@ RSpec.configure do |config|
   config.before :all do
     Qiniu.establish_connection! :access_key => ENV["QINIU_ACCESS_KEY"], :secret_key => ENV["QINIU_SECRET_KEY"]
   end
+  config.before :each, :not_set_ak_sk => true do
+    Qiniu.establish_connection! :access_key => nil, :secret_key => nil
+  end
 end
 
 def make_unique_bucket (bucket)
