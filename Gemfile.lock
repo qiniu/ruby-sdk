@@ -4,7 +4,7 @@ PATH
     qiniu (6.5.0)
       json (~> 1.8)
       mime-types (~> 1.19)
-      rest-client (~> 1.7.3)
+      rest-client (~> 1.8.0)
       ruby-hmac (~> 0.4)
 
 GEM
@@ -16,7 +16,8 @@ GEM
     mime-types (1.25.1)
     netrc (0.10.3)
     rake (10.4.2)
-    rest-client (1.7.3)
+    rest-client (1.8.0)
+      http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
     rspec (3.2.0)
