@@ -59,14 +59,18 @@ module Qiniu
         end
       end
 
-=begin
       context ".exif" do
         it "should works" do
-          code, data = Qiniu::Fop::Image.exif(@source_image_url)
+          result = Qiniu.get(@bucket, 'gogopher.jpg')
+          result["url"].should_not be_empty
+          puts result.inspect
+
+          code, data, headers = Qiniu::Fop::Image.exif(result["url"])
+          code.should == 200
           puts data.inspect
+          puts headers.inspect
         end
       end
-=end
 
       context ".mogrify_preview_url" do
         it "should works" do
