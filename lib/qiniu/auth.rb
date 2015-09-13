@@ -206,11 +206,7 @@ module Qiniu
           return authorize_download_url(download_url, args)
         end # authorize_download_url_2
 
-        def generate_acctoken(url, body = '')
-          ### 提取AK/SK信息
-          access_key = Config.settings[:access_key]
-          secret_key = Config.settings[:secret_key]
-
+        def generate_acctoken_sign_with_mac(access_key, secret_key, url, body)
           ### 解析URL，生成待签名字符串
           uri = URI.parse(url)
           signing_str = uri.path
@@ -232,13 +228,12 @@ module Qiniu
 
           ### 生成数字签名
           sign = calculate_hmac_sha1_digest(secret_key, signing_str)
-          encoded_sign = Utils.urlsafe_base64_encode(sign)
+          return Utils.urlsafe_base64_encode(sign)
+        end # generate_acctoken_sign_with_mac
 
-          ### 生成管理授权凭证
-          acctoken = "#{access_key}:#{encoded_sign}"
-
-          ### 返回管理授权凭证
-          return acctoken
+        def generate_acctoken(url, body = '')
+          encoded_sign = generate_acctoken_sign_with_mac(Config.settings[:access_key], Config.settings[:secret_key], url, body)
+          return "#{Config.settings[:access_key]}:#{encoded_sign}"
         end # generate_acctoken
 
         def generate_uptoken(put_policy)
@@ -259,6 +254,31 @@ module Qiniu
           ### 返回上传授权凭证
           return uptoken
         end # generate_uptoken
+
+        def authenticate_callback_request(auth_str, url, body = '')
+          ### 提取AK/SK信息
+          access_key = Config.settings[:access_key]
+          secret_key = Config.settings[:secret_key]
+
+          ### 检查签名格式
+          ak_pos = auth_str.index(access_key)
+          if ak_pos.nil? then
+            return false
+          end
+
+          colon_pos = auth_str.index(':', ak_pos + 1)
+          if colon_pos.nil? || ((ak_pos + access_key.length) != colon_pos) then
+            return false
+          end
+
+          encoded_sign = generate_acctoken_sign_with_mac(access_key, secret_key, url, body)
+          sign_pos = auth_str.index(encoded_sign, colon_pos + 1)
+          if sign_pos.nil? || ((sign_pos + encoded_sign.length) != auth_str.length) then
+            return false
+          end
+
+          return true
+        end # authenticate_callback_request
       end # class << self
 
     end # module Auth
