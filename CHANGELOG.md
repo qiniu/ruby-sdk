@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### V6.5.1
+
+- 为 Qiniu::Auth 添加验证七牛回调请求签名合法性的函数。[https://github.com/qiniu/ruby-sdk/pull/133](https://github.com/qiniu/ruby-sdk/pull/133)
+
 ### v6.5.0
 
 - 为 Qiniu::Auth 添加一个异常处理逻辑，在 Access Key 和 Secret Key 未正常设置（nil 值）的情况下给出正确提示。[https://github.com/qiniu/ruby-sdk/pull/126](https://github.com/qiniu/ruby-sdk/pull/126)
