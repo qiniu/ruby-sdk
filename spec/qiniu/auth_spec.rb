@@ -3,6 +3,7 @@
 
 require 'spec_helper'
 require 'qiniu/auth'
+require 'qiniu/config'
 require 'qiniu/storage'
 require 'digest/sha1'
 
@@ -67,6 +68,25 @@ module Qiniu
           code.should == 200
           puts data.inspect
         end
+      end
+    end
+
+    ### 测试回调签名
+    context ".authenticate_callback_request" do
+      it "should works" do
+        url = '/test.php'
+        body = 'name=xxx&size=1234'
+        false.should == Qiniu::Auth.authenticate_callback_request('ABCD', url, body)
+        false.should == Qiniu::Auth.authenticate_callback_request(Config.settings[:access_key], url, body)
+        false.should == Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':', url, body)
+        false.should == Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':????', url, body)
+
+        acctoken = Qiniu::Auth.generate_acctoken(url, body)
+        auth_str = 'QBox ' + acctoken
+
+        false.should == Qiniu::Auth.authenticate_callback_request(auth_str + '  ', url, body)
+        true.should == Qiniu::Auth.authenticate_callback_request(auth_str, url, body)
+        true.should == Qiniu::Auth.authenticate_callback_request(acctoken, url, body)
       end
     end
   end # module Auth
