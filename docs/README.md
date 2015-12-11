@@ -436,9 +436,9 @@ target_key
 
 #### 重命名单个文件
 
-    Qiniu::RS.rename(bucket, old_name, new_name)
+    Qiniu::Storage.rename(bucket, old_name, new_name)
 
-可以通过 SDK 提供的 `Qiniu::RS.rename` 函数进行文件重命名操作。
+可以通过 SDK 提供的 `Qiniu::Storage.rename` 函数进行文件重命名操作。
 
 **参数**
 
