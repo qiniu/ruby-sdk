@@ -71,6 +71,12 @@ module Qiniu
           return HTTP.management_post(url)
         end # copy
 
+        def rename(bucket, old_name, new_name)
+          uri = _generate_cp_or_mv_opstr('move', bucket, old_name, bucket, new_name)
+          url = Config.settings[:rs_host] + uri
+          return HTTP.management_post(url)
+        end # rename
+
         def move(source_bucket, source_key, target_bucket, target_key)
           uri = _generate_cp_or_mv_opstr('move', source_bucket, source_key, target_bucket, target_key)
           url = Config.settings[:rs_host] + uri

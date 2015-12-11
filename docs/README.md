@@ -28,6 +28,7 @@ title: Ruby SDK
     - [文件管理](#file-management)
         - [查看单个文件属性信息](#stat)
         - [复制单个文件](#copy)
+        - [重命名单个文件](#rename)
         - [移动单个文件](#move)
         - [删除单个文件](#delete)
         - [批量操作](#batch)
@@ -425,6 +426,30 @@ target_bucket
 
 target_key
 : 必须，字符串类型（String），指定要复制到目标空间的目标文件名。
+
+**返回值**
+
+如果请求失败，返回 `false`；否则返回 `true` 。
+
+
+<a name="rename"></a>
+
+#### 重命名单个文件
+
+    Qiniu::RS.rename(bucket, old_name, new_name)
+
+可以通过 SDK 提供的 `Qiniu::RS.rename` 函数进行文件重命名操作。
+
+**参数**
+
+bucket
+: 必须，字符串类型（String），指定源空间。
+
+old_name
+: 必须，字符串类型（String），源文件名称。
+
+new_name
+: 必须，字符串类型（String），源文件新名称。
 
 **返回值**
 

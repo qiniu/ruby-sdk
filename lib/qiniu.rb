@@ -107,6 +107,11 @@ module Qiniu
         code == StatusOK
       end
 
+      def rename(bucket, old_name, new_name)
+        code, data = Storage.rename(bucket, old_name, new_name)
+        code == StatusOK
+      end
+
       def move(source_bucket, source_key, target_bucket, target_key)
         code, data = Storage.move(source_bucket, source_key, target_bucket, target_key)
         code == StatusOK
