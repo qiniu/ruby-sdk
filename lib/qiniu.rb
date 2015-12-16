@@ -117,6 +117,11 @@ module Qiniu
         code == StatusOK
       end
 
+      def fetch(bucket, target_url, key)
+        code, data = Storage.fetch(bucket, target_url, key)
+        code == StatusOK
+      end
+
       def batch(command, bucket, keys)
         code, data = Storage.batch(command, bucket, keys)
         code == StatusOK ? data : false

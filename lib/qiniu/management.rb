@@ -82,6 +82,11 @@ module Qiniu
           return HTTP.management_post(url)
         end # delete
 
+        def fetch(bucket, target_url, key)
+          url = Config.settings[:fetch_host] + '/fetch/' + Utils.urlsafe_base64_encode(target_url) + '/to/' + encode_entry_uri(bucket, key)
+          return HTTP.management_post(url)
+        end # fetch
+
         def batch(command, bucket, keys)
           execs = []
           keys.each do |key|
