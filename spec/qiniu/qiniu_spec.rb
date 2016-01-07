@@ -248,9 +248,16 @@ module Qiniu
       end
     end
 
+    context ".rename" do
+      it "should works" do
+        result = Qiniu.rename(@bucket, @key, @key2)
+        expect(result).to eq(true)
+      end
+    end
+
     context ".delete" do
       it "should works" do
-        result = Qiniu.delete(@bucket, @key)
+        result = Qiniu.delete(@bucket, @key2)
         expect(result).to eq(true)
       end
     end

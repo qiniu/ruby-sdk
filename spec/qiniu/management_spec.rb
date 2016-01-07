@@ -137,9 +137,17 @@ module Qiniu
         end
       end
 
+      context ".rename" do
+        it "should works" do
+          code, data = Storage.rename(@bucket, @key, @key2)
+          code.should == 200
+          puts data.inspect
+        end
+      end
+
       context ".delete" do
         it "should works" do
-          code, data = Storage.delete(@bucket, @key)
+          code, data = Storage.delete(@bucket, @key2)
           code.should == 200
           puts data.inspect
         end

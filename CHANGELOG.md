@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### V6.5.2
+
+- 为 Qiniu::Storage 添加文件重命名方法。
+
 ### V6.5.1
 
 - 为 Qiniu::Auth 添加验证七牛回调请求签名合法性的函数。[https://github.com/qiniu/ruby-sdk/pull/133](https://github.com/qiniu/ruby-sdk/pull/133)

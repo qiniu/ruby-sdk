@@ -2,7 +2,7 @@
 title: Ruby SDK
 ---
 
-此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](http://docs.qiniu.com/) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
+此 Ruby SDK 适用于 Ruby 1.8.x, 1.9.x, 2.0.x, 2.1.x, jruby, rbx, ree 版本，基于 [七牛云存储官方API](http://developer.qiniu.com/docs/v6/index.html) 构建。使用此 SDK 构建您的网络应用程序，能让您以非常便捷地方式将数据安全地存储到七牛云存储上。无论您的网络应用是一个网站程序，还是包括从云端（服务端程序）到终端（手持设备应用）的架构的服务或应用，通过七牛云存储及其 SDK，都能让您应用程序的终端用户高速上传和下载，同时也让您的服务端更加轻盈。
 
 七牛云存储 Ruby SDK 源码地址：<https://github.com/qiniu/ruby-sdk>
 
@@ -28,6 +28,7 @@ title: Ruby SDK
     - [文件管理](#file-management)
         - [查看单个文件属性信息](#stat)
         - [复制单个文件](#copy)
+        - [重命名单个文件](#rename)
         - [移动单个文件](#move)
         - [删除单个文件](#delete)
         - [批量操作](#batch)
@@ -425,6 +426,30 @@ target_bucket
 
 target_key
 : 必须，字符串类型（String），指定要复制到目标空间的目标文件名。
+
+**返回值**
+
+如果请求失败，返回 `false`；否则返回 `true` 。
+
+
+<a name="rename"></a>
+
+#### 重命名单个文件
+
+    Qiniu::Storage.rename(bucket, old_name, new_name)
+
+可以通过 SDK 提供的 `Qiniu::Storage.rename` 函数进行文件重命名操作。
+
+**参数**
+
+bucket
+: 必须，字符串类型（String），指定源空间。
+
+old_name
+: 必须，字符串类型（String），源文件名称。
+
+new_name
+: 必须，字符串类型（String），源文件新名称。
 
 **返回值**
 
