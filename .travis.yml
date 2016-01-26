@@ -2,7 +2,9 @@ language: ruby
 rvm:
   - 1.9.3
   - 2.0.0
-  - 2.1.1
+  - 2.1.10
+  - 2.2.4
+  - 2.3.0
   - jruby-19mode
 before_script:
   - export QINIU_ACCESS_KEY=QWYn5TFQsLLU1pL5MFEmX3s5DmHdUThav9WyOWOm
