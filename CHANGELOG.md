@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### V6.5.2
+
+- 修正无法触发加载异常类的问题；修正 batch_move 参数未正确打包的问题。[https://github.com/qiniu/ruby-sdk/pull/142](https://github.com/qiniu/ruby-sdk/pull/142)
+
 ### V6.5.1
 
 - 为 Qiniu::Auth 添加验证七牛回调请求签名合法性的函数。[https://github.com/qiniu/ruby-sdk/pull/133](https://github.com/qiniu/ruby-sdk/pull/133)
