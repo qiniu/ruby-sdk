@@ -105,7 +105,7 @@ module Qiniu
         end # batch_copy
 
         def batch_move(*args)
-          _batch_cp_or_mv('move', args)
+          _batch_cp_or_mv('move', *args)
         end # batch_move
 
         def batch_delete(bucket, keys)

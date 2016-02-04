@@ -99,11 +99,11 @@ module Qiniu
 
       context ".batch_move" do
         it "should works" do
-          code, data = Storage.batch_move @bucket, @key, @bucket, @key2
+          code, data = Storage.batch_move [@bucket, @key, @bucket, @key2]
           code.should == 200
           puts data.inspect
 
-          code3, data3 = Storage.batch_move @bucket, @key2, @bucket, @key
+          code3, data3 = Storage.batch_move [@bucket, @key2, @bucket, @key]
           code3.should == 200
           puts data3.inspect
         end
