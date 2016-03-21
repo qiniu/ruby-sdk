@@ -73,7 +73,7 @@ module Qiniu
         return resp_code, resp_body, resp_headers
       end # api_get
 
-      def post (url, req_body = nil, opts = {})
+      def post (url, req_body = nil, opts = {}, keep_alive_context = nil)
         ### 配置请求Header
         req_headers = {
           :connection => 'close',
@@ -87,7 +87,8 @@ module Qiniu
         end
 
         ### 发送请求
-        response = RestClient.post(url, req_body, req_headers)
+        response = keep_alive_context.execute(:method => :post, :url => url,
+                                             :payload => req_body, :headers => req_headers)
         return response.code.to_i, response.body, response.raw_headers
       rescue => e
         Log.logger.warn "#{e.message} => Qiniu::HTTP.post('#{url}')"
@@ -97,7 +98,7 @@ module Qiniu
         return nil, nil, nil
       end # post
 
-      def api_post (url, req_body = nil, opts = {})
+      def api_post (url, req_body = nil, opts = {}, keep_alive_context = nil)
         ### 配置请求Header
         headers = {
           :accept => API_RESULT_MIMETYPE
@@ -111,7 +112,7 @@ module Qiniu
         end
 
         ### 发送请求，然后转换返回值
-        resp_code, resp_body, resp_headers = post(url, req_body, opts)
+        resp_code, resp_body, resp_headers = post(url, req_body, opts, keep_alive_context)
         if resp_code.nil? then
           return 0, {}, {}
         end

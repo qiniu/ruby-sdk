@@ -95,35 +95,36 @@ module Qiniu
           {:ctx => nil, :offset => 0, :restsize => nil, :status_code => nil, :host => nil}
         end # _new_block_put_progress_data
 
-        def _call_binary_with_token(uptoken, url, data, content_type = nil, retry_times = 0)
+        def _call_binary_with_token(uptoken, url, data, content_type = nil, retry_times = 0, keep_alive_context = nil)
           options = {
               :headers => {
                   :content_type   => 'application/octet-stream',
-                  'Authorization' => 'UpToken ' + uptoken
+                  'Authorization' => 'UpToken ' + uptoken,
+                  :connection => 'keep-alive'
               }
           }
           if !content_type.nil? && !content_type.empty? then
               options[:headers][:content_type] = content_type 
           end
 
-          code, data, raw_headers = HTTP.api_post(url, data, options)
+          code, data, raw_headers = HTTP.api_post(url, data, options, keep_alive_context)
           unless HTTP.is_response_ok?(code)
               retry_times += 1
               if Config.settings[:auto_reconnect] && retry_times < Config.settings[:max_retry_times]
-                  return _call_binary_with_token(uptoken, url, data, options[:content_type], retry_times)
+                  return _call_binary_with_token(uptoken, url, data, options[:content_type], retry_times, keep_alive_context)
               end
           end
           return code, data, raw_headers
         end # _call_binary_with_token
 
-        def _mkblock(uptoken, block_size, body)
+        def _mkblock(uptoken, block_size, body, keep_alive_context)
             url = Config.settings[:up_host] + "/mkblk/#{block_size}"
-            _call_binary_with_token(uptoken, url, body)
+            _call_binary_with_token(uptoken, url, body, nil, 0, keep_alive_context)
         end # _mkblock
 
-        def _putblock(uphost, uptoken, ctx, offset, body)
+        def _putblock(uphost, uptoken, ctx, offset, body, keep_alive_context)
             url = uphost + "/bput/#{ctx}/#{offset}"
-            _call_binary_with_token(uptoken, url, body)
+            _call_binary_with_token(uptoken, url, body, nil, 0, keep_alive_context)
         end # _putblock
 
         def _resumable_put_block(uptoken,
@@ -133,7 +134,8 @@ module Qiniu
                                  chunk_size,
                                  progress,
                                  retry_times,
-                                 notifier)
+                                 notifier,
+                                 keep_alive_context)
             code, data = 0, {}
             fpath = fh.path
 
@@ -151,7 +153,7 @@ module Qiniu
                         raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length)
                     end
 
-                    code, data, raw_headers = _mkblock(uptoken, block_size, body)
+                    code, data, raw_headers = _mkblock(uptoken, block_size, body, keep_alive_context)
                     Utils.debug "Mkblk : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
 
                     body_crc32 = Zlib.crc32(body)
@@ -186,7 +188,7 @@ module Qiniu
                         raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length)
                     end
 
-                    code, data, raw_headers = _putblock(progress[:host], uptoken, progress[:ctx], progress[:offset], body)
+                    code, data, raw_headers = _putblock(progress[:host], uptoken, progress[:ctx], progress[:offset], body, keep_alive_context)
                     Utils.debug "Bput : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
 
                     body_crc32 = Zlib.crc32(body)
@@ -219,7 +221,8 @@ module Qiniu
                            checksums,
                            progresses,
                            block_notifier = nil,
-                           chunk_notifier = nil)
+                           chunk_notifier = nil,
+                           keep_alive_context = nil)
             code, data = 0, {}
             fsize = fh.data_size
             block_count = _block_count(fsize)
@@ -239,7 +242,7 @@ module Qiniu
                     end
                     #code, data = _resumable_put_block(uptoken, fh, block_index, block_size, Config.settings[:chunk_size], progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
                     # Put the whole block as a chunk
-                    code, data = _resumable_put_block(uptoken, fh, block_index, block_size, block_size, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
+                    code, data = _resumable_put_block(uptoken, fh, block_index, block_size, block_size, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier, keep_alive_context)
                     if HTTP.is_response_ok?(code)
                         #checksums[block_index] = data["checksum"]
                         checksums[block_index] = data["ctx"]
@@ -261,7 +264,8 @@ module Qiniu
                     custom_meta = nil,
                     customer = nil,
                     callback_params = nil,
-                    rotate = nil)
+                    rotate = nil,
+                    keep_alive_context = nil)
           path = '/rs-mkfile/' + Utils.urlsafe_base64_encode(entry_uri) + "/fsize/#{fsize}"
           path += '/mimeType/' + Utils.urlsafe_base64_encode(mime_type) if !mime_type.nil? && !mime_type.empty?
           path += '/meta/' + Utils.urlsafe_base64_encode(custom_meta) if !custom_meta.nil? && !custom_meta.empty?
@@ -275,7 +279,7 @@ module Qiniu
           #    body += Utils.urlsafe_base64_decode(checksum)
           #end
           body = checksums.join(',')
-          _call_binary_with_token(uptoken, url, body, 'text/plain')
+          _call_binary_with_token(uptoken, url, body, 'text/plain', 0, keep_alive_context)
         end # _mkfile
 
         def _resumable_upload(uptoken,
@@ -299,12 +303,14 @@ module Qiniu
           checksums = []
           block_count.times{checksums << ''}
 
-          code, data, raw_headers = _resumable_put(uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
+          keep_alive_context = RestClient::KeepAliveContext.new
+
+          code, data, raw_headers = _resumable_put(uptoken, fh, checksums, progresses, block_notifier, chunk_notifier, keep_alive_context)
 
           if HTTP.is_response_ok?(code)
             uphost = data["host"]
             entry_uri = bucket + ':' + key
-            code, data, raw_headers = _mkfile(uphost, uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params, rotate)
+            code, data, raw_headers = _mkfile(uphost, uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params, rotate, keep_alive_context)
             Utils.debug "Mkfile : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
           end
 
@@ -313,6 +319,9 @@ module Qiniu
           end
 
           return code, data, raw_headers
+
+        ensure
+          keep_alive_context.finish if keep_alive_context
         end # _resumable_upload
       end # self class
     end # module Storage
