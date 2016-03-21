@@ -7,7 +7,7 @@ module Qiniu
     class << self
       public
       def is_response_ok?(http_code)
-          return 200 <= http_code && http_code <= 299
+        return 200 <= http_code && http_code <= 299
       end # is_response_ok?
 
       def generate_query_string(params)
@@ -22,9 +22,9 @@ module Qiniu
       def get (url, opts = {})
         ### 配置请求Header
         req_headers = {
-          :connection => 'close',
-          :accept     => '*/*',
-          :user_agent => Config.settings[:user_agent]
+            :connection => 'close',
+            :accept     => '*/*',
+            :user_agent => Config.settings[:user_agent]
         }
 
         # 优先使用外部Header，覆盖任何特定Header
@@ -48,7 +48,7 @@ module Qiniu
       def api_get (url, opts = {})
         ### 配置请求Header
         headers = {
-          :accept => API_RESULT_MIMETYPE
+            :accept => API_RESULT_MIMETYPE
         }
 
         # 将特定Header混入外部Header中
@@ -76,9 +76,9 @@ module Qiniu
       def post (url, req_body = nil, opts = {})
         ### 配置请求Header
         req_headers = {
-          :connection => 'close',
-          :accept     => '*/*',
-          :user_agent => Config.settings[:user_agent]
+            :connection => 'close',
+            :accept     => '*/*',
+            :user_agent => Config.settings[:user_agent]
         }
 
         # 优先使用外部Header，覆盖任何特定Header
@@ -100,7 +100,7 @@ module Qiniu
       def api_post (url, req_body = nil, opts = {})
         ### 配置请求Header
         headers = {
-          :accept => API_RESULT_MIMETYPE
+            :accept => API_RESULT_MIMETYPE
         }
 
         # 将特定Header混入外部Header中
@@ -128,8 +128,8 @@ module Qiniu
       def management_post (url, body = '')
         ### 授权并执行管理操作
         return HTTP.api_post(url, body, {
-          :headers => { 'Authorization' => 'QBox ' + Auth.generate_acctoken(url, body) }
-        })
+                                    :headers => { 'Authorization' => 'QBox ' + Auth.generate_acctoken(url, body) }
+                                })
       end # management_post
     end # class << self
 
