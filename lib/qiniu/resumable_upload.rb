@@ -35,7 +35,6 @@ module Qiniu
 
     class BlockProgressNotifier < AbstractClass::BlockProgressNotifier
       def notify(index, checksum)
-        Utils.debug "block #{index}: {ctx: #{checksum}} successfully uploaded."
         Utils.debug "block #{index}: {checksum: #{checksum}} successfully uploaded."
       end
     end # class BlockProgressNotifier
