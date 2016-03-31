@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
 # vim: sw=2 ts=2
 
+require 'stringio'
+
 module Qiniu
   module Storage
     class << self
@@ -80,6 +82,51 @@ module Qiniu
         HTTP.api_post(url, post_data)
       end # upload_with_token_2
 
+      def upload_buffer_with_token(uptoken,
+                              buf,
+                              key = nil,
+                              x_vars = nil,
+                              opts = {})
+        ### 构造 URL
+        url = Config.settings[:up_host]
+        url[/\/*$/] = ''
+        url += '/'
+
+        ### 构造 HTTP Body
+        if buf.is_a?(String)
+          data = StringIO.new(buf)
+        elsif buf.respond_to?(:read)
+          data = buf
+        end
+
+        data.define_singleton_method("path") do
+          'NO-PATH'
+        end
+        data.define_singleton_method("original_filename") do
+          'A-MASS-OF-DATA'
+        end
+        data.define_singleton_method("content_type") do
+          (opts[:content_type].nil? || opts[:content_type].empty?) ? 'application/octet-stream' : opts[:content_type]
+        end
+
+        post_data = {
+          :file      => data,
+          :multipart => true,
+        }
+        if not uptoken.nil?
+          post_data[:token] = uptoken
+        end
+        if not key.nil?
+          post_data[:key] = key
+        end
+        if x_vars.is_a?(Hash)
+          post_data.merge!(x_vars)
+        end
+
+        ### 发送请求
+        HTTP.api_post(url, post_data)
+      end # upload_with_token_2
+
       ### 授权举例
       # put_policy.bucket | put_policy.key | key     | 语义 | 授权
       # :---------------- | :------------- | :------ | :--- | :---
@@ -101,6 +148,19 @@ module Qiniu
 
         return upload_with_token_2(uptoken, local_file, key, x_vars, opts)
       end # upload_with_put_policy
+
+      def upload_buffer_with_put_policy(put_policy,
+                                 buf,
+                                 key = nil,
+                                 x_vars = nil,
+                                 opts = {})
+        uptoken = Auth.generate_uptoken(put_policy)
+        if key.nil? then
+          key = put_policy.key
+        end
+
+        return upload_buffer_with_token(uptoken, buf, key, x_vars, opts)
+      end # upload_buffer_with_put_policy
 
       private
       def _generate_action_params(local_file,
