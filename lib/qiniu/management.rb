@@ -144,6 +144,11 @@ module Qiniu
           return resp_code, resp_body, resp_headers, has_more, new_list_policy
         end # list
 
+        def fetch(url, bucket, key)
+          api_url = Config.settings[:iovip_host] + '/fetch/' + Utils.urlsafe_base64_encode(url) + '/to/' + Utils.urlsafe_base64_encode("#{bucket}:#{key}")
+          return HTTP.management_post(api_url)
+        end # fetch
+
         private
 
         def _generate_cp_or_mv_opstr(command, source_bucket, source_key, target_bucket, target_key)
