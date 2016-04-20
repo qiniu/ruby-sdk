@@ -14,7 +14,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "qiniu"
   gem.require_paths = ["lib"]
-  gem.version       = Qiniu::Version.to_s
+  gem.version       = "6.5.1"
   gem.license       = "MIT"
 
   # specify any dependencies here; for example:
