@@ -14,16 +14,15 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "qiniu"
   gem.require_paths = ["lib"]
-  gem.version       = Qiniu::Version.to_s
+  gem.version       = "6.5.3"
   gem.license       = "MIT"
 
   # specify any dependencies here; for example:
   gem.add_development_dependency "rake", ">= 0.9"
   gem.add_development_dependency "rspec", ">= 2.11"
   gem.add_development_dependency "fakeweb", "~> 1.3"
-  gem.add_runtime_dependency "json", "~> 1.8"
-  gem.add_runtime_dependency "rest-client", "~> 1.7.3"
-  gem.add_runtime_dependency "mime-types", "~> 2.4.3"
+  gem.add_runtime_dependency "json", "~> 1.7"
+  gem.add_runtime_dependency "rest-client", ">= 1.6"
+  gem.add_runtime_dependency "mime-types", "~> 1.19"
   gem.add_runtime_dependency "ruby-hmac", "~> 0.4"
-  gem.add_runtime_dependency "jruby-openssl", "~> 0.7" if RUBY_PLATFORM == "java"
 end
