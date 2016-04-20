@@ -25,5 +25,4 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "rest-client", ">= 1.6"
   gem.add_runtime_dependency "mime-types", "~> 1.19"
   gem.add_runtime_dependency "ruby-hmac", "~> 0.4"
-  gem.add_runtime_dependency "jruby-openssl", "~> 0.7" if RUBY_PLATFORM == "java"
 end
