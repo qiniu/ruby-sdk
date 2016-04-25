@@ -25,6 +25,7 @@ module Qiniu
           :up_host         => "http://up.qiniu.com",
           :pub_host        => "http://pu.qbox.me:10200",
           :eu_host         => "http://eu.qbox.me",
+          :iovip_host         => "http://iovip.qbox.me",
           :access_key      => "",
           :secret_key      => "",
           :auto_reconnect  => true,

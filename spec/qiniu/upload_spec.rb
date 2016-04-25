@@ -147,6 +147,24 @@ module Qiniu
         end
       end # .upload_with_put_policy
 
+      context ".upload_buffer_with_put_policy" do
+        it "should works" do
+          pp = Qiniu::Auth::PutPolicy.new(@bucket, @key)
+          pp.end_user = "amethyst.black@gmail.com"
+          puts 'put_policy=' + pp.to_json
+
+          test_line = 'This is a test line for testing put_buffer function.'
+          code, data, raw_headers = Qiniu::Storage.upload_buffer_with_put_policy(
+            pp,
+            test_line,
+            @key
+          )
+          code.should == 200
+          puts data.inspect
+          puts raw_headers.inspect
+        end
+      end # .upload_buffer_with_put_policy
+
       context ".stat" do
         it "should exists" do
           code, data = Qiniu::Storage.stat(@bucket, @key)

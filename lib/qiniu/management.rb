@@ -110,7 +110,7 @@ module Qiniu
         end # batch_copy
 
         def batch_move(*args)
-          _batch_cp_or_mv('move', args)
+          _batch_cp_or_mv('move', *args)
         end # batch_move
 
         def batch_delete(bucket, keys)
@@ -148,6 +148,11 @@ module Qiniu
 
           return resp_code, resp_body, resp_headers, has_more, new_list_policy
         end # list
+
+        def fetch(url, bucket, key)
+          api_url = Config.settings[:iovip_host] + '/fetch/' + Utils.urlsafe_base64_encode(url) + '/to/' + Utils.urlsafe_base64_encode("#{bucket}:#{key}")
+          return HTTP.management_post(api_url)
+        end # fetch
 
         private
 

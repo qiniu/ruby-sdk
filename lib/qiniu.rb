@@ -1,12 +1,13 @@
 # -*- encoding: utf-8 -*-
 
+require 'qiniu/exceptions'
+
 module Qiniu
   autoload :Version, 'qiniu/version'
   autoload :Utils, 'qiniu/utils'
   autoload :Auth, 'qiniu/auth'
   autoload :Config, 'qiniu/config'
   autoload :Log, 'qiniu/log'
-  autoload :Exception, 'qiniu/exceptions'
   autoload :AccessToken, 'qiniu/tokens/access_token'
   autoload :QboxToken, 'qiniu/tokens/qbox_token'
   autoload :UploadToken, 'qiniu/tokens/upload_token'
