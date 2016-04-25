@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### V6.6.0
+
+- 添加 upload_buffer_with_put_policy() 方法，直接上传一块数据作为文件内容。[https://github.com/qiniu/ruby-sdk/pull/146](https://github.com/qiniu/ruby-sdk/pull/146)
+
 ### V6.5.2
 
 - 修正无法触发加载异常类的问题；修正 batch_move 参数未正确打包的问题。[https://github.com/qiniu/ruby-sdk/pull/142](https://github.com/qiniu/ruby-sdk/pull/142)
