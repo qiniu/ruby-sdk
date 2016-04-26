@@ -11,6 +11,8 @@ RSpec.configure do |config|
   config.before :each, :not_set_ak_sk => true do
     Qiniu.establish_connection! :access_key => nil, :secret_key => nil
   end
+
+  config.order = :defined
 end
 
 def make_unique_bucket (bucket)
