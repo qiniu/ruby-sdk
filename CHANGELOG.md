@@ -1,14 +1,19 @@
 ## CHANGE LOG
 
-### V6.6.0
+### v6.7.0
+
+- 放弃支持过时的 Ruby 1.9、Ruby 2.0 和 JRuby 1.7。[https://github.com/qiniu/ruby-sdk/pull/149](https://github.com/qiniu/ruby-sdk/pull/149)
+- 更好地支持 Rails 4。
+
+### v6.6.0
 
 - 添加 upload_buffer_with_put_policy() 方法，直接上传一块数据作为文件内容。[https://github.com/qiniu/ruby-sdk/pull/146](https://github.com/qiniu/ruby-sdk/pull/146)
 
-### V6.5.2
+### v6.5.2
 
 - 修正无法触发加载异常类的问题；修正 batch_move 参数未正确打包的问题。[https://github.com/qiniu/ruby-sdk/pull/142](https://github.com/qiniu/ruby-sdk/pull/142)
 
-### V6.5.1
+### v6.5.1
 
 - 为 Qiniu::Auth 添加验证七牛回调请求签名合法性的函数。[https://github.com/qiniu/ruby-sdk/pull/133](https://github.com/qiniu/ruby-sdk/pull/133)
 
