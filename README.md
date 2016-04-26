@@ -34,14 +34,6 @@
 
     $ gem install qiniu
 
-## Rails 4 项目安装
-
-在 Rails 4 项目的 `Gemfile` 里添加 `qiniu` 后执行 `bundle` 命令可能会失败，这是因为 Rails 4 项目默认会使用 `mime-types` 3.x 版本。需要使用以下命令将 `mime-types` 降级为满足 Qiniu Ruby SDK 的 2.6.x 版本。
-
-    bundle update mime-types
-
-由于 `mime-types` 3.0 要求的最低 Ruby 版本是 2.0，而 Qiniu Ruby SDK 支持 Ruby 1.9，因此我们不能通过简单修改对 `mime-types` 的版本依赖来解决此问题。
-
 ## 使用
 
 参考文档：[七牛云存储 Ruby SDK 使用指南](http://developer.qiniu.com/docs/v6/sdk/ruby-sdk.html)
