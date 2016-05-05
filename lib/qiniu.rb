@@ -17,6 +17,7 @@ module Qiniu
   autoload :Fop, 'qiniu/fop'
   autoload :Misc, 'qiniu/misc'
   autoload :HostManager, 'qiniu/host_manager'
+  autoload :HTTP, 'qiniu/http'
 
     class << self
 
