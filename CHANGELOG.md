@@ -4,6 +4,7 @@
 
 - 放弃支持过时的 Ruby 1.9、Ruby 2.0 和 JRuby 1.7。[https://github.com/qiniu/ruby-sdk/pull/149](https://github.com/qiniu/ruby-sdk/pull/149)
 - 更好地支持 Rails 4。
+- 确保自动化测试在 CI 上完全通过，为下一步开发做准备。
 
 ### v6.6.0
 
