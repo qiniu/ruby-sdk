@@ -11,7 +11,7 @@ module Qiniu
 
         include Utils
 
-        attr_accessor :scope, :expires_in, :callback_url, :callback_body, :callback_body_type, :customer, :escape, :async_options, :return_body, :return_url
+        attr_accessor :scope, :expires_in, :callback_url, :callback_body, :callback_body_type, :customer, :escape, :async_options, :return_body, :return_url, :delete_after_days
 
         def initialize(opts = {})
           @scope = opts[:scope]
@@ -26,6 +26,7 @@ module Qiniu
           @persistent_pipeline = opts[:persistent_pipeline]
           @return_body = opts[:return_body]
           @return_url = opts[:return_url]
+          @delete_after_days = opts[:delete_after_days]
         end
 
         def generate_signature
@@ -41,6 +42,8 @@ module Qiniu
           params[:persistentOps] = @persistent_ops if !@persistent_ops.nil? && !@persistent_ops.empty?
           params[:persistentNotifyUrl] = @persistent_notify_url if !@persistent_notify_url.nil? && !@persistent_notify_url.empty?
           params[:persistentPipeline] = @persistent_pipeline if !@persistent_pipeline.nil? && !@persistent_pipeline.empty?
+
+          params[:deleteAfterDays] = @delete_after_days if !@delete_after_days.nil? && !@delete_after_days.empty?
 
           Utils.urlsafe_base64_encode(params.to_json)
         end
