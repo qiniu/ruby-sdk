@@ -8,11 +8,8 @@ require 'digest/sha1'
 
 module Qiniu
   module Storage
-    describe Storage do
-
+    shared_examples "Upload Specs" do
       before :all do
-        @bucket = 'rubysdk'
-
         @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
         @key = make_unique_key_in_bucket(@key)
         puts "key=#{@key}"
@@ -52,6 +49,12 @@ module Qiniu
 
       ### 测试单文件直传
       context ".upload_with_token" do
+        after do
+          code, data = Qiniu::Storage.delete(@bucket, @key)
+          puts data.inspect
+          code.should == 200
+        end
+
         it "should works" do
           upopts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com"}
           uptoken = Qiniu.generate_upload_token(upopts)
@@ -68,26 +71,20 @@ module Qiniu
           code.should == 200
           puts data.inspect
           puts raw_headers.inspect
-        end
-      end
 
-      context ".stat" do
-        it "should exists" do
           code, data = Qiniu::Storage.stat(@bucket, @key)
           puts data.inspect
           code.should == 200
         end
       end
 
-      context ".delete" do
-        it "should works" do
+      context ".upload_with_token_2" do
+        after do
           code, data = Qiniu::Storage.delete(@bucket, @key)
           puts data.inspect
           code.should == 200
         end
-      end
 
-      context ".upload_with_token_2" do
         it "should works" do
           upopts = {:scope => @bucket, :expires_in => 3600, :endUser => "why404@gmail.com"}
           uptoken = Qiniu.generate_upload_token(upopts)
@@ -95,32 +92,28 @@ module Qiniu
           code, data, raw_headers = Qiniu::Storage.upload_with_token_2(
             uptoken,
             __FILE__,
-            @key
+            @key,
+            nil,
+            bucket: @bucket
           )
 
           code.should == 200
           puts data.inspect
           puts raw_headers.inspect
-        end
-      end # .upload_with_token_2
 
-      context ".stat" do
-        it "should exists" do
           code, data = Qiniu::Storage.stat(@bucket, @key)
           puts data.inspect
           code.should == 200
         end
-      end
+      end # .upload_with_token_2
 
-      context ".delete" do
-        it "should works" do
+      context ".upload_with_put_policy" do
+        after do
           code, data = Qiniu::Storage.delete(@bucket, @key)
           puts data.inspect
           code.should == 200
         end
-      end
 
-      context ".upload_with_put_policy" do
         it "should works" do
           pp = Qiniu::Auth::PutPolicy.new(@bucket, @key)
           pp.end_user = "why404@gmail.com"
@@ -129,7 +122,9 @@ module Qiniu
           code, data, raw_headers = Qiniu::Storage.upload_with_put_policy(
             pp,
             __FILE__,
-            @key + '-not-equal'
+            @key + '-not-equal',
+            nil,
+            bucket: @bucket
           )
           code.should_not == 200
           puts data.inspect
@@ -138,16 +133,28 @@ module Qiniu
           code, data, raw_headers = Qiniu::Storage.upload_with_put_policy(
             pp,
             __FILE__,
-            @key
+            @key,
+            nil,
+            bucket: @bucket
           )
 
           code.should == 200
           puts data.inspect
           puts raw_headers.inspect
+
+          code, data = Qiniu::Storage.stat(@bucket, @key)
+          puts data.inspect
+          code.should == 200
         end
       end # .upload_with_put_policy
 
       context ".upload_buffer_with_put_policy" do
+        after do
+          code, data = Qiniu::Storage.delete(@bucket, @key)
+          puts data.inspect
+          code.should == 200
+        end
+
         it "should works" do
           pp = Qiniu::Auth::PutPolicy.new(@bucket, @key)
           pp.end_user = "amethyst.black@gmail.com"
@@ -157,32 +164,28 @@ module Qiniu
           code, data, raw_headers = Qiniu::Storage.upload_buffer_with_put_policy(
             pp,
             test_line,
-            @key
+            @key,
+            nil,
+            bucket: @bucket
           )
           code.should == 200
           puts data.inspect
           puts raw_headers.inspect
-        end
-      end # .upload_buffer_with_put_policy
 
-      context ".stat" do
-        it "should exists" do
           code, data = Qiniu::Storage.stat(@bucket, @key)
           puts data.inspect
           code.should == 200
         end
-      end
-
-      context ".delete" do
-        it "should works" do
-          code, data = Qiniu::Storage.delete(@bucket, @key)
-          puts data.inspect
-          code.should == 200
-        end
-      end
+      end # .upload_buffer_with_put_policy
 
       ### 测试断点续上传
       context ".resumable_upload_with_token" do
+        after do
+          code, data = Qiniu::Storage.delete(@bucket, @key_5m)
+          puts data.inspect
+          code.should == 200
+        end
+
         it "should works" do
           upopts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com"}
           uptoken = Qiniu.generate_upload_token(upopts)
@@ -196,26 +199,20 @@ module Qiniu
           puts data.inspect
           puts raw_headers.inspect
           puts "key_5m=#{@key_5m}"
-        end
-      end
 
-      context ".stat" do
-        it "should exists" do
           code, data = Qiniu::Storage.stat(@bucket, @key_5m)
           puts data.inspect
           code.should == 200
         end
       end
 
-      context ".delete" do
-        it "should works" do
-          code, data = Qiniu::Storage.delete(@bucket, @key_5m)
+      context ".resumable_upload_with_token2" do
+        after do
+          code, data = Qiniu::Storage.delete(@bucket, @key_4m)
           puts data.inspect
           code.should == 200
         end
-      end
 
-      context ".resumable_upload_with_token2" do
         it "should works" do
           upopts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com"}
           uptoken = Qiniu.generate_upload_token(upopts)
@@ -229,26 +226,20 @@ module Qiniu
           puts data.inspect
           puts raw_headers.inspect
           puts "key_4m=#{@key_4m}"
-        end
-      end
 
-      context ".stat" do
-        it "should exists" do
           code, data = Qiniu::Storage.stat(@bucket, @key_4m)
           puts data.inspect
           code.should == 200
         end
       end
 
-      context ".delete" do
-        it "should works" do
-          code, data = Qiniu::Storage.delete(@bucket, @key_4m)
+      context ".resumable_upload_with_token3" do
+        after do
+          code, data = Qiniu::Storage.delete(@bucket, @key_8m)
           puts data.inspect
           code.should == 200
         end
-      end
 
-      context ".resumable_upload_with_token3" do
         it "should works" do
           upopts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com"}
           uptoken = Qiniu.generate_upload_token(upopts)
@@ -262,26 +253,20 @@ module Qiniu
           puts data.inspect
           puts raw_headers.inspect
           puts "key_8m=#{@key_8m}"
-        end
-      end
 
-      context ".stat" do
-        it "should exists" do
           code, data = Qiniu::Storage.stat(@bucket, @key_8m)
           puts data.inspect
           code.should == 200
         end
       end
 
-      context ".delete" do
-        it "should works" do
-          code, data = Qiniu::Storage.delete(@bucket, @key_8m)
+      context ".resumable_upload_with_token4" do
+        after do
+          code, data = Qiniu::Storage.delete(@bucket, @key_1m)
           puts data.inspect
           code.should == 200
         end
-      end
 
-      context ".resumable_upload_with_token4" do
         it "should works" do
           upopts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com"}
           uptoken = Qiniu.generate_upload_token(upopts)
@@ -295,25 +280,51 @@ module Qiniu
           puts data.inspect
           puts raw_headers.inspect
           puts "key_1m=#{@key_1m}"
-        end
-      end
 
-      context ".stat" do
-        it "should exists" do
           code, data = Qiniu::Storage.stat(@bucket, @key_1m)
           puts data.inspect
           code.should == 200
         end
       end
+    end
 
-      context ".delete" do
-        it "should works" do
-          code, data = Qiniu::Storage.delete(@bucket, @key_1m)
-          puts data.inspect
-          code.should == 200
+    describe 'When multi_region is disabled' do
+      before :all do
+        Config.settings[:multi_region] = false
+        @bucket = 'rubysdk'
+      end
+      include_examples 'Upload Specs'
+    end
+
+    describe 'When multi_region is enabled' do
+      describe 'for z0 bucket' do
+        before :all do
+          Config.settings[:multi_region] = true
+          @bucket = 'rubysdk'
         end
+        include_examples 'Upload Specs'
       end
 
+      describe 'for z1 bucket' do
+        before :all do
+          Config.settings[:multi_region] = true
+          @bucket = 'rubysdk-bc'
+        end
+        include_examples 'Upload Specs'
+
+        it 'should raise BucketIsMissing error' do
+          upopts = {:scope => @bucket, :expires_in => 3600, :endUser => "why404@gmail.com"}
+          uptoken = Qiniu.generate_upload_token(upopts)
+
+          expect do
+            Qiniu::Storage.upload_with_token_2(
+              uptoken,
+              __FILE__,
+              @key,
+            )
+          end.to raise_error('upload_with_token_2 requires :bucket option when multi_region is enabled')
+        end
+      end
     end
   end # module Storage
 end # module Qiniu

@@ -32,7 +32,7 @@ module Qiniu
         end
         callback_query_string = HTTP.generate_query_string(callback_params)
 
-        url = Config.settings[:up_host] + '/upload'
+        url = Config.up_host(bucket) + '/upload'
         post_data = {
           :params     => callback_query_string,
           :action     => action_params,
@@ -52,7 +52,7 @@ module Qiniu
                               x_vars = nil,
                               opts = {})
         ### 构造URL
-        url = Config.settings[:up_host]
+        url = Config.up_host(opts[:bucket])
         url[/\/*$/] = ''
         url += '/'
 
@@ -80,6 +80,8 @@ module Qiniu
 
         ### 发送请求
         HTTP.api_post(url, post_data)
+      rescue BucketIsMissing
+        raise 'upload_with_token_2 requires :bucket option when multi_region is enabled'
       end # upload_with_token_2
 
       def upload_buffer_with_token(uptoken,
@@ -88,7 +90,7 @@ module Qiniu
                               x_vars = nil,
                               opts = {})
         ### 构造 URL
-        url = Config.settings[:up_host]
+        url = Config.up_host(opts[:bucket])
         url[/\/*$/] = ''
         url += '/'
 
@@ -125,6 +127,8 @@ module Qiniu
 
         ### 发送请求
         HTTP.api_post(url, post_data)
+      rescue BucketIsMissing
+        raise 'upload_buffer_with_token requires :bucket option when multi_region is enabled'
       end # upload_with_token_2
 
       ### 授权举例
@@ -147,6 +151,8 @@ module Qiniu
         end
 
         return upload_with_token_2(uptoken, local_file, key, x_vars, opts)
+      rescue BucketIsMissing
+        raise 'upload_with_put_policy requires :bucket option when multi_region is enabled'
       end # upload_with_put_policy
 
       def upload_buffer_with_put_policy(put_policy,
@@ -160,6 +166,8 @@ module Qiniu
         end
 
         return upload_buffer_with_token(uptoken, buf, key, x_vars, opts)
+      rescue BucketIsMissing
+        raise 'upload_buffer_with_put_policy requires :bucket option when multi_region is enabled'
       end # upload_buffer_with_put_policy
 
       private

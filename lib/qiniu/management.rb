@@ -83,7 +83,7 @@ module Qiniu
         end # delete
 
         def fetch(bucket, target_url, key)
-          url = Config.settings[:fetch_host] + '/fetch/' + Utils.urlsafe_base64_encode(target_url) + '/to/' + encode_entry_uri(bucket, key)
+          url = Config.fetch_host(bucket) + '/fetch/' + Utils.urlsafe_base64_encode(target_url) + '/to/' + encode_entry_uri(bucket, key)
           return HTTP.management_post(url)
         end # fetch
 
