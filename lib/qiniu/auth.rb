@@ -74,7 +74,8 @@ module Qiniu
           :fsize_limit            => "fsizeLimit"          ,
           :callback_fetch_key     => "callbackFetchKey"    ,
           :detect_mime            => "detectMime"          ,
-          :mime_limit             => "mimeLimit"
+          :mime_limit             => "mimeLimit"           ,
+          :checksum               => "checksum"
         } # PARAMS
 
         public
