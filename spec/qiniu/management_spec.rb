@@ -18,6 +18,7 @@ module Qiniu
         @key = make_unique_key_in_bucket(@key)
 
         @key2 = @key + rand(100).to_s
+        @key3 = @key + rand(200).to_s
       end
 
       after :all do
@@ -87,11 +88,16 @@ module Qiniu
 
       context ".batch_copy" do
         it "should works" do
-          code, data = Storage.batch_copy @bucket, @key, @bucket, @key2
+          code, data = Storage.batch_copy [@bucket, @key, @bucket, @key2],
+                                          [@bucket, @key, @bucket, @key3]
           code.should == 200
           puts data.inspect
 
           code, data = Storage.delete @bucket, @key2
+          code.should == 200
+          puts data.inspect
+
+          code, data = Storage.delete @bucket, @key3
           code.should == 200
           puts data.inspect
         end

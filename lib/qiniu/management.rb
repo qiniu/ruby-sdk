@@ -106,7 +106,7 @@ module Qiniu
         end # batch_stat
 
         def batch_copy(*args)
-          _batch_cp_or_mv('copy', args)
+          _batch_cp_or_mv('copy', *args)
         end # batch_copy
 
         def batch_move(*args)
