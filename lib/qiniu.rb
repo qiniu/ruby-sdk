@@ -16,6 +16,7 @@ module Qiniu
   autoload :Storage, 'qiniu/storage'
   autoload :Fop, 'qiniu/fop'
   autoload :Misc, 'qiniu/misc'
+  autoload :HostManager, 'qiniu/host_manager'
 
     class << self
 

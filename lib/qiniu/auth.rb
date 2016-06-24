@@ -74,7 +74,9 @@ module Qiniu
           :fsize_limit            => "fsizeLimit"          ,
           :callback_fetch_key     => "callbackFetchKey"    ,
           :detect_mime            => "detectMime"          ,
-          :mime_limit             => "mimeLimit"
+          :mime_limit             => "mimeLimit"           ,
+          :uphosts                => "uphosts"             ,
+          :global                 => "global"
         } # PARAMS
 
         public
@@ -90,6 +92,15 @@ module Qiniu
           else
             # 覆盖语义，文件已存在则直接覆盖
             @scope = "#{bucket}:#{key}"
+          end
+
+          if Config.settings[:multi_region]
+            begin
+              @uphosts = Config.host_manager.up_hosts(bucket)
+              @global = Config.host_manager.global(bucket)
+            rescue
+              # Do nothing
+            end
           end
         end # scope!
 

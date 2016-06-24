@@ -29,7 +29,10 @@ module Qiniu
           pp = Auth::PutPolicy.new(@bucket, key)
           code, data, raw_headers = Qiniu::Storage.upload_with_put_policy(
             pp,
-            __FILE__
+            __FILE__,
+            nil,
+            nil,
+            bucket: @bucket
           )
           code.should == 200
           puts data.inspect
@@ -67,6 +70,24 @@ module Qiniu
           code, data = Qiniu::Storage.delete(@bucket, key)
           code.should == 200
           puts data.inspect
+        end
+
+        it "should generate uphosts and global for multi_region" do
+          origin_multi_region = Config.settings[:multi_region]
+          begin
+            Config.settings[:multi_region] = true
+            ### 生成Key
+            key = 'a_private_file'
+            key = make_unique_key_in_bucket(key)
+            puts "key=#{key}"
+
+            ### 生成 PutPolicy
+            pp = Auth::PutPolicy.new(@bucket, key)
+            expect(pp.instance_variable_get(:@uphosts)).to eq ["http://up.qiniu.com", "http://upload.qiniu.com", "-H up.qiniu.com http://183.136.139.16"]
+            expect(pp.instance_variable_get(:@global)).to be false
+          ensure
+            Config.settings[:multi_region] = origin_multi_region
+          end
         end
       end
     end

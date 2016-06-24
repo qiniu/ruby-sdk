@@ -20,12 +20,12 @@ module Qiniu
           :content_type    => 'application/x-www-form-urlencoded',
           :auth_url        => "https://acc.qbox.me/oauth2/token",
           :rs_host         => "http://rs.qiniu.com",
-          :fetch_host      => "http://iovip.qbox.me",
+          :fetch_host      => nil,
           :rsf_host        => "http://rsf.qbox.me",
-          :up_host         => "http://up.qiniu.com",
+          :up_host         => nil,
           :pub_host        => "http://pu.qbox.me:10200",
           :eu_host         => "http://eu.qbox.me",
-          :iovip_host         => "http://iovip.qbox.me",
+          :uc_host         => "http://uc.qbox.me",
           :access_key      => "",
           :secret_key      => "",
           :auto_reconnect  => true,
@@ -33,12 +33,13 @@ module Qiniu
           :block_size      => 1024*1024*4,
           :chunk_size      => 1024*256,
           :enable_debug    => true,
-          :tmpdir          => Dir.tmpdir + File::SEPARATOR + 'QiniuRuby'
+          :tmpdir          => Dir.tmpdir + File::SEPARATOR + 'QiniuRuby',
+          :multi_region    => true
         }
 
-        REQUIRED_OPTION_KEYS = [:access_key, :secret_key, :up_host]
+        REQUIRED_OPTION_KEYS = [:access_key, :secret_key]
 
-        attr_reader :settings, :default_params
+        attr_reader :settings, :default_params, :host_manager
 
         def load config_file
           if File.exist?(config_file)
@@ -55,8 +56,17 @@ module Qiniu
           REQUIRED_OPTION_KEYS.each do |opt|
             raise MissingArgsError, [opt] unless @settings.has_key?(opt)
           end
+          @host_manager = HostManager.new(@settings)
+          nil
         end
 
+        def up_host(bucket, opts = {})
+          @settings[:up_host] || @host_manager.up_host(bucket, opts)
+        end
+
+        def fetch_host(bucket, opts = {})
+          @settings[:fetch_host] || @host_manager.fetch_host(bucket, opts)
+        end
       end
     end # module Config
 end # module Qiniu

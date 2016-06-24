@@ -103,7 +103,7 @@ module Qiniu
               }
           }
           if !content_type.nil? && !content_type.empty? then
-              options[:headers][:content_type] = content_type 
+              options[:headers][:content_type] = content_type
           end
 
           code, data, raw_headers = HTTP.api_post(url, data, options)
@@ -116,8 +116,8 @@ module Qiniu
           return code, data, raw_headers
         end # _call_binary_with_token
 
-        def _mkblock(uptoken, block_size, body)
-            url = Config.settings[:up_host] + "/mkblk/#{block_size}"
+        def _mkblock(bucket, uptoken, block_size, body)
+            url = Config.up_host(bucket) + "/mkblk/#{block_size}"
             _call_binary_with_token(uptoken, url, body)
         end # _mkblock
 
@@ -126,7 +126,8 @@ module Qiniu
             _call_binary_with_token(uptoken, url, body)
         end # _putblock
 
-        def _resumable_put_block(uptoken,
+        def _resumable_put_block(bucket,
+                                 uptoken,
                                  fh,
                                  block_index,
                                  block_size,
@@ -151,7 +152,7 @@ module Qiniu
                         raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length)
                     end
 
-                    code, data, raw_headers = _mkblock(uptoken, block_size, body)
+                    code, data, raw_headers = _mkblock(bucket, uptoken, block_size, body)
                     Utils.debug "Mkblk : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
 
                     body_crc32 = Zlib.crc32(body)
@@ -214,7 +215,8 @@ module Qiniu
             ((fsize + Config.settings[:block_size] - 1) / Config.settings[:block_size]).to_i
         end # _block_count
 
-        def _resumable_put(uptoken,
+        def _resumable_put(bucket,
+                           uptoken,
                            fh,
                            checksums,
                            progresses,
@@ -239,7 +241,7 @@ module Qiniu
                     end
                     #code, data = _resumable_put_block(uptoken, fh, block_index, block_size, Config.settings[:chunk_size], progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
                     # Put the whole block as a chunk
-                    code, data = _resumable_put_block(uptoken, fh, block_index, block_size, block_size, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
+                    code, data = _resumable_put_block(bucket, uptoken, fh, block_index, block_size, block_size, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
                     if HTTP.is_response_ok?(code)
                         #checksums[block_index] = data["checksum"]
                         checksums[block_index] = data["ctx"]
@@ -299,7 +301,7 @@ module Qiniu
           checksums = []
           block_count.times{checksums << ''}
 
-          code, data, raw_headers = _resumable_put(uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
+          code, data, raw_headers = _resumable_put(bucket, uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
 
           if HTTP.is_response_ok?(code)
             uphost = data["host"]

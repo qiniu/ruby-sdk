@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v6.8.0
+
+- 支持多存储区域，部分 API 需要额外的 bucket 参数。[https://github.com/qiniu/ruby-sdk/pull/161](https://github.com/qiniu/ruby-sdk/pull/161)
+
 ### v6.7.0
 
 - 放弃支持过时的 Ruby 1.9、Ruby 2.0 和 JRuby 1.7。[https://github.com/qiniu/ruby-sdk/pull/149](https://github.com/qiniu/ruby-sdk/pull/149)
