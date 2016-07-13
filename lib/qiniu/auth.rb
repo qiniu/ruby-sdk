@@ -76,7 +76,8 @@ module Qiniu
           :detect_mime            => "detectMime"          ,
           :mime_limit             => "mimeLimit"           ,
           :uphosts                => "uphosts"             ,
-          :global                 => "global"
+          :global                 => "global"              ,
+          :delete_after_days      => "deleteAfterDays"
         } # PARAMS
 
         public
