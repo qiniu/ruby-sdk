@@ -14,9 +14,11 @@ key = '1.mp4'
 #转码所使用的队列名称。 
 pipeline = 'abc'
 
-#要进行转码的转码操作。   
-fops = "avthumb/mp4/s/640x360/vb/1.25m"
+#需要添加水印的图片UrlSafeBase64,可以参考http://developer.qiniu.com/code/v6/api/dora-api/av/video-watermark.html 
+base64URL = Qiniu::Utils.urlsafe_base64_encode('http://developer.qiniu.com/resource/logo-2.jpg')  
 
+#水印参数
+fops = "avthumb/mp4/wmImage"+base64URL
 
 #可以对转码后的文件进行使用saveas参数自定义命名，当然也可以不指定文件会默认命名并保存在当间。
 saveas_key = Qiniu::Utils.urlsafe_base64_encode(目标Bucket_Name:自定义文件key)
