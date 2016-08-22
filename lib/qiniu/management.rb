@@ -87,6 +87,20 @@ module Qiniu
           return HTTP.management_post(url)
         end # fetch
 
+        def chgm(bucket,key,mine_type)
+          url = Config.settings[:rs_host] + _generate_chgm_opstr(bucket,key,mine_type)
+          return HTTP.management_post(url)
+        end # chgm
+        
+        def batch_chgm(bucket,keys,mine_type)
+          execs = []
+          keys.each do |key|
+            execs << 'op=' + _generate_chgm_opstr(bucket, key, mine_type) 
+          end
+          url = Config.settings[:rs_host] + "/batch"
+          return HTTP.management_post(url, execs.join("&"))
+        end # batch chgm
+
         def batch(command, bucket, keys)
           execs = []
           keys.each do |key|
@@ -157,6 +171,12 @@ module Qiniu
           %Q(/#{command}/#{source_encoded_entry_uri}/#{target_encoded_entry_uri})
         end # _generate_cp_or_mv_opstr
 
+        def _generate_chgm_opstr(bucket,key,mine_type)
+          source_encoded_entry_uri = encode_entry_uri(bucket, key)
+          target_mine_type = urlsafe_base64_encode "#{mine_type}"
+          %Q(/chgm/#{source_encoded_entry_uri}/mime/#{target_mine_type})
+        end
+        
         def _batch_cp_or_mv(command, *op_args)
           execs = []
           op_args.each do |e|

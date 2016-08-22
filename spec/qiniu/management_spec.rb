@@ -143,6 +143,32 @@ module Qiniu
           puts data.inspect
         end
       end
+      
+      context "batch chgm" do 
+        it "should works" do 
+          code, data = Storage.stat(@bucket, @key)
+          code.should == 200
+          old_mineType = data['mimeType']
+          new_mineType = old_mineType + "v2"
+          code, data =  Storage.batch_chgm(@bucket, [@key],new_mineType)
+          code, data =  Storage.stat(@bucket, @key)
+          code.should == 200
+          data['mimeType'].should == new_mineType
+        end
+      end
+      context ".chgm" do 
+        it "should works" do 
+          code, data = Storage.stat(@bucket, @key)
+          code.should == 200
+          old_mineType = data['mimeType']
+          new_mineType = old_mineType + "v2"
+          code, data =  Storage.chgm(@bucket, @key,new_mineType)
+          code, data =  Storage.stat(@bucket, @key)
+          code.should == 200
+          data['mimeType'].should == new_mineType
+        end
+      end
+
     end
 
     describe 'When multi_region is disabled' do
