@@ -2,8 +2,6 @@
 
 ### v6.8.1
 
-- 支持多存储区域，部分 API 需要额外的 bucket 参数。[https://github.com/qiniu/ruby-sdk/pull/161](https://github.com/qiniu/ruby-sdk/pull/161)
-
 - 增加delafterdays 策略。[https://github.com/qiniu/ruby-sdk/pull/162](https://github.com/qiniu/ruby-sdk/pull/162)
 
 - 调整依赖。[https://github.com/qiniu/ruby-sdk/pull/167](https://github.com/qiniu/ruby-sdk/pull/167)
