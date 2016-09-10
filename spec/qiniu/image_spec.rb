@@ -61,7 +61,7 @@ module Qiniu
 
       context ".exif" do
         it "should works" do
-          result = Qiniu.get(@bucket, 'gogopher.jpg')
+          result = Qiniu.get(@bucket, @source_image_url)
           result["url"].should_not be_empty
           puts result.inspect
 
