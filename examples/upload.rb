@@ -16,7 +16,7 @@ key = 'my-ruby-logo.png'
 #构建上传策略
 put_policy = Qiniu::Auth::PutPolicy.new(
     bucket,      # 存储空间
-    key,     # 最终资源名，可省略，即缺省为“创建”语义，设置为nil为普通上传 
+    key,     # 最终资源名，可省略，即缺省为“创建”语义，设置为nil为普通上传
     3600    #token过期时间，默认为3600s
 )
 
@@ -28,9 +28,11 @@ filePath = './ruby-logo.png'
 
 #调用upload_with_token_2方法上传
 code, result, response_headers = Qiniu::Storage.upload_with_token_2(
-     uptoken, 
+     uptoken,
      filePath,
-     key
+     key,
+	 nil,
+	 :bucket => bucket
 )
 
 #打印上传返回的信息
