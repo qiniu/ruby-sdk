@@ -26,6 +26,18 @@ module Qiniu
         Config.initialize_connect opts
       end
 
+      def establish_https_connection!(opts = {})
+        Config.initialize_connect_https opts
+      end
+
+      def switch_to_http!
+        Config.switch_to_http
+      end
+
+      def switch_to_https!
+        Config.switch_to_https
+      end
+
       def mkbucket(bucket_name)
         code, data = Storage.mkbucket(bucket_name)
         code == StatusOK

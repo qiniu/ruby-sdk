@@ -1,5 +1,13 @@
 ## CHANGE LOG
 
+### v6.9.0
+
+- 增加 `Qiniu.establish_https_connection!` 方法，使所有七牛请求都使用 HTTPS 协议，保证连接的安全性。
+
+- 重构随 gem 附带的 example 中的代码，使用更简洁易用的 API。
+
+- 移除 `Qiniu::Config::DEFAULT_OPTIONS`，用户可以调用 `Qiniu::Config.settings` 获取七牛配置。
+
 ### v6.8.1
 
 - 增加delafterdays 策略。[https://github.com/qiniu/ruby-sdk/pull/162](https://github.com/qiniu/ruby-sdk/pull/162)
