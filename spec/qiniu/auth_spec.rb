@@ -39,11 +39,10 @@ module Qiniu
           puts raw_headers.inspect
 
           ### 获取下载地址
-          code, data = Qiniu::Storage.get(@bucket, key)
-          code.should == 200
-          puts data.inspect
-
-          url = data['url']
+          code, domains, = Qiniu::Storage.domains(@bucket)
+          domains.should_not be_empty
+          domain = domains.first['domain']
+          url = "http://#{domain}/#{key}"
 
           ### 授权下载地址（不带参数）
           download_url = Qiniu::Auth.authorize_download_url(url)

@@ -152,22 +152,6 @@ module Qiniu
       end
     end
 
-    context ".get" do
-      it "should works" do
-        result = Qiniu.get(@bucket, @key, "qiniu_spec.rb", 10)
-        expect(result).to_not be_empty
-        puts result.inspect
-      end
-    end
-
-    context ".download" do
-      it "should works" do
-        result = Qiniu.download(@bucket, @key, "rs_spec.rb", 10)
-        expect(result).to_not be_empty
-        puts result.inspect
-      end
-    end
-
     context ".batch" do
       it "should works" do
         result = Qiniu.batch("stat", @bucket, [@key])
@@ -184,43 +168,27 @@ module Qiniu
       end
     end
 
-    context ".batch_get" do
-      it "should works" do
-        result = Qiniu.batch_get(@bucket, [@key])
-        expect(result).to_not be_empty
-        puts result.inspect
-      end
-    end
-
-    context ".batch_download" do
-      it "should works" do
-        result = Qiniu.batch_download(@bucket, [@key])
-        expect(result).to_not be_empty
-        puts result.inspect
-      end
-    end
-
 =begin
     context ".batch_copy" do
       it "should works" do
         result = Qiniu.batch_copy [@bucket, @key, @bucket, @key2]
-        result.should_not be_false
+        result.should_not be_falsey
 
         #result2 = Qiniu.stat(@bucket, @key2)
-        #result2.should_not be_false
+        #result2.should_not be_falsey
       end
     end
 
     context ".batch_move" do
       it "should works" do
         result = Qiniu.batch_move [@bucket, @key, @bucket, @key2]
-        result.should_not be_false
+        result.should_not be_falsey
 
         #result2 = Qiniu.stat(@bucket, @key2)
-        #result2.should_not be_false
+        #result2.should_not be_falsey
 
         result3 = Qiniu.batch_move [@bucket, @key2, @bucket, @key]
-        result3.should_not be_false
+        result3.should_not be_falsey
       end
     end
 =end
@@ -257,23 +225,27 @@ module Qiniu
 
     context ".image_info" do
       it "should works" do
-        data = Qiniu.get(@test_image_bucket, @test_image_key)
-        expect(data).to_not be_empty
-        puts data.inspect
-        result = Qiniu.image_info(data["url"])
-        expect(result).to_not be_empty
+        code, domains, = Qiniu::Storage.domains(@test_image_bucket)
+        code.should be 200
+        domains.should_not be_empty
+        domain = domains.first['domain']
+        url = "http://#{domain}/#{@test_image_key}"
+
+        result = Qiniu.image_info(url)
+        expect(result).to_not be_falsey
         puts result.inspect
       end
     end
 
     context ".image_mogrify_save_as" do
       it "should works" do
-        data = Qiniu.get(@test_image_bucket, @test_image_key)
-        expect(data).to_not be_empty
-        puts data.inspect
+        code, domains, = Qiniu::Storage.domains(@test_image_bucket)
+        code.should be 200
+        domains.should_not be_empty
+        domain = domains.first['domain']
+        src_img_url = "http://#{domain}/#{@test_image_key}"
 
         dest_key = "cropped-" + @test_image_key
-        src_img_url = data["url"]
         mogrify_options = {
           :thumbnail => "!120x120>",
           :gravity => "center",
@@ -284,7 +256,7 @@ module Qiniu
           :auto_orient => true
         }
         result2 = Qiniu.image_mogrify_save_as(@test_image_bucket, dest_key, src_img_url, mogrify_options)
-        expect(result2).to_not be_empty
+        expect(result2).to_not be_falsey
         puts result2.inspect
       end
     end

@@ -72,11 +72,8 @@ module Qiniu
 
       class << self
 
-        API_HOST = 'http://api.qiniu.com'
-
-        PFOP_URL = API_HOST + '/pfop/'
-
         def pfop (args)
+          pfop_url = Config.settings[:api_host] + '/pfop/'
           ### 生成fop指令串
           if args.is_a?(PfopPolicy) then
             # PfopPolicy的各个字段按固定顺序组织
@@ -90,12 +87,12 @@ module Qiniu
           end
 
           ### 发送请求
-          return HTTP.management_post(PFOP_URL, body)
+          return HTTP.management_post(pfop_url, body)
         end # pfop
 
-        PREFOP_URL = API_HOST + '/status/get/prefop?id='
 
         def prefop (persistent_id)
+          prefop_url = Config.settings[:api_host] + '/status/get/prefop?id='
           ### 抽取persistentId
           if persistent_id.is_a?(Hash) then
             pid = persistent_id['persistentId']
@@ -104,7 +101,7 @@ module Qiniu
           end
 
           ### 发送请求
-          url = PREFOP_URL + pid
+          url = prefop_url + pid
           return HTTP.api_get(url)
         end # prefop
 

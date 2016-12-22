@@ -8,6 +8,8 @@
 
 - 移除 `Qiniu::Config::DEFAULT_OPTIONS`，用户可以调用 `Qiniu::Config.settings` 获取七牛配置。
 
+- 移除 `Qiniu.get`，`Qiniu.download` 和 `Qiniu::Storage.get` 方法以及它们的 `batch` 版本。
+
 ### v6.8.1
 
 - 增加delafterdays 策略。[https://github.com/qiniu/ruby-sdk/pull/162](https://github.com/qiniu/ruby-sdk/pull/162)

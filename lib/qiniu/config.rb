@@ -86,6 +86,7 @@ module Qiniu
             :pub_host         => "http://pu.qbox.me:10200",
             :eu_host          => "http://eu.qbox.me",
             :uc_host          => "http://uc.qbox.me",
+            :api_host         => "http://api.qiniu.com",
             :protocol => :http
           }.freeze
         end
@@ -97,6 +98,7 @@ module Qiniu
             :pub_host        => "https://pu.qbox.me",
             :eu_host         => "https://eu.qbox.me",
             :uc_host         => "https://uc.qbox.me",
+            :api_host        => "https://api.qiniu.com",
             :protocol => :https
           }.freeze
         end

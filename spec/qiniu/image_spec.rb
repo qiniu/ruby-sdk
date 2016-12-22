@@ -32,10 +32,11 @@ module Qiniu
         data["width"].should_not be_zero
         data["height"].should_not be_zero
 
-        result = Qiniu.get(@bucket, @key)
-        result["url"].should_not be_empty
-        puts result.inspect
-        @source_image_url = result["url"]
+        code, domains, = Qiniu::Storage.domains(@bucket)
+        code.should be 200
+        domains.should_not be_empty
+        @bucket_domain = domains.first['domain']
+        @source_image_url = "http://#{@bucket_domain}/#{@key}"
 
         @mogrify_options = {
             :thumbnail => "!120x120>",
@@ -61,11 +62,7 @@ module Qiniu
 
       context ".exif" do
         it "should works" do
-          result = Qiniu.get(@bucket, 'gogopher.jpg')
-          result["url"].should_not be_empty
-          puts result.inspect
-
-          code, data, headers = Qiniu::Fop::Image.exif(result["url"])
+          code, data, headers = Qiniu::Fop::Image.exif("http://#{@bucket_domain}/gogopher.jpg")
           code.should == 200
           puts data.inspect
           puts headers.inspect

@@ -57,14 +57,6 @@ module Qiniu
           return HTTP.management_post(url)
         end # stat
 
-        def get(bucket, key, save_as = nil, expires_in = nil, version = nil)
-          url = Config.settings[:rs_host] + '/get/' + encode_entry_uri(bucket, key)
-          url += '/base/' + version unless version.nil?
-          url += '/attName/' + Utils.urlsafe_base64_encode(save_as) unless save_as.nil?
-          url += '/expires/' + expires_in.to_s if !expires_in.nil? && expires_in > 0
-          return HTTP.management_post(url)
-        end # get
-
         def copy(source_bucket, source_key, target_bucket, target_key)
           uri = _generate_cp_or_mv_opstr('copy', source_bucket, source_key, target_bucket, target_key)
           url = Config.settings[:rs_host] + uri
@@ -96,10 +88,6 @@ module Qiniu
           url = Config.settings[:rs_host] + "/batch"
           return HTTP.management_post(url, execs.join("&"))
         end # batch
-
-        def batch_get(bucket, keys)
-          batch("get", bucket, keys)
-        end # batch_get
 
         def batch_stat(bucket, keys)
           batch("stat", bucket, keys)
@@ -148,6 +136,11 @@ module Qiniu
 
           return resp_code, resp_body, resp_headers, has_more, new_list_policy
         end # list
+
+        def domains(bucket)
+          url = Config.settings[:api_host] + '/v7/domain/list?tbl=' + bucket
+          return HTTP.management_post(url)
+        end
 
         private
 

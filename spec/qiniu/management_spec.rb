@@ -44,14 +44,6 @@ module Qiniu
         end
       end
 
-      context ".get" do
-        it "should works" do
-          code, data = Storage.get(@bucket, @key)
-          puts data.inspect
-          code.should == 200
-        end
-      end
-
       context ".batch" do
         it "should works" do
           code, data = Storage.batch("stat", @bucket, [@key])
@@ -63,14 +55,6 @@ module Qiniu
       context ".batch_stat" do
         it "should works" do
           code, data = Storage.batch_stat(@bucket, [@key])
-          puts data.inspect
-          code.should == 200
-        end
-      end
-
-      context ".batch_get" do
-        it "should works" do
-          code, data = Storage.batch_get(@bucket, [@key])
           puts data.inspect
           code.should == 200
         end
