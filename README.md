@@ -43,8 +43,11 @@
 1. Fork
 2. 创建您的特性分支 (`git checkout -b my-new-feature`)
 3. 提交您的改动 (`git commit -am 'Added some feature'`)
-4. 将您的修改记录提交到远程 `git` 仓库 (`git push origin my-new-feature`)
-5. 然后到 github 网站的该 `git` 远程仓库的 `my-new-feature` 分支下发起 Pull Request
+4. 在你自己的七牛账户里创建 rubysdk 和 rubysdk-bc 两个 bucket
+5. 添加 QINIU_ACCESS_KEY 和 QINIU_SECRET_KEY 两个环境变量
+6. 使用 `bundle exec rake` 来运行测试
+7. 将您的修改记录提交到远程 `git` 仓库 (`git push origin my-new-feature`)
+8. 然后到 github 网站的该 `git` 远程仓库的 `my-new-feature` 分支下发起 Pull Request
 
 ## 许可证
 
