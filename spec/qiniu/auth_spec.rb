@@ -18,7 +18,7 @@ module Qiniu
       end
 
       ### 测试私有资源下载
-      context ".download_private_file" do
+      describe ".download_private_file" do
         it "should works" do
           ### 生成Key
           key = 'a_private_file'
@@ -93,7 +93,7 @@ module Qiniu
     end
 
     ### 测试回调签名
-    context ".authenticate_callback_request" do
+    describe ".authenticate_callback_request" do
       it "should works" do
         url = '/test.php'
         body = 'name=xxx&size=1234'
@@ -115,7 +115,7 @@ module Qiniu
   module Exception_Auth
     describe Exception_Auth, :not_set_ak_sk => true do
       ### 测试未设置 ak/sk 的异常抛出情况
-      context ".not_set_ak_sk" do
+      describe ".not_set_ak_sk" do
         it "should works" do
           puts Qiniu::Config.instance_variable_get("@settings").inspect
 
