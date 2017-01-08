@@ -21,7 +21,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rake", ">= 0.9"
   gem.add_development_dependency "rspec", ">= 2.11"
   gem.add_development_dependency "fakeweb", "~> 1.3"
-  gem.add_runtime_dependency "json", "~> 1.8"
+  gem.add_runtime_dependency "json", "~> 2.0"
   gem.add_runtime_dependency "rest-client", "~> 1.8.0"
   gem.add_runtime_dependency "mime-types", "~> 1.19"
   gem.add_runtime_dependency "ruby-hmac", "~> 0.4"
