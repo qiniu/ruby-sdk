@@ -53,12 +53,7 @@ module Qiniu
           result.body.should_not be_empty
 
           ### 授权下载地址（带参数）
-          download_url = Qiniu::Auth.authorize_download_url(
-            url,
-            {
-              :fop => 'download/a.m3u8'
-            }
-          )
+          download_url = Qiniu::Auth.authorize_download_url(url, fop: 'qhash/md5')
           puts "download_url=#{download_url}"
 
           result = RestClient.get(download_url)
@@ -67,8 +62,8 @@ module Qiniu
 
           ### 删除文件
           code, data = Qiniu::Storage.delete(@bucket, key)
-          code.should == 200
           puts data.inspect
+          code.should == 200
         end
 
         it "should generate uphosts and global for multi_region" do
