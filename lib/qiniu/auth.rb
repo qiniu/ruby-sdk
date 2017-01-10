@@ -205,18 +205,43 @@ module Qiniu
 
         ### 对包含中文或其它 utf-8 字符的 Key 做下载授权
         def authorize_download_url_2(domain, key, args = EMPTY_ARGS)
+          authorize_download_url(generate_url(domain, key, args), args)
+        end # authorize_download_url_2
+
+        ### 生成时间戳防盗链
+        def authorize_timestamp_anti_leech_url(domain, key, encrypt_key, args = EMPTY_ARGS)
+          timestamp_anti_leech_url = generate_url(domain, key, args)
+          key_for_sign = '/' + key
+
+          ### URL变换：追加FOP指令
+          if args[:fop].is_a?(String) && args[:fop] != '' then
+            timestamp_anti_leech_url += '?' + args[:fop]
+            key_for_sign += '?' + args[:fop]
+          end
+
+          expires_at = Auth.calculate_deadline(args[:expires_in], args[:deadline]).to_i.to_s(16)
+          sign_str = Digest::MD5.hexdigest(encrypt_key + key_for_sign + expires_at)
+          query = "sign=#{sign_str}&t=#{expires_at}"
+          if timestamp_anti_leech_url.include?('?')
+            timestamp_anti_leech_url += '&' + query
+          else
+            timestamp_anti_leech_url += '?' + query
+          end
+          timestamp_anti_leech_url
+        end
+
+        def generate_url(domain, key, args)
           url_encoded_key = CGI::escape(key)
 
           schema = args[:schema] || "http"
           port   = args[:port]
 
-          if port.nil? then
-            download_url = "#{schema}://#{domain}/#{url_encoded_key}"
+          if port.nil?
+            "#{schema}://#{domain}/#{url_encoded_key}"
           else
-            download_url = "#{schema}://#{domain}:#{port}/#{url_encoded_key}"
+            "#{schema}://#{domain}:#{port}/#{url_encoded_key}"
           end
-          return authorize_download_url(download_url, args)
-        end # authorize_download_url_2
+        end
 
         def generate_acctoken_sign_with_mac(access_key, secret_key, url, body)
           ### 解析URL，生成待签名字符串

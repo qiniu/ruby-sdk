@@ -18,6 +18,7 @@ module Qiniu
   autoload :Misc, 'qiniu/misc'
   autoload :HostManager, 'qiniu/host_manager'
   autoload :HTTP, 'qiniu/http'
+  autoload :CDNManager, 'qiniu/cdn_manager'
 
     class << self
 

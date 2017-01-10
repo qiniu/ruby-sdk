@@ -12,6 +12,8 @@
 
 - 移除对于 Fixnum 的使用，支持 Ruby 2.4.x
 
+- 增加融合 CDN 加速的“文件预取”，“缓存刷新”，“时间戳鉴权”的功能。
+
 ### v6.8.1
 
 - 增加delafterdays 策略。[https://github.com/qiniu/ruby-sdk/pull/162](https://github.com/qiniu/ruby-sdk/pull/162)
