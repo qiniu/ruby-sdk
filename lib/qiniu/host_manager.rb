@@ -50,7 +50,7 @@ module Qiniu
     private
 
     def extract_protocol(opts)
-      opts[:protocol] || 'http'
+      (opts[:protocol] || @config[:protocol]).to_s
     end
 
     def multi_region_support?

@@ -3,36 +3,30 @@
 require 'qiniu'
 
 # 构建鉴权对象
-Qiniu.establish_connection! :access_key => 'Access_Key',
-                            :secret_key => 'Secret_Key'
+Qiniu.establish_connection! access_key: 'Access_Key',
+                            secret_key: 'Secret_Key'
 
-#要上传的空间
+# 要上传的空间
 bucket = 'Bucket_Name'
 
-#上传到七牛后保存的文件名
+# 上传到七牛后保存的文件名
 key = 'my-ruby-logo.png'
 
-
-#构建上传策略
+# 构建上传策略
 put_policy = Qiniu::Auth::PutPolicy.new(
-    bucket,      # 存储空间
-    key,     # 最终资源名，可省略，即缺省为“创建”语义，设置为nil为普通上传 
-    3600    #token过期时间，默认为3600s
+    bucket, # 存储空间
+    key,    # 最终资源名，可省略，即缺省为“创建”语义，设置为 nil 为普通上传
+    3600    # token 过期时间，默认为 3600s
 )
 
-#生成上传 Token
+# 生成上传 Token
 uptoken = Qiniu::Auth.generate_uptoken(put_policy)
 
-#要上传文件的本地路径
+# 要上传文件的本地路径
 filePath = './ruby-logo.png'
 
-#调用upload_with_token_2方法上传
-code, result, response_headers = Qiniu::Storage.upload_with_token_2(
-     uptoken, 
-     filePath,
-     key
-)
+# 调用 upload_file 方法上传
+info = Qiniu.upload_file uptoken: uptoken, file: filePath, bucket: bucket, key: key
 
-#打印上传返回的信息
-puts code
-puts result
+# 打印文件信息
+puts info

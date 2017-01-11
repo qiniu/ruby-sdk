@@ -26,6 +26,18 @@ module Qiniu
         Config.initialize_connect opts
       end
 
+      def establish_https_connection!(opts = {})
+        Config.initialize_connect_https opts
+      end
+
+      def switch_to_http!
+        Config.switch_to_http
+      end
+
+      def switch_to_https!
+        Config.switch_to_https
+      end
+
       def mkbucket(bucket_name)
         code, data = Storage.mkbucket(bucket_name)
         code == StatusOK
@@ -94,16 +106,6 @@ module Qiniu
         code == StatusOK ? data : false
       end
 
-      def get(bucket, key, save_as = nil, expires_in = nil, version = nil)
-        code, data = Storage.get(bucket, key, save_as, expires_in, version)
-        code == StatusOK ? data : false
-      end
-
-      def download(bucket, key, save_as = nil, expires_in = nil, version = nil)
-        code, data = Storage.get(bucket, key, save_as, expires_in, version)
-        code == StatusOK ? data["url"] : false
-      end
-
       def copy(source_bucket, source_key, target_bucket, target_key)
         code, data = Storage.copy(source_bucket, source_key, target_bucket, target_key)
         code == StatusOK
@@ -134,11 +136,6 @@ module Qiniu
         code == StatusOK ? data : false
       end
 
-      def batch_get(bucket, keys)
-        code, data = Storage.batch_get(bucket, keys)
-        code == StatusOK ? data : false
-      end
-
       def batch_copy(*args)
         code, data = Storage.batch_copy(args)
         code == StatusOK
@@ -147,14 +144,6 @@ module Qiniu
       def batch_move(*args)
         code, data = Storage.batch_move(args)
         code == StatusOK
-      end
-
-      def batch_download(bucket, keys)
-        code, data = Storage.batch_get(bucket, keys)
-        return false unless code == StatusOK
-        links = []
-        data.each { |e| links << e["data"]["url"] }
-        links
       end
 
       def batch_delete(bucket, keys)
