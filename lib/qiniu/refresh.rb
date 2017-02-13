@@ -1,6 +1,7 @@
 require 'net/http'
 require 'uri'
- 
+require 'json'
+
 module Qiniu
 
   module Refresh
