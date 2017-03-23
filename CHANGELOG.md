@@ -10,6 +10,8 @@
 
 - 移除 `Qiniu.get`，`Qiniu.download` 和 `Qiniu::Storage.get` 方法以及它们的 `batch` 版本。
 
+- 移除对于 Fixnum 的使用，支持 Ruby 2.4.x
+
 ### v6.8.1
 
 - 增加delafterdays 策略。[https://github.com/qiniu/ruby-sdk/pull/162](https://github.com/qiniu/ruby-sdk/pull/162)

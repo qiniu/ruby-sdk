@@ -171,7 +171,7 @@ module Qiniu
 
           ### URL变换：追加FOP指令
           if args[:fop].is_a?(String) && args[:fop] != '' then
-            if download_url.index('?').is_a?(Fixnum) then
+            if download_url.include?('?')
               # 已有参数
               download_url = "#{download_url}&#{args[:fop]}"
             else
@@ -184,7 +184,7 @@ module Qiniu
           e = Auth.calculate_deadline(args[:expires_in], args[:deadline])
 
           ### URL变换：追加授权期参数
-          if download_url.index('?').is_a?(Fixnum) then
+          if download_url.include?('?')
             # 已有参数
             download_url = "#{download_url}&e=#{e}"
           else
