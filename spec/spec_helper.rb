@@ -3,6 +3,7 @@
 require 'bundler/setup'
 require 'qiniu'
 require 'rspec'
+require 'webmock'
 
 RSpec.configure do |config|
   config.before :all do

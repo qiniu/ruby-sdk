@@ -49,6 +49,10 @@ module Qiniu
 
       ### 测试单文件直传
       context ".upload_with_token" do
+        before do
+          Qiniu::Storage.delete(@bucket, @key)
+        end
+
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key)
           puts data.inspect
@@ -79,6 +83,10 @@ module Qiniu
       end
 
       context ".upload_with_token_2" do
+        before do
+          Qiniu::Storage.delete(@bucket, @key)
+        end
+
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key)
           puts data.inspect
@@ -108,6 +116,10 @@ module Qiniu
       end # .upload_with_token_2
 
       context ".upload_with_put_policy" do
+        before do
+          Qiniu::Storage.delete(@bucket, @key)
+        end
+
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key)
           puts data.inspect
@@ -149,6 +161,10 @@ module Qiniu
       end # .upload_with_put_policy
 
       context ".upload_buffer_with_put_policy" do
+        before do
+          Qiniu::Storage.delete(@bucket, @key)
+        end
+
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key)
           puts data.inspect
@@ -180,6 +196,10 @@ module Qiniu
 
       ### 测试断点续上传
       context ".resumable_upload_with_token" do
+        before do
+          Qiniu::Storage.delete(@bucket, @key_5m)
+        end
+
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_5m)
           puts data.inspect
@@ -207,6 +227,10 @@ module Qiniu
       end
 
       context ".resumable_upload_with_token2" do
+        before do
+          Qiniu::Storage.delete(@bucket, @key_4m)
+        end
+
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_4m)
           puts data.inspect
@@ -234,6 +258,10 @@ module Qiniu
       end
 
       context ".resumable_upload_with_token3" do
+        before do
+          Qiniu::Storage.delete(@bucket, @key_8m)
+        end
+
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_8m)
           puts data.inspect
@@ -261,6 +289,10 @@ module Qiniu
       end
 
       context ".resumable_upload_with_token4" do
+        before do
+          Qiniu::Storage.delete(@bucket, @key_1m)
+        end
+
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_1m)
           puts data.inspect

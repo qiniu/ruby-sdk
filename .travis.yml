@@ -3,6 +3,7 @@ rvm:
   - 2.1.10
   - 2.2.4
   - 2.3.0
+  - 2.4.0
   - jruby-9.0.5.0
 before_script:
   - export QINIU_ACCESS_KEY=QWYn5TFQsLLU1pL5MFEmX3s5DmHdUThav9WyOWOm
