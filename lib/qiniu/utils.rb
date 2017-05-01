@@ -6,7 +6,6 @@ require 'json'
 require 'zlib'
 require 'base64'
 require 'rest_client'
-require 'hmac-sha1'
 require 'qiniu/exceptions'
 
 module Qiniu
