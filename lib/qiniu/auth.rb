@@ -27,16 +27,9 @@ module Qiniu
         end # calculate_deadline
 
         def calculate_hmac_sha1_digest(sk, str)
-          begin
-            sign_str = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha1'), sk, str)
-            sign = [sign_str].pack('H*')
-          rescue TypeError => e
-            raise RuntimeError, "Please set Qiniu's access_key and secret_key before authorize any tokens."
-          rescue
-            raise
-          else
-            return sign
-          end
+          raise ArgumentError, "Please set Qiniu's access_key and secret_key before authorize any tokens." if sk.nil?
+          sign_str = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha1'), sk, str)
+          [sign_str].pack('H*')
         end
       end # class << self
 
