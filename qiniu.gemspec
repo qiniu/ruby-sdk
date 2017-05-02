@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
   gem.version       = Qiniu::Version.to_s
   gem.license       = 'MIT'
+  gem.required_ruby_version = '~> 2.1'
 
   # specify any dependencies here; for example:
   gem.add_development_dependency 'rake', '~> 12'
@@ -24,6 +25,5 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'json', '~> 1.8'
   gem.add_runtime_dependency 'rest-client', '~> 2.0', '>= 2.0.0'
   gem.add_runtime_dependency 'mime-types', '~> 2.4', '>= 2.4.0'
-  gem.add_runtime_dependency 'ruby-hmac', '~> 0.4'
   gem.add_runtime_dependency 'jruby-openssl', '~> 0.7' if RUBY_PLATFORM == 'java'
 end
