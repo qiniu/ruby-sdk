@@ -14,8 +14,8 @@ module Qiniu
         attr_accessor :access_key, :secret_key
 
         def generate_encoded_digest(signature)
-          hmac_digest = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha1'), @secret_key, signature)
-          urlsafe_base64_encode([hmac_digest].pack('H*'))
+          raw_hmac_digest = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha1'), @secret_key, signature)
+          urlsafe_base64_encode(raw_hmac_digest)
         end
 
       end # AccessToken
