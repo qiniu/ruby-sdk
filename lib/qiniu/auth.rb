@@ -28,8 +28,7 @@ module Qiniu
 
         def calculate_hmac_sha1_digest(sk, str)
           raise ArgumentError, "Please set Qiniu's access_key and secret_key before authorize any tokens." if sk.nil?
-          sign_str = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha1'), sk, str)
-          [sign_str].pack('H*')
+          OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha1'), sk, str)
         end
       end # class << self
 
