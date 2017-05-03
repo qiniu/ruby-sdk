@@ -3,7 +3,6 @@
 
 require 'openssl'
 require 'uri'
-require 'cgi'
 
 require 'qiniu/exceptions'
 
@@ -198,7 +197,7 @@ module Qiniu
 
         ### 对包含中文或其它 utf-8 字符的 Key 做下载授权
         def authorize_download_url_2(domain, key, args = EMPTY_ARGS)
-          url_encoded_key = CGI::escape(key)
+          url_encoded_key = URI.escape(key)
 
           schema = args[:schema] || "http"
           port   = args[:port]
