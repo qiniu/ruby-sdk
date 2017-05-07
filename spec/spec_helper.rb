@@ -7,7 +7,8 @@ require 'webmock'
 
 RSpec.configure do |config|
   config.before :all do
-    Qiniu.establish_connection! :access_key => ENV["QINIU_ACCESS_KEY"], :secret_key => ENV["QINIU_SECRET_KEY"]
+    Qiniu.establish_connection! :access_key => ENV["QINIU_ACCESS_KEY"] || 'QWYn5TFQsLLU1pL5MFEmX3s5DmHdUThav9WyOWOm',
+                                :secret_key => ENV["QINIU_SECRET_KEY"] || 'Bxckh6FA-Fbs9Yt3i3cbKVK22UPBmAOHJcL95pGz'
   end
   config.before :each, :not_set_ak_sk => true do
     Qiniu.establish_connection! :access_key => nil, :secret_key => nil
