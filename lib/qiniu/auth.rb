@@ -36,11 +36,13 @@ module Qiniu
         private
         def initialize(bucket,
                        key = nil,
+                       persistent_ops = nil,
                        expires_in = DEFAULT_AUTH_SECONDS,
                        deadline = nil)
           ### 设定scope参数（必填项目）
           self.scope!(bucket, key)
-
+					### 设定persistentops参数(选填项目)
+          @persistent_ops = persistent_ops unless persistent_ops.nil?
           ### 设定deadline参数（必填项目）
           @expires_in = expires_in
           @deadline   = Auth.calculate_deadline(expires_in, deadline)
