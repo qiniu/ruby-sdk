@@ -62,7 +62,7 @@ module Qiniu
 
       context ".batch_copy" do
         it "should works" do
-          code, data = Storage.batch_copy @bucket, @key, @bucket, @key2
+          code, data = Storage.batch_copy [@bucket, @key, @bucket, @key2]
           puts data.inspect
           code.should == 200
 
