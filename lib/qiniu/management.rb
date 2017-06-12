@@ -150,7 +150,7 @@ module Qiniu
           %Q(/#{command}/#{source_encoded_entry_uri}/#{target_encoded_entry_uri})
         end # _generate_cp_or_mv_opstr
 
-        def _batch_cp_or_mv(command, *op_args)
+        def _batch_cp_or_mv(command, op_args)
           execs = []
           op_args.each do |e|
             execs << 'op=' + _generate_cp_or_mv_opstr(command, e[0], e[1], e[2], e[3]) if e.size == 4
