@@ -9,9 +9,10 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{Qiniu Resource (Cloud) Storage SDK for Ruby}
   gem.homepage      = 'https://github.com/qiniu/ruby-sdk'
 
-  gem.files         = `git ls-files`.split($\)
+  gem.files         = `git ls-files`.split($\).reject do |f|
+    f.match(%r{^(spec|examples)/})
+  end - %w(qiniu.gemspec Gemfile Rakefile)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features|examples)/})
   gem.name          = 'qiniu'
   gem.require_paths = ['lib']
   gem.version       = Qiniu::Version.to_s
