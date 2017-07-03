@@ -40,7 +40,7 @@ module Qiniu
           :multipart  => true
         }
         if !uptoken.nil? then
-          post_data[:auth] = uptoken unless uptoken.nil?
+          post_data[:auth] = uptoken
         end
 
         return HTTP.api_post(url, post_data)

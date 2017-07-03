@@ -99,11 +99,11 @@ module Qiniu
         end # scope!
 
         def expires_in!(seconds)
-          if !seconds.nil? then
+          if seconds.nil? then
             return @expires_in
           end
 
-          @epires_in = seconds
+          @expires_in = seconds
           @deadline  = Auth.calculate_deadline(seconds)
 
           return @expires_in
