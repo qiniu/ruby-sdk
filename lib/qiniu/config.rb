@@ -67,6 +67,7 @@ module Qiniu
             :method          => :post,
             :content_type    => 'application/x-www-form-urlencoded',
             :auth_url        => "https://acc.qbox.me/oauth2/token",
+            :cdn_host        => "http://fusion.qiniuapi.com",
             :access_key      => "",
             :secret_key      => "",
             :auto_reconnect  => true,
