@@ -6,8 +6,7 @@ rvm:
   - 2.4.0
   - jruby-9.0.5.0
 before_script:
-  - export QINIU_ACCESS_KEY=QWYn5TFQsLLU1pL5MFEmX3s5DmHdUThav9WyOWOm
-  - export QINIU_SECRET_KEY=Bxckh6FA-Fbs9Yt3i3cbKVK22UPBmAOHJcL95pGz
+  - export IS_TRAVIS=true
 gemfile:
   - Gemfile
   - rails/Gemfile
