@@ -5,7 +5,6 @@ require 'uri'
 
 module Qiniu
   module ADT
-    
     class ApiSpecification
       def to_str; return ""; end
     end # class ApiSpecification
@@ -39,6 +38,5 @@ module Qiniu
         return args.join("&")
       end # to_query_string
     end # module Policy
-
   end # module ADT
 end # module Qiniu
