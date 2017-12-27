@@ -12,11 +12,11 @@ module Qiniu
     module Utils extend self
 
       def urlsafe_base64_encode content
-        Base64.encode64(content).strip.gsub('+', '-').gsub('/','_').gsub(/\r?\n/, '')
+        Base64.encode64(content).strip.tr('+', '-').tr('/','_').gsub(/\r?\n/, '')
       end
 
       def urlsafe_base64_decode encoded_content
-        Base64.decode64 encoded_content.gsub('_','/').gsub('-', '+')
+        Base64.decode64 encoded_content.tr('_','/').tr('-', '+')
       end
 
       def encode_entry_uri(bucket, key)
@@ -37,7 +37,7 @@ module Qiniu
       end
 
       ### 已过时，仅作为兼容接口保留
-      def send_request_with url, data = nil, options = {}
+      def send_request_with(url, data = nil, options = {})
         options[:method] = Config.settings[:method] unless options[:method]
         options[:content_type] = Config.settings[:content_type] unless options[:content_type]
         header_options = {

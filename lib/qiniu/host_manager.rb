@@ -39,7 +39,7 @@ module Qiniu
       end
     end
 
-    def global(bucket, opts = {})
+    def global(bucket, _opts = {})
       if multi_region_support?
         !!hosts(bucket)['global']
       else

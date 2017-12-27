@@ -40,7 +40,7 @@ module Qiniu
       end
 
       def mkbucket(bucket_name)
-        code, data = Storage.mkbucket(bucket_name)
+        code, _data = Storage.mkbucket(bucket_name)
         code == StatusOK
       end
 
@@ -50,26 +50,26 @@ module Qiniu
       end
 
       def set_protected(bucket, protected_mode)
-        code, data = Misc.set_protected(bucket, protected_mode)
+        code, _data = Misc.set_protected(bucket, protected_mode)
         code == StatusOK
       end
 
       def set_separator(bucket, separator)
-        code, data = Misc.set_separator(bucket, separator)
+        code, _data = Misc.set_separator(bucket, separator)
         code == StatusOK
       end
 
       def set_style(bucket, name, style)
-        code, data = Misc.set_style(bucket, name, style)
+        code, _data = Misc.set_style(bucket, name, style)
         code == StatusOK
       end
 
       def unset_style(bucket, name)
-        code, data = Misc.unset_style(bucket, name)
+        code, _data = Misc.unset_style(bucket, name)
         code == StatusOK
       end
 
-      def upload_file opts = {}
+      def upload_file(opts = {})
         uncontained_opts = [:uptoken, :file, :bucket, :key] - opts.keys
         raise MissingArgsError, uncontained_opts unless uncontained_opts.empty?
 
@@ -79,7 +79,7 @@ module Qiniu
         opts[:enable_resumable_upload] = true unless opts.has_key?(:enable_resumable_upload)
 
         if opts[:enable_resumable_upload] && File::size(source_file) > Config.settings[:block_size]
-          code, data, raw_headers = Storage.resumable_upload_with_token(opts[:uptoken],
+          code, data, _raw_headers = Storage.resumable_upload_with_token(opts[:uptoken],
                                             opts[:file],
                                             opts[:bucket],
                                             opts[:key],
@@ -88,7 +88,7 @@ module Qiniu
                                             opts[:callback_params],
                                             opts[:rotate])
         else
-          code, data, raw_headers = Storage.upload_with_token(opts[:uptoken],
+          code, data, _raw_headers = Storage.upload_with_token(opts[:uptoken],
                                             opts[:file],
                                             opts[:bucket],
                                             opts[:key],
@@ -99,7 +99,7 @@ module Qiniu
                                             opts[:rotate])
         end
         raise UploadFailedError.new(code, data) if code != StatusOK
-        return data
+        data
       end
 
       def stat(bucket, key)
@@ -108,22 +108,22 @@ module Qiniu
       end
 
       def copy(source_bucket, source_key, target_bucket, target_key)
-        code, data = Storage.copy(source_bucket, source_key, target_bucket, target_key)
+        code, _data = Storage.copy(source_bucket, source_key, target_bucket, target_key)
         code == StatusOK
       end
 
       def move(source_bucket, source_key, target_bucket, target_key)
-        code, data = Storage.move(source_bucket, source_key, target_bucket, target_key)
+        code, _data = Storage.move(source_bucket, source_key, target_bucket, target_key)
         code == StatusOK
       end
 
       def delete(bucket, key)
-        code, data = Storage.delete(bucket, key)
+        code, _data = Storage.delete(bucket, key)
         code == StatusOK
       end
 
       def fetch(bucket, target_url, key)
-        code, data = Storage.fetch(bucket, target_url, key)
+        code, _data = Storage.fetch(bucket, target_url, key)
         code == StatusOK
       end
 
@@ -138,12 +138,12 @@ module Qiniu
       end
 
       def batch_copy(*args)
-        code, data = Storage.batch_copy(args)
+        code, _data = Storage.batch_copy(args)
         code == StatusOK
       end
 
       def batch_move(*args)
-        code, data = Storage.batch_move(args)
+        code, _data = Storage.batch_move(args)
         code == StatusOK
       end
 
@@ -153,7 +153,7 @@ module Qiniu
       end
 
       def drop(bucket)
-        code, data = Storage.drop(bucket)
+        code, _data = Storage.drop(bucket)
         code == StatusOK
       end
 

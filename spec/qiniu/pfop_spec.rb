@@ -20,8 +20,8 @@ module Qiniu
           local_file = File.expand_path('../' + pic_fname, __FILE__)
 
           ### 检查测试文件存在性
-          code, body, headers = Qiniu::Storage.stat(@bucket, @key)
-          if code == 404 || code == 612 then
+          code, _body, _headers = Qiniu::Storage.stat(@bucket, @key)
+          if code == 404 || code == 612
             # 文件不存在，尝试上传
             pp = Qiniu::Auth::PutPolicy.new(@bucket, @key)
             code, body, headers = Qiniu::Storage.upload_with_put_policy(
@@ -47,7 +47,7 @@ module Qiniu
               'www.baidu.com'             # notify_url
             )
 
-            code, data, headers = Qiniu::Fop::Persistance.pfop(pp)
+            code, data, _headers = Qiniu::Fop::Persistance.pfop(pp)
             code.should == 200
             puts data.inspect
           end
@@ -70,7 +70,7 @@ module Qiniu
             target_url = "#{url}?p/1/#{CGI.escape(fop).gsub('+', '%20')}"
 
             p1_url = Qiniu::Fop::Persistance.generate_p1_url(url, fop)
-            p1_url.should == target_url
+            p1_url.should eq(target_url)
             puts p1_url.inspect
           end
         end

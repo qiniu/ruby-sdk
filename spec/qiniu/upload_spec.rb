@@ -41,10 +41,10 @@ module Qiniu
 
       after :all do
         ### 清除本地临时文件
-        File.unlink(@localfile_5m) if File.exists?(@localfile_5m)
-        File.unlink(@localfile_4m) if File.exists?(@localfile_4m)
-        File.unlink(@localfile_8m) if File.exists?(@localfile_8m)
-        File.unlink(@localfile_1m) if File.exists?(@localfile_1m)
+        File.unlink(@localfile_5m) if File.exist?(@localfile_5m)
+        File.unlink(@localfile_4m) if File.exist?(@localfile_4m)
+        File.unlink(@localfile_8m) if File.exist?(@localfile_8m)
+        File.unlink(@localfile_1m) if File.exist?(@localfile_1m)
       end
 
       ### 测试单文件直传

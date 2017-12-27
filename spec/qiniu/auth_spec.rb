@@ -34,7 +34,7 @@ module Qiniu
             nil,
             bucket: @bucket
           )
-          code.should == 200
+          code.should eq(200)
           puts data.inspect
           puts raw_headers.inspect
 
@@ -49,7 +49,7 @@ module Qiniu
           puts "download_url=#{download_url}"
 
           result = RestClient.get(download_url)
-          result.code.should == 200
+          result.code.should eq(200)
           result.body.should_not be_empty
 
           ### 授权下载地址（带参数）
@@ -57,13 +57,13 @@ module Qiniu
           puts "download_url=#{download_url}"
 
           result = RestClient.get(download_url)
-          result.code.should == 200
+          result.code.should eq(200)
           result.body.should_not be_empty
 
           ### 删除文件
           code, data = Qiniu::Storage.delete(@bucket, key)
           puts data.inspect
-          code.should == 200
+          code.should eq(200)
         end
 
         it "should generate uphosts and global for multi_region" do
@@ -91,17 +91,17 @@ module Qiniu
       it "should works" do
         url = '/test.php'
         body = 'name=xxx&size=1234'
-        false.should == Qiniu::Auth.authenticate_callback_request('ABCD', url, body)
-        false.should == Qiniu::Auth.authenticate_callback_request(Config.settings[:access_key], url, body)
-        false.should == Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':', url, body)
-        false.should == Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':????', url, body)
+        expect(Qiniu::Auth.authenticate_callback_request('ABCD', url, body)).to eq(false)
+        expect(Qiniu::Auth.authenticate_callback_request(Config.settings[:access_key], url, body)).to eq(false)
+        expect(Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':', url, body)).to eq(false)
+        expect(Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':????', url, body)).to eq(false)
 
         acctoken = Qiniu::Auth.generate_acctoken(url, body)
         auth_str = 'QBox ' + acctoken
 
-        false.should == Qiniu::Auth.authenticate_callback_request(auth_str + '  ', url, body)
-        true.should == Qiniu::Auth.authenticate_callback_request(auth_str, url, body)
-        true.should == Qiniu::Auth.authenticate_callback_request(acctoken, url, body)
+        expect(Qiniu::Auth.authenticate_callback_request(auth_str + '  ', url, body)).to eq(false)
+        expect(Qiniu::Auth.authenticate_callback_request(auth_str, url, body)).to eq(true)
+        expect(Qiniu::Auth.authenticate_callback_request(acctoken, url, body)).to eq(true)
       end
     end
   end # module Auth
@@ -114,25 +114,25 @@ module Qiniu
           puts Qiniu::Config.instance_variable_get("@settings").inspect
 
           begin
-            uptoken = Qiniu::Auth.generate_uptoken({})
+            Qiniu::Auth.generate_uptoken({})
           rescue => e
-            e.message.should == "Please set Qiniu's access_key and secret_key before authorize any tokens."
+            expect(e.message).to eq("Please set Qiniu's access_key and secret_key before authorize any tokens.")
           else
             fail "Not raise any exception."
           end
 
           begin
-            download_url = Qiniu::Auth.authorize_download_url("http://test.qiniudn.com/a_private_file")
+            Qiniu::Auth.authorize_download_url("http://test.qiniudn.com/a_private_file")
           rescue => e
-            e.message.should == "Please set Qiniu's access_key and secret_key before authorize any tokens."
+            expect(e.message).to eq("Please set Qiniu's access_key and secret_key before authorize any tokens.")
           else
             fail "Not raise any exception."
           end
 
           begin
-            acctoken = Qiniu::Auth.generate_acctoken("http://rsf.qbox.me/list")
+            Qiniu::Auth.generate_acctoken("http://rsf.qbox.me/list")
           rescue => e
-            e.message.should == "Please set Qiniu's access_key and secret_key before authorize any tokens."
+            expect(e.message).to eq("Please set Qiniu's access_key and secret_key before authorize any tokens.")
           else
             fail "Not raise any exception."
           end

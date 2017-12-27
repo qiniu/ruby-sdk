@@ -39,9 +39,7 @@ module Qiniu
           :file       => File.new(local_file, 'rb'),
           :multipart  => true
         }
-        if !uptoken.nil? then
-          post_data[:auth] = uptoken unless uptoken.nil?
-        end
+        post_data[:auth] = uptoken unless uptoken.nil?
 
         return HTTP.api_post(url, post_data)
       end # upload_with_token
@@ -146,9 +144,7 @@ module Qiniu
                                  x_vars = nil,
                                  opts = {})
         uptoken = Auth.generate_uptoken(put_policy)
-        if key.nil? then
-          key = put_policy.key
-        end
+        key = put_policy.key if key.nil?
 
         return upload_with_token_2(uptoken, local_file, key, x_vars, opts)
       rescue BucketIsMissing
@@ -161,9 +157,7 @@ module Qiniu
                                  x_vars = nil,
                                  opts = {})
         uptoken = Auth.generate_uptoken(put_policy)
-        if key.nil? then
-          key = put_policy.key
-        end
+        key = put_policy.key if key.nil?
 
         return upload_buffer_with_token(uptoken, buf, key, x_vars, opts)
       rescue BucketIsMissing

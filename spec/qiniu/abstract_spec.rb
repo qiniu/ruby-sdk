@@ -25,6 +25,6 @@ describe Qiniu::Abstract do
       end
     end
 
-    subclass.new.foo.should == :overridden
+    subclass.new.foo.to eq(:overridden)
   end
 end

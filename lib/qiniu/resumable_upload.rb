@@ -102,7 +102,7 @@ module Qiniu
                   'Authorization' => 'UpToken ' + uptoken
               }
           }
-          if !content_type.nil? && !content_type.empty? then
+          if !content_type.nil? && !content_type.empty?
               options[:headers][:content_type] = content_type
           end
 

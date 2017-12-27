@@ -16,10 +16,10 @@ RSpec.configure do |config|
   config.order = :defined
 end
 
-def make_unique_bucket (bucket)
+def make_unique_bucket(bucket)
     bucket + "-" + ENV["QINIU_ACCESS_KEY"][0, 8]
 end # make_unique_bucket
 
-def make_unique_key_in_bucket (key)
+def make_unique_key_in_bucket(key)
     "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}-" + key
 end # make_unique_key_in_bucket

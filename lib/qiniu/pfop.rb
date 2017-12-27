@@ -36,7 +36,7 @@ module Qiniu
           :force      =>  "force"
         } # PARAMS
 
-        PARAMS.each_pair do |key, fld|
+        PARAMS.each_pair do |key, _fld|
           attr_accessor key
         end
 
@@ -44,15 +44,13 @@ module Qiniu
           return PARAMS
         end # params
 
-        def fops! (fops)
-          if fops.is_a?(Hash) then
-            fops = fops.values
-          end
+        def fops!(fops)
+          fops = fops.values if fops.is_a?(Hash)
 
-          if fops.is_a?(Array) then
+          if fops.is_a?(Array)
             new_fops = []
             fops.each do |v|
-              if v.is_a?(ApiSpecification) then
+              if v.is_a?(ApiSpecification)
                 new_fops.push(v.to_s)
               end
             end
@@ -72,13 +70,13 @@ module Qiniu
 
       class << self
 
-        def pfop (args)
+        def pfop(args)
           pfop_url = Config.settings[:api_host] + '/pfop/'
           ### 生成fop指令串
-          if args.is_a?(PfopPolicy) then
+          if args.is_a?(PfopPolicy)
             # PfopPolicy的各个字段按固定顺序组织
             body = args.to_query_string()
-          elsif args.is_a?(Hash) then
+          elsif args.is_a?(Hash)
             # 无法保证固定字段顺序
             body = HTTP.generate_query_string(args)
           else
@@ -91,21 +89,17 @@ module Qiniu
         end # pfop
 
 
-        def prefop (persistent_id)
+        def prefop(persistent_id)
           prefop_url = Config.settings[:api_host] + '/status/get/prefop?id='
           ### 抽取persistentId
-          if persistent_id.is_a?(Hash) then
-            pid = persistent_id['persistentId']
-          else
-            pid = persistent_id.to_s
-          end
+          pid = persistent_id.is_a?(Hash) ? persistent_id['persistentId'] : persistent_id.to_s
 
           ### 发送请求
           url = prefop_url + pid
           return HTTP.api_get(url)
         end # prefop
 
-        def generate_p1_url (url, fop)
+        def generate_p1_url(url, fop)
           # 如果fop是ApiSpecification，则各字段按固定顺序组织，保证一致性
           # 否则由调用者保证固定字段顺序
           fop = CGI.escape(fop.to_s).gsub('+', '%20')
@@ -113,9 +107,7 @@ module Qiniu
           ### 生成url
           return url + '?p/1/' + fop
         end # generate_pl_url
-
       end # class << self
-
     end # module Persistance
   end # module Fop
 end # module Qiniu

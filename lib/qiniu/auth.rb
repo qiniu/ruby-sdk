@@ -14,16 +14,16 @@ module Qiniu
       class << self
         def calculate_deadline(expires_in, deadline = nil)
           ### 授权期计算
-          if expires_in.is_a?(Integer) && expires_in > 0 then
+          if expires_in.is_a?(Integer) && expires_in > 0
             # 指定相对时间，单位：秒
             return Time.now.to_i + expires_in
-          elsif deadline.is_a?(Integer) then
+          elsif deadline.is_a?(Integer)
             # 指定绝对时间，常用于调试和单元测试
             return deadline
           end
 
           # 默认授权期1小时
-          return Time.now.to_i + DEFAULT_AUTH_SECONDS
+          Time.now.to_i + DEFAULT_AUTH_SECONDS
         end # calculate_deadline
 
         def calculate_hmac_sha1_digest(sk, str)
@@ -80,7 +80,7 @@ module Qiniu
           @bucket = bucket
           @key    = key
 
-          if key.nil? then
+          if key.nil?
             # 新增语义，文件已存在则失败
             @scope = bucket
           else
@@ -92,21 +92,21 @@ module Qiniu
             begin
               @uphosts = Config.host_manager.up_hosts(bucket)
               @global = Config.host_manager.global(bucket)
-            rescue
-              # Do nothing
+            rescue => e
+              Log.logger.warn "#{e.message}"
             end
           end
         end # scope!
 
         def expires_in!(seconds)
-          if !seconds.nil? then
+          unless seconds.nil?
             return @expires_in
           end
 
           @epires_in = seconds
           @deadline  = Auth.calculate_deadline(seconds)
 
-          return @expires_in
+          @expires_in
         end # expires_in!
 
         def expires_in=(seconds)
@@ -117,11 +117,11 @@ module Qiniu
           return @expires_in
         end # expires_in
 
-        def allow_mime_list! (list)
+        def allow_mime_list!(list)
           @mime_limit = list
         end # allow_mime_list!
 
-        def deny_mime_list! (list)
+        def deny_mime_list!(list)
           @mime_limit = "!#{list}"
         end # deny_mime_list!
 
@@ -138,7 +138,7 @@ module Qiniu
 
           PARAMS.each_pair do |key, fld|
             val = self.__send__(key)
-            if !val.nil? then
+            unless val.nil?
               args[fld] = val
             end
           end
@@ -146,7 +146,7 @@ module Qiniu
           return args.to_json
         end # to_json
 
-        PARAMS.each_pair do |key, fld|
+        PARAMS.each_pair do |key, _fld|
           attr_accessor key
         end
       end # class PutPolicy
@@ -163,7 +163,7 @@ module Qiniu
           download_url = url
 
           ### URL变换：追加FOP指令
-          if args[:fop].is_a?(String) && args[:fop] != '' then
+          if args[:fop].is_a?(String) && args[:fop] != ''
             if download_url.include?('?')
               # 已有参数
               download_url = "#{download_url}&#{args[:fop]}"
@@ -203,15 +203,11 @@ module Qiniu
           schema = args[:schema] || "http"
           port   = args[:port]
 
-          if port.nil? then
-            download_url = "#{schema}://#{domain}/#{url_encoded_key}"
-          else
-            download_url = "#{schema}://#{domain}:#{port}/#{url_encoded_key}"
-          end
+          download_url = port.nil? ? "#{schema}://#{domain}/#{url_encoded_key}" : "#{schema}://#{domain}:#{port}/#{url_encoded_key}"
           return authorize_download_url(download_url, args)
         end # authorize_download_url_2
 
-        def generate_acctoken_sign_with_mac(access_key, secret_key, url, body)
+        def generate_acctoken_sign_with_mac(_access_key, secret_key, url, body)
           ### 解析URL，生成待签名字符串
           uri = URI.parse(url)
           signing_str = uri.path
@@ -267,24 +263,22 @@ module Qiniu
 
           ### 检查签名格式
           ak_pos = auth_str.index(access_key)
-          if ak_pos.nil? then
+          if ak_pos.nil?
             return false
           end
 
           colon_pos = auth_str.index(':', ak_pos + 1)
-          if colon_pos.nil? || ((ak_pos + access_key.length) != colon_pos) then
-            return false
+          if colon_pos.nil? || ((ak_pos + access_key.length) != colon_pos)
+            false
           end
 
           encoded_sign = generate_acctoken_sign_with_mac(access_key, secret_key, url, body)
           sign_pos = auth_str.index(encoded_sign, colon_pos + 1)
-          if sign_pos.nil? || ((sign_pos + encoded_sign.length) != auth_str.length) then
+          if sign_pos.nil? || ((sign_pos + encoded_sign.length) != auth_str.length)
             return false
           end
-
-          return true
+          true
         end # authenticate_callback_request
       end # class << self
-
     end # module Auth
 end # module Qiniu

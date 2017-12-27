@@ -32,7 +32,7 @@ module Qiniu
           :limit      =>  "limit"
         } # PARAMS
 
-        PARAMS.each_pair do |key, fld|
+        PARAMS.each_pair do |key, _fld|
           attr_accessor key
         end
 
@@ -46,7 +46,6 @@ module Qiniu
       class << self
         include Utils
 
-        public
         def buckets
           url = Config.settings[:rs_host] + '/buckets'
           return HTTP.management_post(url)
@@ -121,13 +120,13 @@ module Qiniu
           url = Config.settings[:rsf_host] + '/list?' + list_policy.to_query_string()
 
           resp_code, resp_body, resp_headers = HTTP.management_post(url)
-          if resp_code == 0 || resp_code > 299 then
+          if resp_code == 0 || resp_code > 299
             has_more = false
             return resp_code, resp_body, resp_headers, has_more, list_policy
           end
 
           has_more = (resp_body['marker'].is_a?(String) && resp_body['marker'] != '')
-          if has_more then
+          if has_more
             new_list_policy = list_policy.clone()
             new_list_policy.marker = resp_body['marker']
           else

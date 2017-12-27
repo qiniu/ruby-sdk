@@ -7,18 +7,16 @@ module Qiniu
   module ADT
     
     class ApiSpecification
-      public
       def to_str; return ""; end
     end # class ApiSpecification
 
     module Policy
-      public
       def to_json
         args = {}
 
         self.params.each_pair do |key, fld|
           val = self.__send__(key)
-          if !val.nil? then
+          unless val.nil?
             args[fld] = val
           end
         end
@@ -31,7 +29,7 @@ module Qiniu
 
         self.params.each_pair do |key, fld|
           val = self.__send__(key)
-          if !val.nil? then
+          unless val.nil?
             new_fld = CGI.escape(fld.to_s)
             new_val = CGI.escape(val.to_s).gsub('+', '%20')
             args.push("#{new_fld}=#{new_val}")
