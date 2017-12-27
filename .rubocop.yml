@@ -413,7 +413,7 @@ Style/BeginBlock:
 Style/BarePercentLiterals:
   Description: 'Checks if usage of %() or %Q() matches configuration.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#percent-q-shorthand'
-  Enabled: false
+  Enabled: true
 
 Style/BlockComments:
   Description: 'Do not use block comments.'
@@ -1077,7 +1077,7 @@ Style/UnneededCapitalW:
 Style/UnneededPercentQ:
   Description: 'Checks for %q/%Q when single quotes or double quotes would do.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#percent-q'
-  Enabled: false
+  Enabled: true
 
 Style/TrailingUnderscoreVariable:
   Description: >-

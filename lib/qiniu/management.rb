@@ -146,7 +146,7 @@ module Qiniu
       def _generate_cp_or_mv_opstr(command, source_bucket, source_key, target_bucket, target_key)
         source_encoded_entry_uri = encode_entry_uri(source_bucket, source_key)
         target_encoded_entry_uri = encode_entry_uri(target_bucket, target_key)
-        %Q(/#{command}/#{source_encoded_entry_uri}/#{target_encoded_entry_uri})
+        "/#{command}/#{source_encoded_entry_uri}/#{target_encoded_entry_uri}"
       end # _generate_cp_or_mv_opstr
 
       def _batch_cp_or_mv(command, *op_args)

@@ -11,7 +11,7 @@ module Qiniu
         args.each do |name|
           class_eval <<-END
             def #{name}(*args)
-              errmsg = %Q(class \#{self.class.name} must implement abstract method #{self.name}##{name}().)
+              errmsg = "class \#{self.class.name} must implement abstract method #{self.name}##{name}()."
               raise NotImplementedError.new(errmsg)
             end
           END

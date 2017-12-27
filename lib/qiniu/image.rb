@@ -26,7 +26,7 @@ module Qiniu
           params_string = ""
           keys = ["thumbnail", "gravity", "crop", "quality", "rotate", "format"]
           keys.each do |key|
-            params_string += %Q(/#{key}/#{opts[key]}) unless opts[key].nil?
+            params_string += "/#{key}/#{opts[key]}" unless opts[key].nil?
           end
           params_string += '/auto-orient' unless opts["auto_orient"].nil?
           'imageMogr' + URI.escape(params_string)

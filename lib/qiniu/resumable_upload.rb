@@ -163,7 +163,7 @@ module Qiniu
               notifier.notify(block_index, progress) if !notifier.nil? && notifier.respond_to?("notify")
               break
             elsif i == retry_times && data["crc32"] != body_crc32
-              Log.logger.error %Q(Uploading block error. Expected crc32: #{body_crc32}, but got: #{data["crc32"]})
+              Log.logger.error %(Uploading block error. Expected crc32: #{body_crc32}, but got: #{data["crc32"]})
               return code, data, raw_headers
             end
           end
@@ -194,7 +194,7 @@ module Qiniu
               notifier.notify(block_index, progress) if !notifier.nil? && notifier.respond_to?("notify")
               break
             elsif i == retry_times && data["crc32"] != body_crc32
-              Log.logger.error %Q(Uploading block error. Expected crc32: #{body_crc32}, but got: #{data["crc32"]})
+              Log.logger.error %(Uploading block error. Expected crc32: #{body_crc32}, but got: #{data["crc32"]})
               return code, data, raw_headers
             end
           end

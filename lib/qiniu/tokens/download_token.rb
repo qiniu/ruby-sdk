@@ -27,7 +27,7 @@ module Qiniu
     def generate_token
       signature = generate_signature
       encoded_digest = generate_encoded_digest(signature)
-      %Q(#{@access_key}:#{encoded_digest}:#{signature})
+      "#{@access_key}:#{encoded_digest}:#{signature}"
     end
 
   end # moidule DownloadToken

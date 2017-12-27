@@ -11,7 +11,7 @@ module Qiniu
 
       def generate_query_string(params)
         if params.is_a?(Hash)
-          total_param = params.map { |key, value| %Q(#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s).gsub('+', '%20')}) }
+          total_param = params.map { |key, value| "#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s).gsub('+', '%20')}" }
           return total_param.join("&")
         end
 

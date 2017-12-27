@@ -31,7 +31,7 @@ module Qiniu
 
     def generate_token
       encoded_digest = generate_encoded_digest(generate_signature)
-      %Q(#{@access_key}:#{encoded_digest})
+      "#{@access_key}:#{encoded_digest}"
     end
 
   end # module QboxToken
