@@ -1,10 +1,11 @@
 language: ruby
 rvm:
   - 2.1.10
-  - 2.2.4
-  - 2.3.0
-  - 2.4.0
-  - jruby-9.0.5.0
+  - 2.2.8
+  - 2.3.5
+  - 2.4.2
+  - 2.5.0
+  - jruby-9.1.15.0
 before_script:
   - export IS_TRAVIS=true
 gemfile:
