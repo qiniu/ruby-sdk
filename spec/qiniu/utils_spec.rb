@@ -14,7 +14,7 @@ module Qiniu
 
       context "safe_json_parse" do
         it "should works" do
-          Utils.safe_json_parse('{"foo": "bar"}').should == {"foo" => "bar"}
+          Utils.safe_json_parse('{"foo": "bar"}').should eq({"foo" => "bar"})
           Utils.safe_json_parse('{}').should == {}
         end
       end

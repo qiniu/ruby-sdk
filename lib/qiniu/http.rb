@@ -5,7 +5,6 @@ module Qiniu
   module HTTP
 
     class << self
-      public
       def is_response_ok?(http_code)
           return 200 <= http_code && http_code <= 299
       end # is_response_ok?

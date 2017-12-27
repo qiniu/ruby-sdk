@@ -48,7 +48,7 @@ module Qiniu
             )
 
             code, data, _headers = Qiniu::Fop::Persistance.pfop(pp)
-            code.should == 200
+            code.should eq(200)
             puts data.inspect
           end
         end
@@ -56,7 +56,7 @@ module Qiniu
         context ".prefop" do
           it "should works" do
             code, data, headers = Qiniu::Fop::Persistance.prefop('fakePersistentId')
-            code.should == 612
+            code.should eq(612)
             puts code.inspect
             puts data.inspect
             puts headers.inspect

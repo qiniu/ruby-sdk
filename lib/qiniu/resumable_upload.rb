@@ -148,9 +148,7 @@ module Qiniu
                     seek_pos = block_index*Config.settings[:block_size]
                     body = fh.get_data(seek_pos, body_length)
                     result_length = body.length
-                    if result_length != body_length
-                        raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length)
-                    end
+                    raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length) if result_length != body_length
 
                     code, data, raw_headers = _mkblock(bucket, uptoken, block_size, body)
                     Utils.debug "Mkblk : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
@@ -162,9 +160,7 @@ module Qiniu
                         progress[:restsize] = block_size - body_length
                         progress[:status_code] = code
                         progress[:host] = data["host"]
-                        if !notifier.nil? && notifier.respond_to?("notify")
-                            notifier.notify(block_index, progress)
-                        end
+                        notifier.notify(block_index, progress) if !notifier.nil? && notifier.respond_to?("notify")
                         break
                     elsif i == retry_times && data["crc32"] != body_crc32
                         Log.logger.error %Q(Uploading block error. Expected crc32: #{body_crc32}, but got: #{data["crc32"]})
@@ -183,9 +179,7 @@ module Qiniu
                     seek_pos = block_index*Config.settings[:block_size] + progress[:offset]
                     body = fh.get_data(seek_pos, body_length)
                     result_length = body.length
-                    if result_length != body_length
-                        raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length)
-                    end
+                    raise FileSeekReadError.new(fpath, block_index, seek_pos, body_length, result_length) if result_length != body_length
 
                     code, data, raw_headers = _putblock(progress[:host], uptoken, progress[:ctx], progress[:offset], body)
                     Utils.debug "Bput : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
@@ -197,9 +191,7 @@ module Qiniu
                         progress[:restsize] -= body_length
                         progress[:status_code] = code
                         progress[:host] = data["host"]
-                        if !notifier.nil? && notifier.respond_to?("notify")
-                            notifier.notify(block_index, progress)
-                        end
+                        notifier.notify(block_index, progress) if !notifier.nil? && notifier.respond_to?("notify")
                         break
                     elsif i == retry_times && data["crc32"] != body_crc32
                         Log.logger.error %Q(Uploading block error. Expected crc32: #{body_crc32}, but got: #{data["crc32"]})

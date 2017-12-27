@@ -19,7 +19,7 @@ module Qiniu
       context ".set_protected" do
         it "should works" do
           code, data = Qiniu::Misc.set_protected(@bucket, 1)
-          code.should == 200
+          code.should.eq 200
           puts data.inspect
         end
       end
@@ -27,7 +27,7 @@ module Qiniu
       context ".set_separator" do
         it "should works" do
           code, data = Qiniu::Misc.set_separator(@bucket, "-")
-          code.should == 200
+          code.should eq(200)
           puts data.inspect
         end
       end
@@ -35,7 +35,7 @@ module Qiniu
       context ".set_style" do
         it "should works" do
           code, data = Qiniu::Misc.set_style(@bucket, "small.jpg", "imageMogr/auto-orient/thumbnail/!120x120r/gravity/center/crop/!120x120/quality/80")
-          code.should == 200
+          code.should eq(200)
           puts data.inspect
         end
       end
@@ -43,7 +43,7 @@ module Qiniu
       context ".unset_style" do
         it "should works" do
           code, data = Qiniu::Misc.unset_style(@bucket, "small.jpg")
-          code.should == 200
+          code.should eq(200)
           puts data.inspect
         end
       end

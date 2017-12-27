@@ -10,7 +10,7 @@ Qiniu.establish_connection! access_key: 'Access_Key',
 bucket = 'xxxx'
 
 # 调用list接口,参数可以参考 http://developer.qiniu.com/code/v6/api/kodo-api/rs/list.html#list-specification
-code, result, response_headers, s, d = Qiniu::Storage.list(Qiniu::Storage::ListPolicy.new(
+code, result, response_headers, _s, _d = Qiniu::Storage.list(Qiniu::Storage::ListPolicy.new(
     bucket,   # bucket
     100,      # limit
     'photo/', # prefix

@@ -39,7 +39,7 @@ module Qiniu
           puts raw_headers.inspect
 
           ### 获取下载地址
-          code, domains, = Qiniu::Storage.domains(@bucket)
+          _code, domains, = Qiniu::Storage.domains(@bucket)
           domains.should_not be_empty
           domain = domains.first['domain']
           url = "http://#{domain}/#{key}"

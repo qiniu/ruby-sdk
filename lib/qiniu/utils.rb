@@ -61,14 +61,11 @@ module Qiniu
           response = RestClient.post(url, data, header_options)
         end
         code = response.respond_to?(:code) ? response.code.to_i : 0
-        unless HTTP.is_response_ok?(code)
-          raise RequestFailed.new("Request Failed", response)
-        else
-          data = {}
-          body = response.respond_to?(:body) ? response.body : {}
-          raw_headers = response.respond_to?(:raw_headers) ? response.raw_headers : {}
-          data = safe_json_parse(body) unless body.empty?
-        end
+        raise RequestFailed.new("Request Failed", response) unless HTTP.is_response_ok?(code)
+        data = {}
+        body = response.respond_to?(:body) ? response.body : {}
+        raw_headers = response.respond_to?(:raw_headers) ? response.raw_headers : {}
+        data = safe_json_parse(body) unless body.empty?
         [code, data, raw_headers]
       end # send_request_with
 

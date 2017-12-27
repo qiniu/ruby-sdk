@@ -94,16 +94,6 @@ Lint/HandleExceptions:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#dont-hide-exceptions'
   Enabled: true
 
-Lint/InvalidCharacterLiteral:
-  Description: >-
-                 Checks for invalid character literals with a non-escaped
-                 whitespace character.
-  Enabled: true
-
-Lint/LiteralInCondition:
-  Description: 'Checks of literals used in conditions.'
-  Enabled: true
-
 Lint/LiteralInInterpolation:
   Description: 'Checks for literals used in interpolation.'
   Enabled: true
@@ -224,12 +214,6 @@ Metrics/ClassLength:
   Enabled: true
   Max: 250
 
-Metrics/CyclomaticComplexity:
-  Description: >-
-                 A complexity metric that is strongly correlated to the number
-                 of test cases needed to validate a method.
-  Enabled: true
-
 Metrics/LineLength:
   Description: 'Limit lines to 80 characters.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#80-character-limits'
@@ -245,11 +229,6 @@ Metrics/ModuleLength:
   Description: 'Avoid modules longer than 250 lines of code.'
   Enabled: true
   Max: 250
-
-Metrics/ParameterLists:
-  Description: 'Avoid parameter lists longer than three or four parameters.'
-  StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#too-many-params'
-  Enabled: true
 
 Metrics/PerceivedComplexity:
   Description: >-
@@ -1003,11 +982,6 @@ Layout/SpaceAroundEqualsInParameterDefault:
 Layout/SpaceAroundOperators:
   Description: 'Use a single space around operators.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#spaces-operators'
-  Enabled: false
-
-Layout/SpaceInsideBrackets:
-  Description: 'No spaces after [ or before ].'
-  StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-spaces-braces'
   Enabled: false
 
 Layout/SpaceInsideHashLiteralBraces:

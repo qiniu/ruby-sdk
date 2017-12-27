@@ -99,19 +99,16 @@ module Qiniu
           data = buf
         end
 
-        data.define_singleton_method("path") do
-          'NO-PATH'
-        end
-        data.define_singleton_method("original_filename") do
-          'A-MASS-OF-DATA'
-        end
+        data.define_singleton_method("path") { 'NO-PATH' }
+        data.define_singleton_method("original_filename") { 'A-MASS-OF-DATA' }
+
         data.define_singleton_method("content_type") do
           (opts[:content_type].nil? || opts[:content_type].empty?) ? 'application/octet-stream' : opts[:content_type]
         end
 
         post_data = {
-          :file      => data,
-          :multipart => true,
+          file: data,
+          multipart: true,
         }
         if not uptoken.nil?
           post_data[:token] = uptoken

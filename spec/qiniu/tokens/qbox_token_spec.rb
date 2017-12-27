@@ -21,7 +21,7 @@ module Qiniu
 
       context "#generate_signature" do
         it "should generate signature" do
-          @qbox_token.generate_signature.should == "www.qiniu.com?key1=value1\nkey2=value2"
+          @qbox_token.generate_signature.should eq("www.qiniu.com?key1=value1\nkey2=value2")
         end
       end
     end
