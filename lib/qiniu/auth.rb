@@ -48,9 +48,9 @@ module Qiniu
 
         PARAMS = {
           scope: 'scope',
-          # <Bucket                   string>
+          # <Bucket                       string>
           is_prefixal_scope: 'IsPrefixalScope',
-          # <IsPrefixalScope          int>
+          # <IsPrefixalScope                 int>
           deadline: 'deadline',
           # <UnixTimestamp                uint32>
           insert_only: 'insertOnly',
