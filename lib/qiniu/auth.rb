@@ -47,31 +47,47 @@ module Qiniu
         end # initialize
 
         PARAMS = {
-          # 字符串类型参数
-          :scope                  => "scope"               ,
-          :save_key               => "saveKey"             ,
-          :end_user               => "endUser"             ,
-          :return_url             => "returnUrl"           ,
-          :return_body            => "returnBody"          ,
-          :callback_url           => "callbackUrl"         ,
-          :callback_host          => "callbackHost"        ,
-          :callback_body          => "callbackBody"        ,
-          :callback_body_type     => "callbackBodyType"    ,
-          :persistent_ops         => "persistentOps"       ,
-          :persistent_notify_url  => "persistentNotifyUrl" ,
-          :persistent_pipeline    => "persistentPipeline"  ,
-
-          # 数值类型参数
-          :deadline               => "deadline"            ,
-          :insert_only            => "insertOnly"          ,
-          :fsize_limit            => "fsizeLimit"          ,
-          :callback_fetch_key     => "callbackFetchKey"    ,
-          :detect_mime            => "detectMime"          ,
-          :mime_limit             => "mimeLimit"           ,
-          :uphosts                => "uphosts"             ,
-          :global                 => "global"              ,
-          :delete_after_days      => "deleteAfterDays"
-        } # PARAMS
+          scope: 'scope',
+          # <Bucket                       string>
+          is_prefixal_scope: 'IsPrefixalScope',
+          # <IsPrefixalScope                 int>
+          deadline: 'deadline',
+          # <UnixTimestamp                uint32>
+          insert_only: 'insertOnly',
+          # <AllowFileUpdating               int>
+          end_user: 'endUser',
+          # <EndUserId                    string>
+          return_url: 'returnUrl',
+          # <RedirectURL                  string>
+          return_body: 'returnBody',
+          # <ResponseBodyForAppClient     string>
+          callback_url: 'callbackUrl',
+          # <RequestUrlForAppServer       string>
+          callback_host: 'callbackHost',
+          # <RequestHostForAppServer      string>
+          callback_body: 'callbackBody',
+          # <RequestBodyForAppServer      string>
+          callback_body_type: 'callbackBodyType',
+          # <RequestBodyTypeForAppServer  string>
+          persistent_ops: 'persistentOps',
+          # <persistentOpsCmds            string>
+          persistent_notify_url: 'persistentNotifyUrl',
+          # <persistentNotifyUrl          string>
+          persistent_pipeline: 'persistentPipeline',
+          # <persistentPipeline           string>
+          save_key: 'saveKey',
+          # <SaveKey                      string>
+          fsize_min: 'fsizeMin',
+          # <FileSizeMin                   int64>
+          fsize_limit: 'fsizeLimit',
+          # <FileSizeLimit                 int64>
+          detect_mime: 'detectMime',
+          # <AutoDetectMimeType              int>
+          mime_limit: 'mimeLimit',
+          # <MimeLimit                    string>
+          file_type: 'fileType',
+          # <fileType                        int>
+        }.freeze # PARAMS
 
         public
         attr_reader :bucket, :key
