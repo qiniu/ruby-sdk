@@ -77,7 +77,7 @@ module Qiniu
 
             ### 生成 PutPolicy
             pp = Auth::PutPolicy.new(@bucket, key)
-            expect(pp.instance_variable_get(:@uphosts)).to eq ["http://up.qiniu.com", "http://upload.qiniu.com", "-H up.qiniu.com http://183.131.7.18"]
+            expect(pp.instance_variable_get(:@uphosts)).to eq ["http://up.qbox.me", "http://upload.qiniu.com", "-H up.qbox.me http://183.131.7.18"]
             expect(pp.instance_variable_get(:@global)).to be false
           ensure
             Config.settings[:multi_region] = origin_multi_region
