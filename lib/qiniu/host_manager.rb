@@ -13,9 +13,9 @@ module Qiniu
 
     def up_host(bucket, opts = {})
       if !multi_region_support?
-        "#{extract_protocol(opts)}://up.qiniu.com"
+        "#{extract_protocol(opts)}://up.qbox.me"
       elsif bucket
-        hosts(bucket)[extract_protocol(opts)]['up'][0] rescue "#{extract_protocol(opts)}://up.qiniu.com"
+        hosts(bucket)[extract_protocol(opts)]['up'][0] rescue "#{extract_protocol(opts)}://up.qbox.me"
       else
         raise BucketIsMissing, 'HostManager#up_host: bucket is required when multi_region is enabled'
       end
