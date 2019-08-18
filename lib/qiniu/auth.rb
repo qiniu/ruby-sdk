@@ -51,6 +51,7 @@ module Qiniu
           :scope                  => "scope"               ,
           :is_prefixal_scope      => "isPrefixalScope"     ,
           :save_key               => "saveKey"             ,
+          :force_save_key         => "forceSaveKey"        ,
           :end_user               => "endUser"             ,
           :return_url             => "returnUrl"           ,
           :return_body            => "returnBody"          ,
