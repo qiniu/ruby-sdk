@@ -15,7 +15,7 @@ module Qiniu
 
         def initialize(opts = {})
           @scope = opts[:scope]
-          @expires_in = opts[:expires_in] || 3600
+          @expires_in = opts[:expires_in] || 36000
           @callback_url = opts[:callback_url]
           @callback_body = opts[:callback_body]
           @callback_body_type = opts[:callback_body_type]
