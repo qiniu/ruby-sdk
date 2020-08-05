@@ -10,6 +10,8 @@ module Qiniu
   module Storage
     shared_examples "Upload Specs" do
       before :all do
+        Config.settings[:multi_region] = true
+
         @key = Digest::SHA1.hexdigest((Time.now.to_i+rand(100)).to_s)
         @key = make_unique_key_in_bucket(@key)
         puts "key=#{@key}"
@@ -320,42 +322,30 @@ module Qiniu
       end
     end
 
-    describe 'When multi_region is disabled' do
+    describe 'for na0 bucket' do
       before :all do
-        Config.settings[:multi_region] = false
-        @bucket = 'rubysdk'
+        @bucket = 'rubysdk-na0'
       end
       include_examples 'Upload Specs'
     end
 
-    describe 'When multi_region is enabled' do
-      describe 'for z0 bucket' do
-        before :all do
-          Config.settings[:multi_region] = true
-          @bucket = 'rubysdk'
-        end
-        include_examples 'Upload Specs'
+    describe 'for as0 bucket' do
+      before :all do
+        @bucket = 'rubysdk-as0'
       end
+      include_examples 'Upload Specs'
 
-      describe 'for z1 bucket' do
-        before :all do
-          Config.settings[:multi_region] = true
-          @bucket = 'rubysdk-bc'
-        end
-        include_examples 'Upload Specs'
+      it 'should raise BucketIsMissing error' do
+        upopts = {:scope => @bucket, :expires_in => 3600, :endUser => "why404@gmail.com"}
+        uptoken = Qiniu.generate_upload_token(upopts)
 
-        it 'should raise BucketIsMissing error' do
-          upopts = {:scope => @bucket, :expires_in => 3600, :endUser => "why404@gmail.com"}
-          uptoken = Qiniu.generate_upload_token(upopts)
-
-          expect do
-            Qiniu::Storage.upload_with_token_2(
-              uptoken,
-              __FILE__,
-              @key,
-            )
-          end.to raise_error('upload_with_token_2 requires :bucket option when multi_region is enabled')
-        end
+        expect do
+          Qiniu::Storage.upload_with_token_2(
+            uptoken,
+            __FILE__,
+            @key,
+          )
+        end.to raise_error('upload_with_token_2 requires :bucket option when multi_region is enabled')
       end
     end
   end # module Storage

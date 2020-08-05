@@ -40,6 +40,8 @@ module Qiniu
 
           ### 获取下载地址
           code, domains, = Qiniu::Storage.domains(@bucket)
+
+          code.should == 200
           domains.should_not be_empty
           domain = domains.first['domain']
           url = "http://#{domain}/#{key}"
@@ -77,7 +79,7 @@ module Qiniu
 
             ### 生成 PutPolicy
             pp = Auth::PutPolicy.new(@bucket, key)
-            expect(pp.instance_variable_get(:@uphosts)).to eq ["http://up.qiniu.com", "http://upload.qiniu.com", "-H up.qiniu.com http://183.131.7.18"]
+            expect(pp.instance_variable_get(:@uphosts)).to eq ["http://up.qiniu.com", "http://upload.qiniu.com", "-H up.qiniu.com http://183.131.7.3"]
             expect(pp.instance_variable_get(:@global)).to be false
           ensure
             Config.settings[:multi_region] = origin_multi_region

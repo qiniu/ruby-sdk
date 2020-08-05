@@ -10,6 +10,9 @@
 * Ruby 2.2.x
 * Ruby 2.3.x
 * Ruby 2.4.x
+* Ruby 2.5.x
+* Ruby 2.6.x
+* Ruby 2.7.x
 * JRuby 9.x
 
 如果您的应用程序需要在 Ruby 1.9、2.0 或 JRuby 1.7 上运行，请使用此 Ruby SDK 的 6.6.0 版本。
