@@ -1,15 +1,20 @@
 language: ruby
 rvm:
-  - 2.1.10
-  - 2.2.4
-  - 2.3.0
-  - 2.4.0
-  - jruby-9.0.5.0
+- 2.1.10
+- 2.2.4
+- 2.6.0
+- ruby-head
+- jruby-9.0
+- jruby-head
 before_script:
-  - export IS_TRAVIS=true
+- export IS_TRAVIS=true
 gemfile:
-  - Gemfile
-  - rails/Gemfile
+- Gemfile
+- rails/Gemfile
+env:
+  global:
+  - QINIU_ACCESS_KEY=vHg2e7nOh7Jsucv2Azr5FH6omPgX22zoJRWa0FN5
+  - secure: Hc4PbrnMvVhWyOzG79LroswM60wj7Fr0kpCERLuA65Li2DW01sRYYQR61MXjATcBSqBbgn0ywBV/vWFP/1vxEeZfPuDXHpUxOtUxf57Y7Nsgs2KFQ4QlpYU3gDn2Qz/+KWoBZDNHTrlKuMC8l+pvEyJ2mN99q2Ap6EE188cpP5k=
 deploy:
   provider: rubygems
   gem: qiniu
