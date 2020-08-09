@@ -26,4 +26,6 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'rest-client', '~> 2.0'
   gem.add_runtime_dependency 'mime-types', '~> 3.1'
   gem.add_runtime_dependency 'jruby-openssl', '~> 0.10' if RUBY_PLATFORM == 'java'
+  gem.add_development_dependency 'codecov', '>= 0.2.0'
+  gem.add_development_dependency 'simplecov'
 end
