@@ -2,6 +2,10 @@
 
 require 'spec_helper'
 require 'qiniu/abstract'
+require 'simplecov'
+SimpleCov.start
+require 'codecov'
+SimpleCov.formatter = SimpleCov::Formatter::Codecov
 
 describe Qiniu::Abstract do
   before(:each) do
