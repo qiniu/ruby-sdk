@@ -22,4 +22,5 @@ deploy:
     secure: frhK5TRyrplKjwEktkjx4nGyXBhELae7B/rfDTWUqLrwX4Gmx2XTf0j3VSwKphf2PclW2Phs1o029JFjivgjCB0gYpb4/lgPLxXAjYoUv7cbyZ1SdvIkhJsxilPgkPOr/t6XZ4OB1WU0yLJxDKNyJCh6fHJ47OlMfy7neGPtFKI=
   on:
     tags: true
-script: bundle exec rake
+script:
+- bundle exec rspec --format doc
