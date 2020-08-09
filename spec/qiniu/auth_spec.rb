@@ -6,6 +6,10 @@ require 'qiniu/auth'
 require 'qiniu/config'
 require 'qiniu/storage'
 require 'digest/sha1'
+require 'simplecov'
+SimpleCov.start
+require 'codecov'
+SimpleCov.formatter = SimpleCov::Formatter::Codecov
 
 module Qiniu
   module Auth
