@@ -1,5 +1,9 @@
 # -*- encoding: utf-8 -*-
 
+require 'simplecov'
+SimpleCov.start
+require 'codecov'
+SimpleCov.formatter = SimpleCov::Formatter::Codecov
 require 'bundler/setup'
 require 'qiniu'
 require 'rspec'
