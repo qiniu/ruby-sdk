@@ -1,16 +1,12 @@
 # Qiniu Resource (Cloud) Storage SDK for Ruby
 
 [![LICENSE](https://img.shields.io/github/license/qiniu/ruby-sdk.svg)](https://github.com/qiniu/ruby-sdk/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/qiniu/ruby-sdk.svg?branch=master)](https://travis-ci.org/qiniu/ruby-sdk)
+[![Build Status](https://travis-ci.org/qiniu/ruby-sdk.svg?branch=develop)](https://travis-ci.org/qiniu/ruby-sdk)
 [![GitHub release](https://img.shields.io/github/v/tag/qiniu/ruby-sdk.svg?label=release)](https://github.com/qiniu/ruby-sdk/releases)
-[![Coverage Status](https://codecov.io/gh/qiniu/ruby-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/qiniu/ruby-sdk)
+[![Coverage Status](https://codecov.io/gh/qiniu/ruby-sdk/branch/develop/graph/badge.svg)](https://codecov.io/gh/qiniu/ruby-sdk)
 [![Gem Version](https://badge.fury.io/rb/qiniu.svg)](http://badge.fury.io/rb/qiniu)
 [![Dependency Status](https://gemnasium.com/qiniu/ruby-sdk.svg)](https://gemnasium.com/qiniu/ruby-sdk)
 [![Code Climate](https://codeclimate.com/github/qiniu/ruby-sdk.svg)](https://codeclimate.com/github/qiniu/ruby-sdk)
-
-[![Build Status](https://travis-ci.org/zju-xjh/ruby-sdk.svg?branch=master)](https://travis-ci.org/zju-xjh/ruby-sdk)
-[![Coverage Status](https://codecov.io/gh/zju-xjh/ruby-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/zju-xjh/ruby-sdk)
-
 
 ## 关于
 
