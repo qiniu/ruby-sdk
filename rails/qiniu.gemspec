@@ -21,6 +21,13 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rake', '~> 12'
   gem.add_development_dependency 'rspec', '~> 3.5'
   gem.add_development_dependency 'webmock', '~> 2.3'
+  if Gem::Version.create(RUBY_VERSION) >= Gem::Version::create('2.3.0')
+    gem.add_development_dependency 'codecov', '~> 0.2.5'
+    gem.add_development_dependency 'simplecov', '~> 0.18.5'
+  else
+    gem.add_development_dependency 'codecov', '~> 0.1.20'
+    gem.add_development_dependency 'simplecov', '~> 0.17.1'
+  end
   gem.add_runtime_dependency 'rexml', '~> 3.2'
   gem.add_runtime_dependency 'rest-client', '~> 2.0'
   gem.add_runtime_dependency 'mime-types', '~> 3.1'
