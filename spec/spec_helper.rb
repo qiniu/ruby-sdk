@@ -4,6 +4,11 @@ require 'bundler/setup'
 require 'qiniu'
 require 'rspec'
 require 'webmock'
+require 'simplecov'
+require 'codecov'
+
+SimpleCov.start
+SimpleCov.formatter = SimpleCov::Formatter::Codecov
 
 RSpec.configure do |config|
   config.before :all do
