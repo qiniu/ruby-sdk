@@ -22,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rake', '~> 12'
   gem.add_development_dependency 'rspec', '~> 3.5'
   gem.add_development_dependency 'webmock', '~> 2.3'
-  gem.add_development_dependency 'codecov', '>= 0.2.5'
+  gem.add_development_dependency 'codecov'
   gem.add_development_dependency 'simplecov'
   gem.add_runtime_dependency 'rexml', '~> 3.2'
   gem.add_runtime_dependency 'rest-client', '~> 2.0'
