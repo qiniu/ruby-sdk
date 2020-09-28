@@ -16,7 +16,6 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
   gem.version       = Qiniu::Version.to_s
   gem.license       = 'MIT'
-  gem.required_ruby_version = '~> 2.1'
 
   # specify any dependencies here; for example:
   gem.add_development_dependency 'rake', '~> 12'
