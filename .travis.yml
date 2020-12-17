@@ -3,7 +3,6 @@ rvm:
   - 2.4.0
   - 2.6.0
   - ruby-head
-  - jruby-9.0
   - jruby-head
 before_script:
   - export IS_TRAVIS=true

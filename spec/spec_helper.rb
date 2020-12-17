@@ -4,12 +4,13 @@ require 'bundler/setup'
 require 'qiniu'
 require 'rspec'
 require 'webmock'
-require 'simplecov'
-require 'codecov'
 
 if RUBY_ENGINE == 'jruby' && Gem::Version.create(RUBY_VERSION) < Gem::Version::create('2.3.0')
   # Do nothing
 else
+  require 'simplecov'
+  require 'codecov'
+
   SimpleCov.start
   SimpleCov.formatter = SimpleCov::Formatter::Codecov
 end
