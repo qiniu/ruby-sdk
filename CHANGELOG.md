@@ -1,5 +1,9 @@
 ## CHANGE LOG
 
+### v6.9.1
+
+- 移除 ruby 版本号约束
+
 ### v6.9.0
 
 - 增加 `Qiniu.establish_https_connection!` 方法，使所有七牛请求都使用 HTTPS 协议，保证连接的安全性。
