@@ -9,8 +9,9 @@ module Qiniu
   describe Qiniu do
 
     before :all do
-      @bucket = 'rubysdk'
+      Config.settings[:multi_region] = true
 
+      @bucket = 'rubysdk-na0'
       @test_image_bucket = @bucket
 
       @key = Digest::SHA1.hexdigest Time.now.to_s

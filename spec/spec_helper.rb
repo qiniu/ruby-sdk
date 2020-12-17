@@ -5,6 +5,16 @@ require 'qiniu'
 require 'rspec'
 require 'webmock'
 
+if RUBY_ENGINE == 'jruby' && Gem::Version.create(RUBY_VERSION) < Gem::Version::create('2.3.0')
+  # Do nothing
+else
+  require 'simplecov'
+  require 'codecov'
+
+  SimpleCov.start
+  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+end
+
 RSpec.configure do |config|
   config.before :all do
     Qiniu.establish_connection! :access_key => ENV["QINIU_ACCESS_KEY"], :secret_key => ENV["QINIU_SECRET_KEY"]

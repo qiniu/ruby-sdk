@@ -16,13 +16,17 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
   gem.version       = Qiniu::Version.to_s
   gem.license       = 'MIT'
-  gem.required_ruby_version = '~> 2.1'
 
   # specify any dependencies here; for example:
   gem.add_development_dependency 'rake', '~> 12'
   gem.add_development_dependency 'rspec', '~> 3.5'
   gem.add_development_dependency 'webmock', '~> 2.3'
+  if Gem::Version.create(RUBY_VERSION) >= Gem::Version::create('2.3.0')
+    gem.add_development_dependency 'codecov', '~> 0.2.5'
+    gem.add_development_dependency 'simplecov', '~> 0.18.5'
+  end
+  gem.add_runtime_dependency 'rexml', '~> 3.2'
   gem.add_runtime_dependency 'rest-client', '~> 2.0'
   gem.add_runtime_dependency 'mime-types', '~> 3.1'
-  gem.add_runtime_dependency 'jruby-openssl', '~> 0.9' if RUBY_PLATFORM == 'java'
+  gem.add_runtime_dependency 'jruby-openssl', '~> 0.10' if RUBY_PLATFORM == 'java'
 end
