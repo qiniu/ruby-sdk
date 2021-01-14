@@ -20,7 +20,7 @@ module Qiniu
       end
 
       def encode_entry_uri(bucket, key)
-        entry_uri = bucket + ':' + key
+        entry_uri = key.nil? ? bucket : bucket + ':' + key
         urlsafe_base64_encode(entry_uri)
       end
 
