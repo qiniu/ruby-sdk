@@ -35,8 +35,15 @@ module Qiniu
 
     def up_hosts(bucket, opts = {})
       if multi_region_support?
-        host = hosts(bucket)
-        host['up']['acc']['main'] rescue host['up']['src']['main']
+        host = hosts(bucket)['up']
+        multi_region_hosts = []
+        if host.key?('acc')
+          multi_region_hosts | host['acc']['main']
+        end
+        if host.key?('src')
+          multi_region_hosts | host['src']['main']
+        end
+        return multi_region_hosts
       else
         raise 'HostManager#up_hosts: multi_region must be enabled'
       end
