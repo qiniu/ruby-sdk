@@ -379,7 +379,7 @@ module Qiniu
             uptoken,
             @localfile_4m,
             @bucket,
-            @key_5m,
+            @key_4m,
             nil,
             nil,
             nil,
