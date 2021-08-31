@@ -262,6 +262,24 @@ module Qiniu
           return uptoken
         end # generate_uptoken
 
+        def decode_uptoken(uptoken)
+          ### 解析uptoken
+          uptoken_list = uptoken.split(":")
+
+          ### 提取ak sign policy
+          access_key = uptoken_list[0]
+          sign = Utils.urlsafe_base64_decode(uptoken_list[1])
+          str_policy = Utils.urlsafe_base64_decode(uptoken_list[2])
+          hash_policy = JSON.parse(str_policy)
+          ### 提取bucket
+          bucket = ''
+          if hash_policy != {} && !hash_policy.nil?
+            bucket = hash_policy['scope'].split(":")[0]
+          end
+          ### 返回 ak sign policy bucket
+          return  access_key, sign, hash_policy, bucket
+        end
+
         def authenticate_callback_request(auth_str, url, body = '')
           ### 提取AK/SK信息
           access_key = Config.settings[:access_key]

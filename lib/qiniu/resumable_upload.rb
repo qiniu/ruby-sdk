@@ -8,6 +8,7 @@ require 'mime/types'
 require 'digest/sha1'
 require 'qiniu/abstract'
 require 'qiniu/exceptions'
+require 'json'
 
 module Qiniu
     module Storage
@@ -51,7 +52,10 @@ module Qiniu
                               custom_meta = nil,
                               customer = nil,
                               callback_params = nil,
-                              rotate = nil)
+                              rotate = nil,
+                              resume_record_file = nil,
+                              version = 'v1',
+                              part_size = Config.settings[:block_size])
           begin
             ifile = File.open(local_file, 'rb')
             fh = FileData.new(ifile)
@@ -61,7 +65,7 @@ module Qiniu
               mime = MIME::Types.type_for local_file
               mime_type = mime.empty? ? 'application/octet-stream' : mime[0].content_type
             end
-            code, data = _resumable_upload(uptoken, fh, fsize, bucket, key, mime_type, custom_meta, customer, callback_params, rotate)
+            code, data = _resumable_upload(uptoken, fh, fsize, bucket, key, mime_type, custom_meta, customer, callback_params, rotate, resume_record_file, version, part_size)
             [code, data]
           ensure
             ifile.close unless ifile.nil?
@@ -94,6 +98,20 @@ module Qiniu
         def _new_block_put_progress_data
           {:ctx => nil, :offset => 0, :restsize => nil, :status_code => nil, :host => nil}
         end # _new_block_put_progress_data
+
+        def _new_block_put_progress_data_v2
+          {:etag => nil, :offset => 0, :restsize => nil, :partNumber => 0, :status_code => nil, :host => nil}
+        end
+
+        def _record_upload_progress
+          {:ctx => nil, :offset => 0, :upload_extra => {}}
+        end
+
+        def get_upload_record(resume_record_file)
+          record = File.read(resume_record_file)
+          record_hash = record.to_hash
+          return record_hash
+        end
 
         def _call_binary_with_token(uptoken, url, data, content_type = nil, retry_times = 0)
           options = {
@@ -137,7 +155,6 @@ module Qiniu
                                  notifier)
             code, data = 0, {}
             fpath = fh.path
-
             # this block has never been uploaded.
             if progress[:ctx] == nil || progress[:ctx].empty?
                 progress[:offset] = 0
@@ -145,7 +162,7 @@ module Qiniu
                 # choose the smaller one
                 body_length = [block_size, chunk_size].min
                 for i in 1..retry_times
-                    seek_pos = block_index*Config.settings[:block_size]
+                    seek_pos = block_index * Config.settings[:block_size]
                     body = fh.get_data(seek_pos, body_length)
                     result_length = body.length
                     if result_length != body_length
@@ -155,7 +172,7 @@ module Qiniu
                     code, data, raw_headers = _mkblock(bucket, uptoken, block_size, body)
                     Utils.debug "Mkblk : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
 
-                    body_crc32 = Zlib.crc32(body)
+                    body_crc32 = ''
                     if HTTP.is_response_ok?(code) && data["crc32"] == body_crc32
                         progress[:ctx] = data["ctx"]
                         progress[:offset] = body_length
@@ -190,7 +207,7 @@ module Qiniu
                     code, data, raw_headers = _putblock(progress[:host], uptoken, progress[:ctx], progress[:offset], body)
                     Utils.debug "Bput : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
 
-                    body_crc32 = Zlib.crc32(body)
+                    body_crc32 = ''
                     if HTTP.is_response_ok?(code) && data["crc32"] == body_crc32
                         progress[:ctx] = data["ctx"]
                         progress[:offset] += body_length
@@ -211,6 +228,72 @@ module Qiniu
             return code, data, raw_headers
         end # _resumable_put_block
 
+        def _resumeble_put_block_v2(bucket,
+                                    uptoken,
+                                    fh,
+                                    block_index,
+                                    progress,
+                                    retry_times,
+                                    notifier,
+                                    part_size,
+                                    upload_extra,
+                                    restsize)
+          fpath = fh.path
+          if restsize > part_size
+            for i in 1..retry_times
+              seek_positon = block_index * part_size
+              body = fh.get_data(seek_positon, part_size)
+              if body.length != part_size
+                raise FileSeekReadError.new(fpath, block_index, seek_positon, body.length, body.length)
+              end
+              md5 = Digest::MD5.new
+              body_md5 = md5.update body
+              code, data, raw_headers = _upload_part(upload_extra['host'], uptoken, body, bucket, block_index + 1, upload_extra['upload_id'], upload_extra['encoded_object_name'])
+
+              if HTTP.is_response_ok?(code) && data["md5"] == body_md5
+                progress[:etag] = data["etag"]
+                progress[:offset] = seek_positon
+                progress[:restsize] = restsize - part_size * block_index
+                progress[:status_code] = code
+                progress[:host] = data["host"]
+                if !notifier.nil? && notifier.respond_to?("notify")
+                  notifier.notify(block_index, progress)
+                end
+                break
+              elsif i == retry_times && data["md5"] != body_md5
+                Log.logger.error %Q(Uploading block error. Expected md5: #{body_md5}, but got: #{data["md5"]})
+                return code, data, raw_headers
+              end
+            end
+          else
+            for i in 1..retry_times
+              seek_positon = block_index * part_size
+              body = fh.get_data(seek_positon, restsize)
+              if body.length != restsize
+                raise FileSeekReadError.new(fpath, block_index, seek_positon, body.length, body.length)
+              end
+              md5 = Digest::MD5.new
+              body_md5 = md5.update body
+              code, data, raw_headers = _upload_part(upload_extra['host'], uptoken, body, bucket, block_index + 1, upload_extra['upload_id'], upload_extra['encoded_object_name'])
+
+              if HTTP.is_response_ok?(code) && data["md5"] == body_md5
+                progress[:etag] = data["etag"]
+                progress[:offset] = seek_positon
+                progress[:restsize] = restsize - part_size
+                progress[:status_code] = code
+                progress[:host] = data["host"]
+                if !notifier.nil? && notifier.respond_to?("notify")
+                  notifier.notify(block_index, progress)
+                end
+                break
+              elsif i == retry_times && data["md5"] != body_md5
+                Log.logger.error %Q(Uploading block error. Expected md5: #{body_md5}, but got: #{data["md5"]})
+                return code, data, raw_headers
+              end
+            end
+          end
+        end
+
         def _block_count(fsize)
             ((fsize + Config.settings[:block_size] - 1) / Config.settings[:block_size]).to_i
         end # _block_count
@@ -221,7 +304,13 @@ module Qiniu
                            checksums,
                            progresses,
                            block_notifier = nil,
-                           chunk_notifier = nil)
+                           chunk_notifier = nil,
+                           complete_block = nil,
+                           version = 'v1',
+                           part_size = Config.settings[:block_size],
+                           upload_record = nil)
+
+            upload_extra = upload_record[:upload_extra]
             code, data = 0, {}
             fsize = fh.data_size
             block_count = _block_count(fsize)
@@ -230,27 +319,51 @@ module Qiniu
             if checksum_count != block_count || progress_count != block_count
                 raise BlockCountNotMathchError.new(fh.path, block_count, checksum_count, progress_count)
             end
-            0.upto(block_count-1).each do |block_index|
+            complete_block.upto(block_count-1).each do |block_index|
                 if checksums[block_index].nil? || checksums[block_index].empty?
-                    block_size = Config.settings[:block_size]
+                    block_size = part_size
                     if block_index == block_count - 1
-                        block_size = fsize - block_index*Config.settings[:block_size]
+                        block_size = fsize - block_index * part_size
                     end
-                    if progresses[block_index].nil?
+                    if version == 'v1'
+                      if progresses[block_index].nil?
                         progresses[block_index] = _new_block_put_progress_data
+                      end
+                    else
+                      if progresses[block_index].nil?
+                        progresses[block_index] = _new_block_put_progress_data_v2
                     end
+
                     #code, data = _resumable_put_block(uptoken, fh, block_index, block_size, Config.settings[:chunk_size], progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
                     # Put the whole block as a chunk
-                    code, data = _resumable_put_block(bucket, uptoken, fh, block_index, block_size, block_size, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
+
+                    if version == 'v1'
+                      code, data = _resumable_put_block(bucket, uptoken, fh, block_index, block_size, block_size, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
+                    else
+                      restsize = fsize - part_size * block_index
+                      code, data = _resumeble_put_block_v2(bucket, uptoken, fh, block_index, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier, part_size, upload_extra, restsize)
+                    end
                     if HTTP.is_response_ok?(code)
                         #checksums[block_index] = data["checksum"]
-                        checksums[block_index] = data["ctx"]
+                        if version == 'v1'
+                          checksums[block_index] = data["ctx"]
+                        else
+                          checksums[block_index] = {:etag => data["etag"], :partNumber => block_index + 1}
+                        end
+                        upload_record[:ctx] = checksums
+                        if upload_extra['resume_record_file'] != '' && !upload_extra['resume_record_file'].nil?
+                          upload_extra_json = upload_record.to_json
+                          f = File.new(upload_extra['resume_record_file'], "r+")
+                          f.syswrite(upload_extra_json)
+                        end
+
                         if !block_notifier.nil? && block_notifier.respond_to?("notify")
                             block_notifier.notify(block_index, checksums[block_index])
                         end
                     end
                 end
-            end
+                end
+                end
             return [code, data]
         end # _resumable_put
 
@@ -289,25 +402,88 @@ module Qiniu
                               custom_meta = nil,
                               customer = nil,
                               callback_params = nil,
-                              rotate = nil)
+                              rotate = nil,
+                              resume_record_file = nil,
+                              version = 'v1',
+                              part_size = Config.settings[:block_size])
 
+          if part_size.nil?
+            part_size = Config.settings[:block_size]
+          end
+          encoded_object_name = '~'
+          upload_extra = {}
+          host = Config.up_host(bucket)
+          upload_extra['host'] = host
+          if version == 'v2'
+            encoded_object_name = Utils.urlsafe_base64_encode(key)
+            upload_extra['encoded_object_name'] = encoded_object_name
+          end
           block_count = _block_count(fsize)
 
           chunk_notifier = ChunkProgressNotifier.new()
           block_notifier = BlockProgressNotifier.new()
 
           progresses = []
-          block_count.times{progresses << _new_block_put_progress_data}
           checksums = []
-          block_count.times{checksums << ''}
+          complete_block = 0
+          upload_record = _record_upload_progress
+          record = nil
+          upload_extra['resume_record_file'] = nil
+          if !resume_record_file.nil?
+            upload_extra['resume_record_file'] = resume_record_file
+            record = get_upload_record(resume_record_file)
+          end
+          if record.nil?
+            Log.logger.warn 'resume record is nil'
+            block_count.times{checksums << ''}
+            if version == 'v1'
+              block_count.times{progresses << _new_block_put_progress_data}
+            else
+              data = _init_req(host,encoded_object_name, bucket, uptoken)
+              upload_extra['upload_id'] = data['uploadId']
+              upload_extra['expired'] = data['expireAt']
+              upload_record[:upload_extra] = upload_extra
+              for i in 0..block_count - 1
+                progresses[i] = _new_block_put_progress_data_v2
+              end
+            end
+          else
+            ctx = record[:ctx]
+            complete_block = ctx.length
+            if version == 'v1'
+              upload_record = record
+              checksums = upload_record[:ctx]
+            elsif  version == 'v2'
+              now = Time.new
+              extra = record[:upload_extra]
+              if extra[:upload_id] && extra[:expired] > now.to_i
+                upload_record = record
+                checksums = upload_record[:ctx]
+                block_count.times{progresses << _new_block_put_progress_data_v2}
+              else
+                data = _init_req(host,encoded_object_name, bucket, uptoken)
+                upload_extra['upload_id'] = data['uploadId']
+                upload_extra['expired'] = data['expireAt']
+                upload_record[:upload_extra] = extra
+                block_count.times(progresses << _new_block_put_progress_data_v2)
+                block_count.times{checksums << ''}
+              end
+            else
+              Log.logger.error 'only support v1/v2 now!'
+            end
+          end
 
-          code, data, raw_headers = _resumable_put(bucket, uptoken, fh, checksums, progresses, block_notifier, chunk_notifier)
+          code, data, raw_headers = _resumable_put(bucket, uptoken, fh, checksums, progresses, block_notifier, chunk_notifier, complete_block, version, part_size, upload_record)
 
           if HTTP.is_response_ok?(code)
             uphost = data["host"]
-            entry_uri = bucket + ':' + key
-            code, data, raw_headers = _mkfile(uphost, uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params, rotate)
-            Utils.debug "Mkfile : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
+            if version == 'v1'
+              entry_uri = bucket + ':' + key
+              code, data, raw_headers = _mkfile(uphost, uptoken, entry_uri, fsize, checksums, mime_type, custom_meta, customer, callback_params, rotate)
+              Utils.debug "Mkfile : #{code.inspect} #{data.inspect} #{raw_headers.inspect}"
+            else
+              code, data, raw_headers = _complete_parts(key, uptoken, upload_extra, bucket, checksums, mime_type, customer)
+            end
           end
 
           if HTTP.is_response_ok?(code)
@@ -316,6 +492,70 @@ module Qiniu
 
           return code, data, raw_headers
         end # _resumable_upload
+
+        def _init_req(host,
+                      encoded_object_name,
+                      bucket,
+                      uptoken)
+
+          url = host + '/buckets/' + bucket + '/objects/' + encoded_object_name + '/uploads'
+          options = {
+            :headers => {
+              :content_type   => 'application/json',
+              'Authorization' => 'UpToken ' + uptoken
+            }
+          }
+          _, body, _ = HTTP.api_post(url, '', options)
+          return body
+        end # init request
+
+        def  _upload_part(host,
+                          uptoken,
+                          block,
+                          bucket,
+                          part_number,
+                          upload_id,
+                          encoded_object_name)
+
+          md5 = Digest::MD5.new
+          body_md5 = md5.update block
+          options = {
+            :headers => {
+              'Authorization' => 'UpToken ' + uptoken,
+              'Content-Type' => 'application/octet-stream',
+              'Content-MD5' => body_md5
+            }
+          }
+          url = "#{host}/buckets/#{bucket}/objects/#{encoded_object_name}/uploads/#{upload_id}/#{part_number}"
+          code, body, raw_headers = HTTP.api_put(url, block, options)
+          return code, body, raw_headers
+        end # upload block
+
+        def _complete_parts(fname,
+                            uptoken,
+                            upload_extra,
+                            bucket,
+                            etags,
+                            mime_type = nil,
+                            customer = nil)
+          options = {
+            :headers => {
+              'Authorization' => 'UpToken ' + uptoken,
+              'Content-Type' => 'application/json'
+            }
+          }
+          body = {
+            'fname' => fname,
+            'mimeType' => mime_type,
+            'customVars' => customer,
+            'parts' => etags
+          }
+          json_body = body.to_json
+          url = "#{upload_extra["host"]}/buckets/#{bucket}/objects/#{upload_extra["encoded_object_name"]}/uploads/#{upload_extra["upload_id"]}"
+          code, data, raw_headers = HTTP.api_post(url, json_body, options)
+          return code, data, raw_headers
+        end #coplete upload
+
       end # self class
     end # module Storage
 end # module Qiniu

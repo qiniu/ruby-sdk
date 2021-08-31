@@ -15,7 +15,8 @@ module Qiniu
       if !multi_region_support?
         "#{extract_protocol(opts)}://up.qiniu.com"
       elsif bucket
-        hosts(bucket)[extract_protocol(opts)]['up'][0] rescue "#{extract_protocol(opts)}://up.qiniu.com"
+        host = hosts(bucket)
+        "#{extract_protocol(opts)}://" + host['up']['acc']['main'][0] rescue "#{extract_protocol(opts)}://" + host['up']['src']['main'][0]
       else
         raise BucketIsMissing, 'HostManager#up_host: bucket is required when multi_region is enabled'
       end
@@ -25,7 +26,8 @@ module Qiniu
       if !multi_region_support?
         "#{extract_protocol(opts)}://iovip.qbox.me"
       elsif bucket
-        hosts(bucket)[extract_protocol(opts)]['io'][0] rescue "#{extract_protocol(opts)}://iovip.qbox.me"
+        host = hosts(bucket)
+        "#{extract_protocol(opts)}://" + host['io']['acc']['main'][0] rescue "#{extract_protocol(opts)}://" + host['io']['src']['main'][0]
       else
         raise BucketIsMissing, 'HostManager#fetch_host: bucket is required when multi_region is enabled'
       end
@@ -33,7 +35,8 @@ module Qiniu
 
     def up_hosts(bucket, opts = {})
       if multi_region_support?
-        hosts(bucket)[extract_protocol(opts)]['up']
+        host = hosts(bucket)
+        host['up']['acc']['main'][0] rescue host['up']['src']['main'][0]
       else
         raise 'HostManager#up_hosts: multi_region must be enabled'
       end
@@ -66,7 +69,7 @@ module Qiniu
           return host
         end
       end
-      url = @config[:uc_host] + '/v1/query?' + HTTP.generate_query_string(ak: @config[:access_key], bucket: bucket)
+      url = @config[:uc_host] + '/v2/query?' + HTTP.generate_query_string(ak: @config[:access_key], bucket: bucket)
       status, body = HTTP.api_get(url)
       if HTTP.is_response_ok?(status)
         Utils.debug("Query #{bucket} hosts Success: #{body}")

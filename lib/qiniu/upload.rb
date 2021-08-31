@@ -52,7 +52,8 @@ module Qiniu
                               x_vars = nil,
                               opts = {})
         ### 构造URL
-        url = Config.up_host(opts[:bucket])
+        _, _, _, bucket = Auth.decode_uptoken(uptoken)
+        url = Config.up_host(bucket)
         url[/\/*$/] = ''
         url += '/'
 
@@ -90,7 +91,8 @@ module Qiniu
                               x_vars = nil,
                               opts = {})
         ### 构造 URL
-        url = Config.up_host(opts[:bucket])
+        _, _, _, bucket = Auth.decode_uptoken(uptoken)
+        url = Config.up_host(bucket)
         url[/\/*$/] = ''
         url += '/'
 

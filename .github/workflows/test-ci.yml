@@ -1,0 +1,39 @@
+name: RUBY CI
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        ruby-versions: ['2.4.0', '2.6.0']
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-versions }}
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Test
+        run: bundle exec rspec ./spec/qiniu/upload_spec.rb
+
+        env:
+          QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
+          QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
+          QINIU_TEST_BUCKET: ${{ secrets.QINIU_TEST_BUCKET }}
+          QINIU_TEST_DOMAIN: ${{ secrets.QINIU_TEST_DOMAIN }}
+
+      - name: After_success
+        run: bash <(curl -s https://codecov.io/bash)
