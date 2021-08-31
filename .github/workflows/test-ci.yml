@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        ruby-versions: ['2.4', '2.6']
+        ruby-versions: ['2.3', '2.7']
 
     runs-on: ubuntu-latest
     steps:
