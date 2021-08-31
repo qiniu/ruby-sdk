@@ -27,7 +27,7 @@ jobs:
         run: bundle install
 
       - name: Test
-        run: bundle exec rspec ./spec/qiniu/upload_spec.rb
+        run: bundle exec rspec
 
         env:
           QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
