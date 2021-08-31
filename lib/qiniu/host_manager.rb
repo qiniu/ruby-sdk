@@ -38,10 +38,10 @@ module Qiniu
         host = hosts(bucket)['up']
         multi_region_hosts = []
         if host.key?('acc')
-          multi_region_hosts | host['acc']['main']
+          multi_region_hosts = multi_region_hosts | host['acc']['main']
         end
         if host.key?('src')
-          multi_region_hosts | host['src']['main']
+          multi_region_hosts = multi_region_hosts | host['src']['main']
         end
         return multi_region_hosts
       else
