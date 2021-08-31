@@ -96,7 +96,6 @@ module Qiniu
         end
 
         it "should works" do
-          @bucket = "z0-bucket"
           upopts = {:scope => @bucket, :expires_in => 3600, :endUser => "why404@gmail.com"}
           uptoken = Qiniu.generate_upload_token(upopts)
 
