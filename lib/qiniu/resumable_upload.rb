@@ -326,7 +326,6 @@ module Qiniu
                         block_size = fsize - block_index * part_size
                     end
                     if version == 'v1'
-                      puts "分片v1:#2"
                       if progresses[block_index].nil?
                         progresses[block_index] = _new_block_put_progress_data
                       end
@@ -335,12 +334,10 @@ module Qiniu
                         progresses[block_index] = _new_block_put_progress_data_v2
                       end
                     end
-                      puts "分片v1:#3"
                     #code, data = _resumable_put_block(uptoken, fh, block_index, block_size, Config.settings[:chunk_size], progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
                     # Put the whole block as a chunk
 
                     if version == 'v1'
-                      puts "分片v1:#3"
                       code, data = _resumable_put_block(bucket, uptoken, fh, block_index, block_size, block_size, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
                     else
                       restsize = fsize - part_size * block_index
@@ -440,7 +437,6 @@ module Qiniu
             block_count.times{checksums << ''}
             if version == 'v1'
               block_count.times{progresses << _new_block_put_progress_data}
-              puts "分片v1:#1"
             else
               data = _init_req(host,encoded_object_name, bucket, uptoken)
               upload_extra['upload_id'] = data['uploadId']
