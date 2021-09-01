@@ -81,8 +81,6 @@ module Qiniu
 
         ### 发送请求
         HTTP.api_post(url, post_data)
-      rescue BucketIsMissing
-        raise 'upload_with_token_2 requires :bucket option when multi_region is enabled'
       end # upload_with_token_2
 
       def upload_buffer_with_token(uptoken,

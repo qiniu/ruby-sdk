@@ -484,24 +484,5 @@ module Qiniu
       end
       include_examples 'Upload Specs'
     end
-
-    describe 'for as0 bucket' do
-      before :all do
-        @bucket = 'rubysdk-as0'
-      end
-      include_examples 'Upload Specs'
-
-      it 'should raise BucketIsMissing error' do
-        upopts = {:scope => @bucket, :expires_in => 3600, :endUser => "why404@gmail.com"}
-        uptoken = Qiniu.generate_upload_token(upopts)
-        expect do
-          Qiniu::Storage.upload_with_token_2(
-            uptoken,
-            __FILE__,
-            @key,
-            )
-        end.to raise_error('upload_with_token_2 requires :bucket option when multi_region is enabled')
-      end
-    end
   end # module Storage
 end # module Qiniu
