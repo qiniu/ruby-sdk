@@ -347,7 +347,7 @@ module Qiniu
             nil,
             nil,
             nil,
-            'v2',
+            :v2,
             4 * 1024 * 1024
           )
           (code/100).should == 2
@@ -386,7 +386,7 @@ module Qiniu
             nil,
             nil,
             nil,
-            'v2',
+            :v2,
             4 * 1024 * 1024
           )
           (code/100).should == 2
@@ -425,7 +425,7 @@ module Qiniu
             nil,
             nil,
             nil,
-            'v2',
+            :v2,
             4 * 1024 * 1024
           )
           (code/100).should == 2
@@ -464,7 +464,7 @@ module Qiniu
             nil,
             nil,
             nil,
-            'v2'
+            :v2
           )
           (code/100).should == 2
           puts data.inspect

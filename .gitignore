@@ -18,3 +18,4 @@ test/version_tmp
 tmp
 Gemfile.lock
 rails/Gemfile.lock
+vendor

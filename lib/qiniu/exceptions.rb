@@ -105,6 +105,12 @@ module Qiniu
       end
     end
 
+    class BadUploadToken < Exception
+      def initialize(upload_token)
+        super("Failed to parse upload token #{upload_token}.")
+      end
+    end
+
     class MissingConfError < Exception
       def initialize(missing_conf_file)
         super("Error, missing #{missing_conf_file}. You must have #{missing_conf_file} to configure your client id and secret.")

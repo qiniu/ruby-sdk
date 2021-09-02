@@ -4,6 +4,7 @@
 require 'openssl'
 require 'uri'
 require 'cgi'
+require 'json'
 
 require 'qiniu/exceptions'
 
@@ -265,6 +266,7 @@ module Qiniu
         def decode_uptoken(uptoken)
           ### 解析uptoken
           uptoken_list = uptoken.split(":")
+          raise BadUploadToken, uptoken if uptoken_list.length != 3
 
           ### 提取ak sign policy
           access_key = uptoken_list[0]
@@ -272,12 +274,11 @@ module Qiniu
           str_policy = Utils.urlsafe_base64_decode(uptoken_list[2])
           hash_policy = JSON.parse(str_policy)
           ### 提取bucket
-          bucket = ''
-          if hash_policy != {} && !hash_policy.nil?
-            bucket = hash_policy['scope'].split(":")[0]
-          end
+          bucket = hash_policy['scope'].split(":", 2)[0]
           ### 返回 ak sign policy bucket
           return  access_key, sign, hash_policy, bucket
+        rescue
+          raise BadUploadToken, uptoken
         end
 
         def authenticate_callback_request(auth_str, url, body = '')

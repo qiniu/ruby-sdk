@@ -64,8 +64,8 @@ module Qiniu
           return 0, {}, {}
         end
 
-        content_type = resp_headers["content-type"][0]
-        if !content_type.nil? && !content_type.downcase.index(API_RESULT_MIMETYPE).nil? then
+        content_type = resp_headers.dig('content-type', 0)
+        if content_type && content_type.downcase == API_RESULT_MIMETYPE then
           # 如果是JSON格式，则反序列化
           resp_body = Utils.safe_json_parse(resp_body)
         end
@@ -114,7 +114,7 @@ module Qiniu
         response = RestClient.put(url, req_body, req_headers)
         return response.code.to_i, response.body, response.raw_headers
       rescue => e
-        Log.logger.warn "#{e.message} => Qiniu::HTTP.post('#{url}')"
+        Log.logger.warn "#{e.message} => Qiniu::HTTP.put('#{url}')"
         if e.respond_to?(:response) && e.response.respond_to?(:code) then
           return e.response.code, e.response.body, e.response.raw_headers
         end
@@ -140,8 +140,8 @@ module Qiniu
           return 0, {}, {}
         end
 
-        content_type = resp_headers["content-type"][0]
-        if !content_type.nil? && !content_type.downcase.index(API_RESULT_MIMETYPE).nil? then
+        content_type = resp_headers.dig('content-type', 0)
+        if content_type && content_type.downcase == API_RESULT_MIMETYPE then
           # 如果是JSON格式，则反序列化
           resp_body = Utils.safe_json_parse(resp_body)
         end
@@ -168,8 +168,8 @@ module Qiniu
           return 0, {}, {}
         end
 
-        content_type = resp_headers["content-type"][0]
-        if !content_type.nil? && !content_type.downcase.index(API_RESULT_MIMETYPE).nil? then
+        content_type = resp_headers.dig('content-type', 0)
+        if content_type && content_type.downcase == API_RESULT_MIMETYPE then
           # 如果是JSON格式，则反序列化
           resp_body = Utils.safe_json_parse(resp_body)
         end

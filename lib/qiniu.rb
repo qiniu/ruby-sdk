@@ -79,16 +79,22 @@ module Qiniu
         opts[:enable_resumable_upload] = true unless opts.has_key?(:enable_resumable_upload)
 
         if opts[:enable_resumable_upload] && File::size(source_file) > Config.settings[:block_size]
-          code, data, raw_headers = Storage.resumable_upload_with_token(opts[:uptoken],
+          code, data, raw_headers = Storage.resumable_upload_with_token(
+                                            opts[:uptoken],
                                             opts[:file],
                                             opts[:bucket],
                                             opts[:key],
                                             opts[:mime_type],
+                                            opts[:note],
                                             opts[:customer],
                                             opts[:callback_params],
-                                            opts[:rotate])
+                                            opts[:rotate],
+                                            opts[:resume_record_file],
+                                            opts[:version] || :v1,
+                                            opts[:part_size] || Config.settings[:block_size])
         else
-          code, data, raw_headers = Storage.upload_with_token(opts[:uptoken],
+          code, data, raw_headers = Storage.upload_with_token(
+                                            opts[:uptoken],
                                             opts[:file],
                                             opts[:bucket],
                                             opts[:key],

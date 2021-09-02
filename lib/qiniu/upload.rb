@@ -32,18 +32,20 @@ module Qiniu
         end
         callback_query_string = HTTP.generate_query_string(callback_params)
 
-        url = Config.up_host(bucket) + '/upload'
-        post_data = {
-          :params     => callback_query_string,
-          :action     => action_params,
-          :file       => File.new(local_file, 'rb'),
-          :multipart  => true
-        }
-        if !uptoken.nil? then
-          post_data[:auth] = uptoken unless uptoken.nil?
-        end
+        File.open(local_file, 'rb') do |file|
+          url = Config.up_host(bucket) + '/upload'
+          post_data = {
+            :params     => callback_query_string,
+            :action     => action_params,
+            :file       => file,
+            :multipart  => true
+          }
+          if !uptoken.nil? then
+            post_data[:auth] = uptoken unless uptoken.nil?
+          end
 
-        return HTTP.api_post(url, post_data)
+          return HTTP.api_post(url, post_data)
+        end
       end # upload_with_token
 
       def upload_with_token_2(uptoken,
@@ -58,29 +60,28 @@ module Qiniu
         url += '/'
 
         ### 构造HTTP Body
-        file = File.new(local_file, 'rb')
-        if not opts[:content_type].nil?
-          file.define_singleton_method("content_type") do
-            opts[:content_type]
+        File.open(local_file, 'rb') do |file|
+          if opts[:content_type]
+            file.define_singleton_method("content_type") do
+              opts[:content_type]
+            end
           end
-        end
 
-        post_data = {
-          :file      => file,
-          :multipart => true,
-        }
-        if not uptoken.nil?
-          post_data[:token] = uptoken
-        end
-        if not key.nil?
-          post_data[:key] = key
-        end
-        if x_vars.is_a?(Hash)
-          post_data.merge!(x_vars)
-        end
+          post_data = {
+            :file      => file,
+            :multipart => true,
+            :crc32     => Utils::crc32checksum(local_file),
+          }
+          post_data[:token] = uptoken if uptoken
+          post_data[:key] = key if key
 
-        ### 发送请求
-        HTTP.api_post(url, post_data)
+          if x_vars.is_a?(Hash)
+            post_data.merge!(x_vars)
+          end
+
+          ### 发送请求
+          HTTP.api_post(url, post_data)
+        end
       end # upload_with_token_2
 
       def upload_buffer_with_token(uptoken,
@@ -108,27 +109,21 @@ module Qiniu
           'A-MASS-OF-DATA'
         end
         data.define_singleton_method("content_type") do
-          (opts[:content_type].nil? || opts[:content_type].empty?) ? 'application/octet-stream' : opts[:content_type]
+          opts[:content_type] || 'application/octet-stream'
         end
 
         post_data = {
           :file      => data,
           :multipart => true,
         }
-        if not uptoken.nil?
-          post_data[:token] = uptoken
-        end
-        if not key.nil?
-          post_data[:key] = key
-        end
+        post_data[:token] = uptoken if uptoken
+        post_data[:key] = key if key
         if x_vars.is_a?(Hash)
           post_data.merge!(x_vars)
         end
 
         ### 发送请求
         HTTP.api_post(url, post_data)
-      rescue BucketIsMissing
-        raise 'upload_buffer_with_token requires :bucket option when multi_region is enabled'
       end # upload_with_token_2
 
       ### 授权举例
@@ -151,8 +146,6 @@ module Qiniu
         end
 
         return upload_with_token_2(uptoken, local_file, key, x_vars, opts)
-      rescue BucketIsMissing
-        raise 'upload_with_put_policy requires :bucket option when multi_region is enabled'
       end # upload_with_put_policy
 
       def upload_buffer_with_put_policy(put_policy,
@@ -166,8 +159,6 @@ module Qiniu
         end
 
         return upload_buffer_with_token(uptoken, buf, key, x_vars, opts)
-      rescue BucketIsMissing
-        raise 'upload_buffer_with_put_policy requires :bucket option when multi_region is enabled'
       end # upload_buffer_with_put_policy
 
       private

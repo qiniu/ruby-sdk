@@ -2,6 +2,7 @@ require 'thread'
 require 'cgi'
 
 module Qiniu
+  # @deprecated
   class BucketIsMissing < RuntimeError; end
 
   class HostManager
@@ -13,12 +14,10 @@ module Qiniu
 
     def up_host(bucket, opts = {})
       if !multi_region_support?
-        "#{extract_protocol(opts)}://up.qiniu.com"
+        "#{extract_protocol(opts)}://up.qiniup.com"
       elsif bucket
         host = hosts(bucket)
-        "#{extract_protocol(opts)}://" + host['up']['acc']['main'][0] rescue "#{extract_protocol(opts)}://" + host['up']['src']['main'][0]
-      else
-        raise BucketIsMissing, 'HostManager#up_host: bucket is required when multi_region is enabled'
+        "#{extract_protocol(opts)}://" + host.dig('up', 'acc', 'main', 0) rescue "#{extract_protocol(opts)}://" + host.dig('up', 'src', 'main', 0)
       end
     end
 
@@ -27,9 +26,7 @@ module Qiniu
         "#{extract_protocol(opts)}://iovip.qbox.me"
       elsif bucket
         host = hosts(bucket)
-        "#{extract_protocol(opts)}://" + host['io']['acc']['main'][0] rescue "#{extract_protocol(opts)}://" + host['io']['src']['main'][0]
-      else
-        raise BucketIsMissing, 'HostManager#fetch_host: bucket is required when multi_region is enabled'
+        "#{extract_protocol(opts)}://" + host.dig('io', 'acc', 'main', 0) rescue "#{extract_protocol(opts)}://" + host.dig('io', 'src', 'main', 0)
       end
     end
 
@@ -37,12 +34,8 @@ module Qiniu
       if multi_region_support?
         host = hosts(bucket)['up']
         multi_region_hosts = []
-        if host.key?('acc')
-          multi_region_hosts = multi_region_hosts | host['acc']['main']
-        end
-        if host.key?('src')
-          multi_region_hosts = multi_region_hosts | host['src']['main']
-        end
+        multi_region_hosts |= host.dig('acc', 'main') || []
+        multi_region_hosts |= host.dig('src', 'main') || []
         return multi_region_hosts
       else
         raise 'HostManager#up_hosts: multi_region must be enabled'
