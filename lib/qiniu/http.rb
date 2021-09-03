@@ -64,8 +64,8 @@ module Qiniu
           return 0, {}, {}
         end
 
-        content_type = resp_headers["content-type"][0]
-        if !content_type.nil? && !content_type.downcase.index(API_RESULT_MIMETYPE).nil? then
+        content_type = resp_headers.dig('content-type', 0)
+        if content_type && content_type.downcase == API_RESULT_MIMETYPE then
           # 如果是JSON格式，则反序列化
           resp_body = Utils.safe_json_parse(resp_body)
         end
@@ -97,6 +97,30 @@ module Qiniu
         return nil, nil, nil
       end # post
 
+      def put (url, req_body = nil, opts = {})
+        ### 配置请求Header
+        req_headers = {
+          :connection => 'close',
+          :accept     => '*/*',
+          :user_agent => Config.settings[:user_agent]
+        }
+
+        # 优先使用外部Header，覆盖任何特定Header
+        if opts[:headers].is_a?(Hash) then
+          req_headers.merge!(opts[:headers])
+        end
+
+        ### 发送请求
+        response = RestClient.put(url, req_body, req_headers)
+        return response.code.to_i, response.body, response.raw_headers
+      rescue => e
+        Log.logger.warn "#{e.message} => Qiniu::HTTP.put('#{url}')"
+        if e.respond_to?(:response) && e.response.respond_to?(:code) then
+          return e.response.code, e.response.body, e.response.raw_headers
+        end
+        return nil, nil, nil
+      end # put
+
       def api_post (url, req_body = nil, opts = {})
         ### 配置请求Header
         headers = {
@@ -116,14 +140,42 @@ module Qiniu
           return 0, {}, {}
         end
 
-        content_type = resp_headers["content-type"][0]
-        if !content_type.nil? && !content_type.downcase.index(API_RESULT_MIMETYPE).nil? then
+        content_type = resp_headers.dig('content-type', 0)
+        if content_type && content_type.downcase == API_RESULT_MIMETYPE then
           # 如果是JSON格式，则反序列化
           resp_body = Utils.safe_json_parse(resp_body)
         end
 
         return resp_code, resp_body, resp_headers
       end # api_post
+
+      def api_put(url, req_body = nil, opts = {})
+        ### 配置请求Header
+        headers = {
+          :accept => API_RESULT_MIMETYPE
+        }
+
+        # 将特定Header混入外部Header中
+        if opts[:headers].is_a?(Hash) then
+          opts[:headers] = opts[:headers].dup.merge!(headers)
+        else
+          opts[:headers] = headers
+        end
+
+        ### 发送请求，然后转换返回值
+        resp_code, resp_body, resp_headers = put(url, req_body, opts)
+        if resp_code.nil? then
+          return 0, {}, {}
+        end
+
+        content_type = resp_headers.dig('content-type', 0)
+        if content_type && content_type.downcase == API_RESULT_MIMETYPE then
+          # 如果是JSON格式，则反序列化
+          resp_body = Utils.safe_json_parse(resp_body)
+        end
+
+        return resp_code, resp_body, resp_headers
+      end # api_put
 
       def management_post (url, body = '')
         ### 授权并执行管理操作

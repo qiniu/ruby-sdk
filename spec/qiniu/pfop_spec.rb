@@ -56,7 +56,7 @@ module Qiniu
         context ".prefop" do
           it "should works" do
             code, data, headers = Qiniu::Fop::Persistance.prefop('fakePersistentId')
-            code.should == 612
+            code.should == 404
             puts code.inspect
             puts data.inspect
             puts headers.inspect

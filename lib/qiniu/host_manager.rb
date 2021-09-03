@@ -2,6 +2,7 @@ require 'thread'
 require 'cgi'
 
 module Qiniu
+  # @deprecated
   class BucketIsMissing < RuntimeError; end
 
   class HostManager
@@ -13,11 +14,10 @@ module Qiniu
 
     def up_host(bucket, opts = {})
       if !multi_region_support?
-        "#{extract_protocol(opts)}://up.qiniu.com"
+        "#{extract_protocol(opts)}://up.qiniup.com"
       elsif bucket
-        hosts(bucket)[extract_protocol(opts)]['up'][0] rescue "#{extract_protocol(opts)}://up.qiniu.com"
-      else
-        raise BucketIsMissing, 'HostManager#up_host: bucket is required when multi_region is enabled'
+        host = hosts(bucket)
+        "#{extract_protocol(opts)}://" + host.dig('up', 'acc', 'main', 0) rescue "#{extract_protocol(opts)}://" + host.dig('up', 'src', 'main', 0)
       end
     end
 
@@ -25,15 +25,18 @@ module Qiniu
       if !multi_region_support?
         "#{extract_protocol(opts)}://iovip.qbox.me"
       elsif bucket
-        hosts(bucket)[extract_protocol(opts)]['io'][0] rescue "#{extract_protocol(opts)}://iovip.qbox.me"
-      else
-        raise BucketIsMissing, 'HostManager#fetch_host: bucket is required when multi_region is enabled'
+        host = hosts(bucket)
+        "#{extract_protocol(opts)}://" + host.dig('io', 'acc', 'main', 0) rescue "#{extract_protocol(opts)}://" + host.dig('io', 'src', 'main', 0)
       end
     end
 
     def up_hosts(bucket, opts = {})
       if multi_region_support?
-        hosts(bucket)[extract_protocol(opts)]['up']
+        host = hosts(bucket)['up']
+        multi_region_hosts = []
+        multi_region_hosts |= host.dig('acc', 'main') || []
+        multi_region_hosts |= host.dig('src', 'main') || []
+        return multi_region_hosts
       else
         raise 'HostManager#up_hosts: multi_region must be enabled'
       end
@@ -66,7 +69,7 @@ module Qiniu
           return host
         end
       end
-      url = @config[:uc_host] + '/v1/query?' + HTTP.generate_query_string(ak: @config[:access_key], bucket: bucket)
+      url = @config[:uc_host] + '/v2/query?' + HTTP.generate_query_string(ak: @config[:access_key], bucket: bucket)
       status, body = HTTP.api_get(url)
       if HTTP.is_response_ok?(status)
         Utils.debug("Query #{bucket} hosts Success: #{body}")
