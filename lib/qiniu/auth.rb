@@ -10,7 +10,7 @@ require 'qiniu/exceptions'
 
 module Qiniu
     module Auth
-      DEFAULT_AUTH_SECONDS = 3600
+      DEFAULT_AUTH_SECONDS = 36000
 
       class << self
         def calculate_deadline(expires_in, deadline = nil)
