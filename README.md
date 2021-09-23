@@ -5,7 +5,6 @@
 [![GitHub release](https://img.shields.io/github/v/tag/qiniu/ruby-sdk.svg?label=release)](https://github.com/qiniu/ruby-sdk/releases)
 [![Coverage Status](https://codecov.io/gh/qiniu/ruby-sdk/branch/develop/graph/badge.svg)](https://codecov.io/gh/qiniu/ruby-sdk)
 [![Gem Version](https://badge.fury.io/rb/qiniu.svg)](http://badge.fury.io/rb/qiniu)
-[![Dependency Status](https://gemnasium.com/qiniu/ruby-sdk.svg)](https://gemnasium.com/qiniu/ruby-sdk)
 [![Code Climate](https://codeclimate.com/github/qiniu/ruby-sdk.svg)](https://codeclimate.com/github/qiniu/ruby-sdk)
 
 ## 关于
