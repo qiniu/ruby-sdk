@@ -1,7 +1,7 @@
 # Qiniu Resource (Cloud) Storage SDK for Ruby
 
 [![LICENSE](https://img.shields.io/github/license/qiniu/ruby-sdk.svg)](https://github.com/qiniu/ruby-sdk/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/qiniu/ruby-sdk.svg?branch=develop)](https://travis-ci.org/qiniu/ruby-sdk)
+[![Build Status](https://github.com/qiniu/ruby-sdk/actions/workflows/test-ci.yml/badge.svg?branch=develop)](https://travis-ci.org/qiniu/ruby-sdk)
 [![GitHub release](https://img.shields.io/github/v/tag/qiniu/ruby-sdk.svg?label=release)](https://github.com/qiniu/ruby-sdk/releases)
 [![Coverage Status](https://codecov.io/gh/qiniu/ruby-sdk/branch/develop/graph/badge.svg)](https://codecov.io/gh/qiniu/ruby-sdk)
 [![Gem Version](https://badge.fury.io/rb/qiniu.svg)](http://badge.fury.io/rb/qiniu)
