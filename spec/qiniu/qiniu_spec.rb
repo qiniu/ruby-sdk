@@ -130,7 +130,7 @@ module Qiniu
         #uploading
         result1 = Qiniu.upload_file(upload_opts)
         #drop the bigfile
-        File.unlink(localfile) if File.exists?(localfile)
+        File.unlink(localfile) if File.exist?(localfile)
         #expect
         puts result1.inspect
         expect(result1).to_not be_empty

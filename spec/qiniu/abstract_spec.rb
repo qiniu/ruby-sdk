@@ -13,9 +13,7 @@ describe Qiniu::Abstract do
   end
 
   it "raises NotImplementedError" do
-    proc {
-      @klass.new.foo
-    }.should raise_error(NotImplementedError)
+    expect { @klass.new.foo }.to raise_error(NotImplementedError)
   end
 
   it "can be overridden" do
@@ -25,6 +23,6 @@ describe Qiniu::Abstract do
       end
     end
 
-    subclass.new.foo.should == :overridden
+    expect(subclass.new.foo).to eq(:overridden)
   end
 end
