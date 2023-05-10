@@ -180,7 +180,7 @@ module Qiniu
       def management_post (url, body = '')
         ### 授权并执行管理操作
         return HTTP.api_post(url, body, {
-          :headers => { 'Authorization' => 'QBox ' + Auth.generate_acctoken(url, body) }
+          :headers => { 'Authorization' => 'QBox ' + Auth.generate_qbox_token(url, body) }
         })
       end # management_post
     end # class << self

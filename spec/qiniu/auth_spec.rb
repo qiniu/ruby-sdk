@@ -98,7 +98,7 @@ module Qiniu
         expect(Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':', url, body)).to be_falsey
         expect(Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':????', url, body)).to be_falsey
 
-        acctoken = Qiniu::Auth.generate_acctoken(url, body)
+        acctoken = Qiniu::Auth.generate_qbox_token(url, body)
         auth_str = 'QBox ' + acctoken
 
         expect(Qiniu::Auth.authenticate_callback_request(auth_str + '  ', url, body)).to be_falsey
@@ -132,7 +132,7 @@ module Qiniu
           end
 
           begin
-            acctoken = Qiniu::Auth.generate_acctoken("http://rsf.qbox.me/list")
+            acctoken = Qiniu::Auth.generate_qbox_token("http://rsf.qbox.me/list")
           rescue => e
             expect(e.message).to eq("Please set Qiniu's access_key and secret_key before authorize any tokens.")
           else

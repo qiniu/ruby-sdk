@@ -214,7 +214,7 @@ module Qiniu
           return authorize_download_url(download_url, args)
         end # authorize_download_url_2
 
-        def generate_acctoken_sign_with_mac(access_key, secret_key, url, body)
+        def generate_qbox_token_sign_with_mac(access_key, secret_key, url, body)
           ### 解析URL，生成待签名字符串
           uri = URI.parse(url)
           signing_str = uri.path
@@ -237,12 +237,14 @@ module Qiniu
           ### 生成数字签名
           sign = calculate_hmac_sha1_digest(secret_key, signing_str)
           return Utils.urlsafe_base64_encode(sign)
-        end # generate_acctoken_sign_with_mac
+        end # generate_qbox_token_sign_with_mac
+        alias :generate_acctoken_sign_with_mac :generate_qbox_token_sign_with_mac
 
-        def generate_acctoken(url, body = '')
-          encoded_sign = generate_acctoken_sign_with_mac(Config.settings[:access_key], Config.settings[:secret_key], url, body)
+        def generate_qbox_token(url, body = '')
+          encoded_sign = generate_qbox_token_sign_with_mac(Config.settings[:access_key], Config.settings[:secret_key], url, body)
           return "#{Config.settings[:access_key]}:#{encoded_sign}"
-        end # generate_acctoken
+        end # generate_qbox_token
+        alias :generate_acctoken :generate_qbox_token # For compatibility
 
         def generate_uptoken(put_policy)
           ### 提取AK/SK信息
@@ -297,7 +299,7 @@ module Qiniu
             return false
           end
 
-          encoded_sign = generate_acctoken_sign_with_mac(access_key, secret_key, url, body)
+          encoded_sign = generate_qbox_token_sign_with_mac(access_key, secret_key, url, body)
           sign_pos = auth_str.index(encoded_sign, colon_pos + 1)
           if sign_pos.nil? || ((sign_pos + encoded_sign.length) != auth_str.length) then
             return false
