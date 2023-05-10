@@ -91,7 +91,7 @@ module Qiniu
     ### 测试回调签名
     context ".authenticate_callback_request" do
       it "should works" do
-        url = '/test.php'
+        url = 'https://www.qiniu.com:8080/test.php'
         body = 'name=xxx&size=1234'
         expect(Qiniu::Auth.authenticate_callback_request('ABCD', url, body)).to be_falsey
         expect(Qiniu::Auth.authenticate_callback_request(Config.settings[:access_key], url, body)).to be_falsey
@@ -104,6 +104,38 @@ module Qiniu
         expect(Qiniu::Auth.authenticate_callback_request(auth_str + '  ', url, body)).to be_falsey
         expect(Qiniu::Auth.authenticate_callback_request(auth_str, url, body)).to be_truthy
         expect(Qiniu::Auth.authenticate_callback_request(acctoken, url, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request(acctoken, url, body, 'application/json')).to be_falsey
+      end
+    end
+
+    ### 测试回调签名 v2
+    context ".authenticate_callback_request_v2" do
+      it "should works" do
+        url = 'https://www.qiniu.com:8080/test.php'
+        body = 'name=xxx&size=1234'
+        expect(Qiniu::Auth.authenticate_callback_request_v2('ABCD', :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2(Config.settings[:access_key], :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2('QBox ' + Config.settings[:access_key] + ':', :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2('QBox ' + Config.settings[:access_key] + ':????', :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2('Qiniu ' + Config.settings[:access_key] + ':', :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2('Qiniu ' + Config.settings[:access_key] + ':????', :post, url, {}, body)).to be_falsey
+
+        acctoken = Qiniu::Auth.generate_qbox_token(url, body)
+        auth_str = 'QBox ' + acctoken
+
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str + '  ', :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, {}, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(acctoken, :post, url, {}, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, {'Content-Type' => 'application/x-www-form-urlencoded'}, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, {'Content-Type' => 'application/json'}, body)).to be_falsey
+
+        headers = {}
+        acctoken = Qiniu::Auth.generate_qiniu_token(:post, url, headers, body)
+        auth_str = 'Qiniu ' + acctoken
+
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str + '  ', :post, url, headers, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, headers, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(acctoken, :post, url, headers, body)).to be_falsey
       end
     end
   end # module Auth
