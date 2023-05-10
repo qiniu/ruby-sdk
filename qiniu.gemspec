@@ -21,8 +21,8 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rake', '~> 12'
   gem.add_development_dependency 'rspec', '~> 3.5'
   gem.add_development_dependency 'webmock', '~> 2.3'
-  if Gem::Version.create(RUBY_VERSION) >= Gem::Version::create('2.3.0')
-    gem.add_development_dependency 'codecov', '~> 0.2.5'
+  if Gem::Version.create(RUBY_VERSION) >= Gem::Version::create('2.4.0')
+    gem.add_development_dependency 'codecov', '~> 0.6.0'
     gem.add_development_dependency 'simplecov', '~> 0.18.5'
   end
   gem.add_runtime_dependency 'rexml', '~> 3.2'

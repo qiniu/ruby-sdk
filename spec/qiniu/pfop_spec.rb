@@ -48,18 +48,18 @@ module Qiniu
             )
 
             code, data, headers = Qiniu::Fop::Persistance.pfop(pp)
-            code.should == 200
             puts data.inspect
+            expect(code).to eq(200)
           end
         end
 
         context ".prefop" do
           it "should works" do
             code, data, headers = Qiniu::Fop::Persistance.prefop('fakePersistentId')
-            code.should == 404
             puts code.inspect
             puts data.inspect
             puts headers.inspect
+            expect(code).to eq(404)
           end
         end
 
@@ -70,8 +70,8 @@ module Qiniu
             target_url = "#{url}?p/1/#{CGI.escape(fop).gsub('+', '%20')}"
 
             p1_url = Qiniu::Fop::Persistance.generate_p1_url(url, fop)
-            p1_url.should == target_url
             puts p1_url.inspect
+            expect(p1_url).to eq(target_url)
           end
         end
       end

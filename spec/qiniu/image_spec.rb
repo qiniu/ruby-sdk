@@ -27,14 +27,14 @@ module Qiniu
         data = Qiniu.upload_file :uptoken => uptoken, :file => local_file, :bucket => @bucket, :key => @key
         puts data.inspect
 
-        data["size"].should_not be_zero
-        data["hash"].should_not be_empty
-        data["width"].should_not be_zero
-        data["height"].should_not be_zero
+        expect(data["size"]).not_to be_zero
+        expect(data["hash"]).not_to be_empty
+        expect(data["width"]).not_to be_zero
+        expect(data["height"]).not_to be_zero
 
         code, domains, = Qiniu::Storage.domains(@bucket)
-        code.should be 200
-        domains.should_not be_empty
+        expect(code).to eq(200)
+        expect(domains).not_to be_empty
         @bucket_domain = domains.first['domain']
         @source_image_url = "http://#{@bucket_domain}/#{@key}"
 
@@ -53,8 +53,8 @@ module Qiniu
       #   it "should works" do
       #     pending('This function cannot work for private bucket file')
       #     code, data = Qiniu::Fop::Image.info(@source_image_url)
-      #     code.should == 200
       #     puts data.inspect
+      #     expect(code).to eq(200)
       #   end
       # end
 
@@ -62,9 +62,9 @@ module Qiniu
       #   it "should works" do
       #     pending('This function cannot work for private bucket file')
       #     code, data, headers = Qiniu::Fop::Image.exif("http://#{@bucket_domain}/gogopher.jpg")
-      #     code.should == 200
       #     puts data.inspect
       #     puts headers.inspect
+      #     expect(code).to eq(200)
       #   end
       # end
 

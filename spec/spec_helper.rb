@@ -27,9 +27,9 @@ RSpec.configure do |config|
 end
 
 def make_unique_bucket (bucket)
-    bucket + "-" + ENV["QINIU_ACCESS_KEY"][0, 8]
+    "#{bucket}-#{ENV["QINIU_ACCESS_KEY"][0, 8]}-#{Time.now.to_f}"
 end # make_unique_bucket
 
 def make_unique_key_in_bucket (key)
-    "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}-" + key
+    "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}-#{key}-#{Time.now.to_f}"
 end # make_unique_key_in_bucket

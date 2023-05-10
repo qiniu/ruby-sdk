@@ -14,8 +14,8 @@ module Qiniu
 
       context "safe_json_parse" do
         it "should works" do
-          Utils.safe_json_parse('{"foo": "bar"}').should == {"foo" => "bar"}
-          Utils.safe_json_parse('{}').should == {}
+          expect(Utils.safe_json_parse('{"foo": "bar"}')).to eq({"foo" => "bar"})
+          expect(Utils.safe_json_parse('{}')).to eq({})
         end
       end
 
@@ -24,7 +24,7 @@ module Qiniu
           WebMock.enable!
           stub_request(:get, "develoepr.qiniu.com/").to_return(body: {abc: 123}.to_json)
           res = Utils.send_request_with 'http://develoepr.qiniu.com/', nil, :method => :get
-          res.should == [200, {"abc" => 123}, {}]
+          expect(res).to eq([200, {"abc" => 123}, {}])
         end
 
         [400, 500].each do |code|

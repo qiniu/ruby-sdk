@@ -95,7 +95,7 @@ module Qiniu
           :key => @key,
           :enable_crc32_check => true
         }
-        lambda { Qiniu.upload_file(upload_opts) }.should raise_error(MissingArgsError)
+        expect { Qiniu.upload_file(upload_opts) }.to raise_error(MissingArgsError)
       end
 
       it "should raise NoSuchFileError" do
@@ -107,7 +107,7 @@ module Qiniu
           :key => @key,
           :enable_crc32_check => true
         }
-        lambda { Qiniu.upload_file(upload_opts) }.should raise_error(NoSuchFileError)
+        expect { Qiniu.upload_file(upload_opts) }.to raise_error(NoSuchFileError)
       end
     end
 
@@ -115,33 +115,40 @@ module Qiniu
       it "should works" do
         # generate bigfile for testing
         localfile = "test_bigfile"
-        File.open(localfile, "w"){|f| 5242888.times{f.write(rand(9).to_s)}}
-        key = Digest::SHA1.hexdigest(localfile+Time.now.to_s)
-        # generate the upload token
-        uptoken_opts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com", :escape => 0}
-        uptoken = Qiniu.generate_upload_token(uptoken_opts)
-        # uploading
-        upload_opts = {
-            :uptoken => uptoken,
-            :file => localfile,
-            :bucket => @bucket,
-            :key => key
-        }
-        #uploading
-        result1 = Qiniu.upload_file(upload_opts)
-        #drop the bigfile
-        File.unlink(localfile) if File.exist?(localfile)
-        #expect
-        puts result1.inspect
-        expect(result1).to_not be_empty
-        #stat
-        result2 = Qiniu.stat(@bucket, key)
-        puts result2.inspect
-        expect(result2).to_not be_empty
-        #delete
-        result3 = Qiniu.delete(@bucket, key)
-        puts result3.inspect
-        expect(result3).to eq(true)
+        begin
+          File.open(localfile, "w") do |f|
+            5242888.times{f.write(rand(9).to_s)}
+          end
+          key = Digest::SHA1.hexdigest("#{localfile}#{Time.now.to_f}")
+          # generate the upload token
+          uptoken_opts = {:scope => @bucket, :expires_in => 3600, :customer => "why404@gmail.com", :escape => 0}
+          uptoken = Qiniu.generate_upload_token(uptoken_opts)
+          # uploading
+          upload_opts = {
+              :uptoken => uptoken,
+              :file => localfile,
+              :bucket => @bucket,
+              :key => key
+          }
+          #uploading
+          result1 = Qiniu.upload_file(upload_opts)
+          #expect
+          puts result1.inspect
+          expect(result1).to_not be_empty
+
+          #stat
+          result2 = Qiniu.stat(@bucket, key)
+          puts result2.inspect
+          expect(result2).to_not be_empty
+
+          #delete
+          result3 = Qiniu.delete(@bucket, key)
+          puts result3.inspect
+          expect(result3).to eq(true)
+        ensure
+          #drop the bigfile
+          File.unlink(localfile) if File.exist?(localfile)
+        end
       end
     end
 
@@ -173,23 +180,23 @@ module Qiniu
     context ".batch_copy" do
       it "should works" do
         result = Qiniu.batch_copy [@bucket, @key, @bucket, @key2]
-        result.should_not be_falsey
+        expect(result).not_to be_falsey
 
-        #result2 = Qiniu.stat(@bucket, @key2)
-        #result2.should_not be_falsey
+        result2 = Qiniu.stat(@bucket, @key2)
+        expect(result2).not_to be_falsey
       end
     end
 
     context ".batch_move" do
       it "should works" do
         result = Qiniu.batch_move [@bucket, @key, @bucket, @key2]
-        result.should_not be_falsey
+        expect(result).not_to be_falsey
 
-        #result2 = Qiniu.stat(@bucket, @key2)
-        #result2.should_not be_falsey
+        result2 = Qiniu.stat(@bucket, @key2)
+        expect(result2).not_to be_falsey
 
         result3 = Qiniu.batch_move [@bucket, @key2, @bucket, @key]
-        result3.should_not be_falsey
+        expect(result3).not_to be_falsey
       end
     end
 =end
@@ -197,30 +204,30 @@ module Qiniu
     context ".move" do
       it "should works" do
         result = Qiniu.move(@bucket, @key, @bucket, @key2)
-        expect(result).to eq(true)
+        expect(result).to be_truthy
 
         result2 = Qiniu.stat(@bucket, @key2)
         expect(result2).to_not be_empty
 
         result3 = Qiniu.move(@bucket, @key2, @bucket, @key)
-        expect(result3).to eq(true)
+        expect(result3).to be_truthy
       end
     end
 
     context ".copy" do
       it "should works" do
         result = Qiniu.copy(@bucket, @key, @bucket, @key2)
-        expect(result).to eq(true)
+        expect(result).to be_truthy
 
         result3 = Qiniu.delete(@bucket, @key2)
-        expect(result3).to eq(true)
+        expect(result3).to be_truthy
       end
     end
 
     context ".delete" do
       it "should works" do
         result = Qiniu.delete(@bucket, @key)
-        expect(result).to eq(true)
+        expect(result).to be_truthy
       end
     end
 
@@ -228,8 +235,8 @@ module Qiniu
     #   it "should works" do
     #     pending 'This function cannot work for private bucket file'
     #     code, domains, = Qiniu::Storage.domains(@test_image_bucket)
-    #     code.should be 200
-    #     domains.should_not be_empty
+    #     expect(code).to eq(200)
+    #     expect(domains).not_to be_empty
     #     domain = domains.first['domain']
     #     url = "http://#{domain}/#{@test_image_key}"
 
@@ -243,8 +250,8 @@ module Qiniu
     #   it "should works" do
     #     pending 'This function cannot work for private bucket file'
     #     code, domains, = Qiniu::Storage.domains(@test_image_bucket)
-    #     code.should be 200
-    #     domains.should_not be_empty
+    #     expect(code).to eq(200)
+    #     expect(domains).not_to be_empty
     #     domain = domains.first['domain']
     #     src_img_url = "http://#{domain}/#{@test_image_key}"
 
@@ -259,26 +266,26 @@ module Qiniu
     #       :auto_orient => true
     #     }
     #     result2 = Qiniu.image_mogrify_save_as(@test_image_bucket, dest_key, src_img_url, mogrify_options)
-    #     expect(result2).to_not be_falsey
     #     puts result2.inspect
+    #     expect(result2).to_not be_falsey
     #   end
     # end
 
     context ".generate_upload_token" do
       it "should works" do
         data = Qiniu.generate_upload_token({:scope => @bucket, :expires_in => 3600, :escape => 0})
-        data.should_not be_empty
+        expect(data).not_to be_empty
         puts data.inspect
-        data.split(":").length.should == 3
+        expect(data.split(":")).to have_attributes(length: 3)
       end
     end
 
     context ".generate_download_token" do
       it "should works" do
         data = Qiniu.generate_download_token({:expires_in => 1, :pattern => 'http://*.dn.qbox.me/*'})
-        data.should_not be_empty
+        expect(data).not_to be_empty
         puts data.inspect
-        data.split(":").length.should == 3
+        expect(data.split(":")).to have_attributes(length: 3)
       end
     end
 

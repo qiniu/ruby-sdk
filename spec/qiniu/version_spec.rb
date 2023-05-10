@@ -5,6 +5,6 @@ require 'qiniu/version'
 
 describe Qiniu::Version do
   it "should has a VERSION" do
-    Qiniu::Version.to_s.should =~ /^\d+\.\d+\.\d+?$/
+    expect(Qiniu::Version.to_s).to match(/^\d+\.\d+\.\d+?$/)
   end
 end
