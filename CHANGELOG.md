@@ -1,5 +1,12 @@
 ## CHANGE LOG
 
+### v6.10.0
+
+- 支持新版分片上传
+- 分片上传支持断点续传功能
+- 现在上传不会再抛出 `BucketIsMissing` 异常
+- 支持 Qiniu 鉴权算法，提供 `Qiniu::Auth.authenticate_callback_request_v2` 方法根据前缀判断验证鉴权正确性
+
 ### v6.9.1
 
 - 移除 ruby 版本号约束
