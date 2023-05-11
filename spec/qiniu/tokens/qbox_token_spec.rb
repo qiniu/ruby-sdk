@@ -15,13 +15,13 @@ module Qiniu
 
       context "#generate_token" do
         it "should generate token" do
-          @qbox_token.generate_token.should_not be_empty
+          expect(@qbox_token.generate_token).not_to be_empty
         end
       end
 
       context "#generate_signature" do
         it "should generate signature" do
-          @qbox_token.generate_signature.should == "www.qiniu.com?key1=value1\nkey2=value2"
+          expect(@qbox_token.generate_signature).to eq("www.qiniu.com?key1=value1\nkey2=value2")
         end
       end
     end

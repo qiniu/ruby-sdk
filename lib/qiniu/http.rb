@@ -179,9 +179,10 @@ module Qiniu
 
       def management_post (url, body = '')
         ### 授权并执行管理操作
-        return HTTP.api_post(url, body, {
-          :headers => { 'Authorization' => 'QBox ' + Auth.generate_acctoken(url, body) }
-        })
+        headers = {}
+        authorization = "#{Auth::AUTHORIZATION_PREFIX_QINIU}#{Auth.generate_qiniu_token(:post, url, headers, body)}"
+        headers['Authorization'] = authorization
+        return HTTP.api_post(url, body, { :headers => headers })
       end # management_post
     end # class << self
 

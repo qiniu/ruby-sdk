@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 # vim: sw=2 ts=2
 
+require 'date'
 require 'openssl'
 require 'uri'
 require 'cgi'
@@ -11,6 +12,10 @@ require 'qiniu/exceptions'
 module Qiniu
     module Auth
       DEFAULT_AUTH_SECONDS = 3600
+      APPLICATION_FORM_URLENCODED = 'application/x-www-form-urlencoded'.freeze
+      APPLICATION_JSON = 'application/json'.freeze
+      AUTHORIZATION_PREFIX_QBOX = 'QBox '.freeze
+      AUTHORIZATION_PREFIX_QINIU = 'Qiniu '.freeze
 
       class << self
         def calculate_deadline(expires_in, deadline = nil)
@@ -214,7 +219,7 @@ module Qiniu
           return authorize_download_url(download_url, args)
         end # authorize_download_url_2
 
-        def generate_acctoken_sign_with_mac(access_key, secret_key, url, body)
+        def generate_qbox_token_sign_with_mac(access_key, secret_key, url, body, content_type = APPLICATION_FORM_URLENCODED)
           ### 解析URL，生成待签名字符串
           uri = URI.parse(url)
           signing_str = uri.path
@@ -229,20 +234,87 @@ module Qiniu
           signing_str += "\n"
 
           # 如果有Body，则也加上
-          # （仅限于mime == "application/x-www-form-urlencoded"的情况）
-          if body.is_a?(String) && !body.empty?
+          # （仅限于content_type == "application/x-www-form-urlencoded"的情况）
+          if body.is_a?(String) && !body.empty? && content_type == APPLICATION_FORM_URLENCODED
               signing_str += body
           end
 
           ### 生成数字签名
           sign = calculate_hmac_sha1_digest(secret_key, signing_str)
           return Utils.urlsafe_base64_encode(sign)
-        end # generate_acctoken_sign_with_mac
+        end # generate_qbox_token_sign_with_mac
+        alias :generate_acctoken_sign_with_mac :generate_qbox_token_sign_with_mac
 
-        def generate_acctoken(url, body = '')
-          encoded_sign = generate_acctoken_sign_with_mac(Config.settings[:access_key], Config.settings[:secret_key], url, body)
+        def generate_qiniu_token_sign_with_mac(access_key, secret_key, method, url, headers, body)
+          ### 解析URL，生成待签名字符串
+          uri = URI.parse(url)
+          signing_str = "#{method.upcase} #{uri.path}"
+
+          # 如有QueryString部分，则需要加上
+          query_string = uri.query
+          if query_string.is_a?(String) && !query_string.empty?
+            signing_str += '?' + query_string
+          end
+
+          # 追加指定的 Headers
+          signing_str += "\nHost: "
+          signing_str += uri.host
+          signing_str += ":#{uri.port}" if uri.port != uri.default_port
+          signing_str += "\n"
+
+          content_type = headers['Content-Type']
+          if content_type.nil?
+            content_type = APPLICATION_FORM_URLENCODED
+            headers['Content-Type'] = content_type
+          end
+          signing_str += "Content-Type: #{content_type}\n"
+
+          # 追加所有 X-Qiniu- 开头的 Headers
+          x_qiniu_headers = []
+          headers.each do |header_name, _|
+            header_name = capitalize(header_name)
+            if header_name.start_with?('X-Qiniu-') && header_name.length > 'X-Qiniu-'.length
+              header_values = Array(headers[header_name])
+              header_values.each do |header_value|
+                x_qiniu_headers.push([header_name, header_value])
+              end
+            end
+          end
+          if !x_qiniu_headers.empty?
+            x_qiniu_headers.sort!
+            x_qiniu_headers.each do |header_name, header_value|
+              signing_str += "#{header_name}: #{header_value}\n"
+            end
+          end
+
+          # 追加换行符
+          signing_str += "\n"
+
+          # 如果有Body，则也加上
+          # （仅限于content_type == "application/x-www-form-urlencoded" 或 content_type == "application/json"的情况）
+          if body.is_a?(String) && !body.empty? && [APPLICATION_FORM_URLENCODED, APPLICATION_JSON].include?(content_type)
+            signing_str += body
+          end
+
+          ### 生成数字签名
+          sign = calculate_hmac_sha1_digest(secret_key, signing_str)
+          return Utils.urlsafe_base64_encode(sign)
+        end #generate_qiniu_token_sign_with_mac
+
+
+        def generate_qbox_token(url, body = '', content_type = APPLICATION_FORM_URLENCODED)
+          encoded_sign = generate_qbox_token_sign_with_mac(Config.settings[:access_key], Config.settings[:secret_key], url, body, content_type)
           return "#{Config.settings[:access_key]}:#{encoded_sign}"
-        end # generate_acctoken
+        end # generate_qbox_token
+        alias :generate_acctoken :generate_qbox_token # For compatibility
+
+        def generate_qiniu_token(method, url, headers = {}, body = '', disable_qiniu_timestamp_signature: false)
+          if !(disable_qiniu_timestamp_signature || disable_qiniu_timestamp_signature?) && headers['X-Qiniu-Date'].nil?
+            headers['X-Qiniu-Date'] = x_qiniu_date
+          end
+          encoded_sign = generate_qiniu_token_sign_with_mac(Config.settings[:access_key], Config.settings[:secret_key], method, url, headers, body)
+          return "#{Config.settings[:access_key]}:#{encoded_sign}"
+        end # generate_qbox_token
 
         def generate_uptoken(put_policy)
           ### 提取AK/SK信息
@@ -281,7 +353,7 @@ module Qiniu
           raise BadUploadToken, uptoken
         end
 
-        def authenticate_callback_request(auth_str, url, body = '')
+        def _authenticate_callback_request(auth_str)
           ### 提取AK/SK信息
           access_key = Config.settings[:access_key]
           secret_key = Config.settings[:secret_key]
@@ -297,14 +369,56 @@ module Qiniu
             return false
           end
 
-          encoded_sign = generate_acctoken_sign_with_mac(access_key, secret_key, url, body)
+          encoded_sign = yield(access_key, secret_key)
           sign_pos = auth_str.index(encoded_sign, colon_pos + 1)
-          if sign_pos.nil? || ((sign_pos + encoded_sign.length) != auth_str.length) then
-            return false
-          end
+          !(sign_pos.nil? || (sign_pos + encoded_sign.length) != auth_str.length)
+        end
+        private :_authenticate_callback_request
 
-          return true
+        def authenticate_callback_request(auth_str, url, body = '', content_type = APPLICATION_FORM_URLENCODED)
+          _authenticate_callback_request(auth_str) do |access_key, secret_key|
+            generate_qbox_token_sign_with_mac(access_key, secret_key, url, body, content_type)
+          end
         end # authenticate_callback_request
+
+        def authenticate_callback_request_v2(auth_str, method, url, headers = {}, body = '')
+          access_key = Config.settings[:access_key]
+          secret_key = Config.settings[:secret_key]
+          content_type = headers['Content-Type'] || APPLICATION_FORM_URLENCODED
+
+          if auth_str.start_with?(AUTHORIZATION_PREFIX_QBOX)
+            prefix_length = AUTHORIZATION_PREFIX_QBOX.length
+            authenticate_callback_request(auth_str.slice(prefix_length..-1), url, body, content_type)
+          elsif auth_str.start_with?(AUTHORIZATION_PREFIX_QINIU)
+            _authenticate_callback_request(auth_str) do |access_key, secret_key|
+              generate_qiniu_token_sign_with_mac(access_key, secret_key, method, url, headers, body)
+            end
+          else
+            authenticate_callback_request(auth_str, url, body, content_type)
+          end
+        end
+
+        def capitalize(name)
+          name.to_s.split(/-/).map {|s| s.capitalize }.join('-')
+        end
+        private :capitalize
+
+        DISABLE_QINIU_TIMESTAMP_SIGNATURE_ENV_KEY = "DISABLE_QINIU_TIMESTAMP_SIGNATURE".freeze
+
+        def disable_qiniu_timestamp_signature?
+          env = ENV[DISABLE_QINIU_TIMESTAMP_SIGNATURE_ENV_KEY]
+          if env.nil?
+            false
+          else
+            ['true', 'yes', 'y', '1'].include?(env.downcase)
+          end
+        end
+        private :disable_qiniu_timestamp_signature?
+
+        def x_qiniu_date
+          DateTime.now.new_offset(0).strftime('%Y%m%dT%H%M%SZ')
+        end
+        private :x_qiniu_date
       end # class << self
 
     end # module Auth

@@ -24,14 +24,14 @@ module Qiniu
           nil,
           bucket: @bucket
         )
-        code.should == 200
+        expect(code).to eq(200)
       end
 
       ### 列举Bucket
       context ".buckets" do
         it "should works" do
           code, data = Storage.buckets
-          code.should == 200
+          expect(code).to eq(200)
           puts data.inspect
         end
       end
@@ -40,7 +40,7 @@ module Qiniu
         it "should works" do
           code, data = Storage.stat(@bucket, @key)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -48,7 +48,7 @@ module Qiniu
         it "should works" do
           code, data = Storage.batch("stat", @bucket, [@key])
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -56,7 +56,7 @@ module Qiniu
         it "should works" do
           code, data = Storage.batch_stat(@bucket, [@key])
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -64,11 +64,11 @@ module Qiniu
         it "should works" do
           code, data = Storage.batch_copy [@bucket, @key, @bucket, @key2]
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
 
           code, data = Storage.delete @bucket, @key2
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -76,11 +76,11 @@ module Qiniu
         it "should works" do
           code, data = Storage.batch_move [@bucket, @key, @bucket, @key2]
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
 
           code3, data3 = Storage.batch_move [@bucket, @key2, @bucket, @key]
           puts data3.inspect
-          code3.should == 200
+          expect(code3).to eq(200)
         end
       end
 
@@ -88,15 +88,15 @@ module Qiniu
         it "should works" do
           code, data = Storage.move(@bucket, @key, @bucket, @key2)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
 
           code2, data2 = Storage.stat(@bucket, @key2)
           puts data2.inspect
-          code2.should == 200
+          expect(code2).to eq(200)
 
           code3, data3 = Storage.move(@bucket, @key2, @bucket, @key)
           puts data3.inspect
-          code3.should == 200
+          expect(code3).to eq(200)
         end
       end
 
@@ -104,11 +104,11 @@ module Qiniu
         it "should works" do
           code, data = Storage.copy(@bucket, @key, @bucket, @key2)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
 
           code, data = Storage.delete(@bucket, @key2)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -116,15 +116,15 @@ module Qiniu
         it "should works" do
           code, data = Storage.delete(@bucket, @key)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
       context ".fetch" do
         it "should works" do
           code, data = Qiniu::Storage.fetch(@bucket, "https://www.baidu.com/robots.txt", @key)
-          code.should == 200
           puts data.inspect
+          expect(code).to eq(200)
         end
       end
     end

@@ -188,7 +188,7 @@ module Qiniu
             end
 
             # loop uploading other chunks except the first one
-            while progress['restsize'].to_i > 0 && progress['restsize'] < block_size
+            while progress['restsize'] > 0 && progress['restsize'] < block_size
                 # choose the smaller one
                 body_length = [progress['restsize'], chunk_size].min
                 for i in 1..retry_times
@@ -327,7 +327,7 @@ module Qiniu
                       progresses[block_index] ||= _new_block_put_progress_data_v2
                     end
                     if version == :v1
-                      code, data = _resumable_put_block(bucket, uptoken, fh, block_index, block_size, block_size, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
+                      code, data = _resumable_put_block(bucket, uptoken, fh, block_index, block_size, Config.settings[:chunk_size], progresses[block_index], Config.settings[:max_retry_times], chunk_notifier)
                     else
                       restsize = fsize - part_size * block_index
                       code, data = _resumeble_put_block_v2(bucket, uptoken, fh, block_index, progresses[block_index], Config.settings[:max_retry_times], chunk_notifier, part_size, upload_extra, restsize)

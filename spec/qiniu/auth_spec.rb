@@ -34,15 +34,15 @@ module Qiniu
             nil,
             bucket: @bucket
           )
-          code.should == 200
+          expect(code).to eq(200)
           puts data.inspect
           puts raw_headers.inspect
 
           ### 获取下载地址
           code, domains, = Qiniu::Storage.domains(@bucket)
 
-          code.should == 200
-          domains.should_not be_empty
+          expect(code).to eq(200)
+          expect(domains).not_to be_empty
           domain = domains.first['domain']
           url = "http://#{domain}/#{key}"
 
@@ -51,21 +51,21 @@ module Qiniu
           puts "download_url=#{download_url}"
 
           result = RestClient.get(download_url)
-          result.code.should == 200
-          result.body.should_not be_empty
+          expect(result.code).to eq(200)
+          expect(result.body).not_to be_empty
 
           ### 授权下载地址（带参数）
           download_url = Qiniu::Auth.authorize_download_url(url, fop: 'qhash/md5')
           puts "download_url=#{download_url}"
 
           result = RestClient.get(download_url)
-          result.code.should == 200
-          result.body.should_not be_empty
+          expect(result.code).to eq(200)
+          expect(result.body).not_to be_empty
 
           ### 删除文件
           code, data = Qiniu::Storage.delete(@bucket, key)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should generate uphosts and global for multi_region" do
@@ -91,19 +91,51 @@ module Qiniu
     ### 测试回调签名
     context ".authenticate_callback_request" do
       it "should works" do
-        url = '/test.php'
+        url = 'https://www.qiniu.com:8080/test.php'
         body = 'name=xxx&size=1234'
-        false.should == Qiniu::Auth.authenticate_callback_request('ABCD', url, body)
-        false.should == Qiniu::Auth.authenticate_callback_request(Config.settings[:access_key], url, body)
-        false.should == Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':', url, body)
-        false.should == Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':????', url, body)
+        expect(Qiniu::Auth.authenticate_callback_request('ABCD', url, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request(Config.settings[:access_key], url, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':', url, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request('QBox ' + Config.settings[:access_key] + ':????', url, body)).to be_falsey
 
-        acctoken = Qiniu::Auth.generate_acctoken(url, body)
+        acctoken = Qiniu::Auth.generate_qbox_token(url, body)
         auth_str = 'QBox ' + acctoken
 
-        false.should == Qiniu::Auth.authenticate_callback_request(auth_str + '  ', url, body)
-        true.should == Qiniu::Auth.authenticate_callback_request(auth_str, url, body)
-        true.should == Qiniu::Auth.authenticate_callback_request(acctoken, url, body)
+        expect(Qiniu::Auth.authenticate_callback_request(auth_str + '  ', url, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request(auth_str, url, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request(acctoken, url, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request(acctoken, url, body, 'application/json')).to be_falsey
+      end
+    end
+
+    ### 测试回调签名 v2
+    context ".authenticate_callback_request_v2" do
+      it "should works" do
+        url = 'https://www.qiniu.com:8080/test.php'
+        body = 'name=xxx&size=1234'
+        expect(Qiniu::Auth.authenticate_callback_request_v2('ABCD', :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2(Config.settings[:access_key], :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2('QBox ' + Config.settings[:access_key] + ':', :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2('QBox ' + Config.settings[:access_key] + ':????', :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2('Qiniu ' + Config.settings[:access_key] + ':', :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2('Qiniu ' + Config.settings[:access_key] + ':????', :post, url, {}, body)).to be_falsey
+
+        acctoken = Qiniu::Auth.generate_qbox_token(url, body)
+        auth_str = 'QBox ' + acctoken
+
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str + '  ', :post, url, {}, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, {}, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(acctoken, :post, url, {}, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, {'Content-Type' => 'application/x-www-form-urlencoded'}, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, {'Content-Type' => 'application/json'}, body)).to be_falsey
+
+        headers = {}
+        acctoken = Qiniu::Auth.generate_qiniu_token(:post, url, headers, body)
+        auth_str = 'Qiniu ' + acctoken
+
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str + '  ', :post, url, headers, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, headers, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(acctoken, :post, url, headers, body)).to be_falsey
       end
     end
   end # module Auth
@@ -118,7 +150,7 @@ module Qiniu
           begin
             uptoken = Qiniu::Auth.generate_uptoken({})
           rescue => e
-            e.message.should == "Please set Qiniu's access_key and secret_key before authorize any tokens."
+            expect(e.message).to eq("Please set Qiniu's access_key and secret_key before authorize any tokens.")
           else
             fail "Not raise any exception."
           end
@@ -126,15 +158,15 @@ module Qiniu
           begin
             download_url = Qiniu::Auth.authorize_download_url("http://test.qiniudn.com/a_private_file")
           rescue => e
-            e.message.should == "Please set Qiniu's access_key and secret_key before authorize any tokens."
+            expect(e.message).to eq("Please set Qiniu's access_key and secret_key before authorize any tokens.")
           else
             fail "Not raise any exception."
           end
 
           begin
-            acctoken = Qiniu::Auth.generate_acctoken("http://rsf.qbox.me/list")
+            acctoken = Qiniu::Auth.generate_qbox_token("http://rsf.qbox.me/list")
           rescue => e
-            e.message.should == "Please set Qiniu's access_key and secret_key before authorize any tokens."
+            expect(e.message).to eq("Please set Qiniu's access_key and secret_key before authorize any tokens.")
           else
             fail "Not raise any exception."
           end

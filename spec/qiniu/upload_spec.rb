@@ -43,10 +43,10 @@ module Qiniu
 
       after :all do
         ### 清除本地临时文件
-        File.unlink(@localfile_5m) if File.exists?(@localfile_5m)
-        File.unlink(@localfile_4m) if File.exists?(@localfile_4m)
-        File.unlink(@localfile_8m) if File.exists?(@localfile_8m)
-        File.unlink(@localfile_1m) if File.exists?(@localfile_1m)
+        File.unlink(@localfile_5m) if File.exist?(@localfile_5m)
+        File.unlink(@localfile_4m) if File.exist?(@localfile_4m)
+        File.unlink(@localfile_8m) if File.exist?(@localfile_8m)
+        File.unlink(@localfile_1m) if File.exist?(@localfile_1m)
       end
 
       ### 测试单文件直传
@@ -58,7 +58,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -74,13 +74,13 @@ module Qiniu
             nil,
             true
           )
-          code.should == 200
+          expect(code).to eq(200)
           puts data.inspect
           puts raw_headers.inspect
 
           code, data = Qiniu::Storage.stat(@bucket, @key)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -92,7 +92,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -107,13 +107,13 @@ module Qiniu
             bucket: @bucket
           )
 
-          code.should == 200
+          expect(code).to eq(200)
           puts data.inspect
           puts raw_headers.inspect
 
           code, data = Qiniu::Storage.stat(@bucket, @key)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end # .upload_with_token_2
 
@@ -125,7 +125,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -140,7 +140,7 @@ module Qiniu
             nil,
             bucket: @bucket
           )
-          code.should_not == 200
+          expect(code).not_to eq(200)
           puts data.inspect
           puts raw_headers.inspect
 
@@ -152,13 +152,13 @@ module Qiniu
             bucket: @bucket
           )
 
-          code.should == 200
+          expect(code).to eq(200)
           puts data.inspect
           puts raw_headers.inspect
 
           code, data = Qiniu::Storage.stat(@bucket, @key)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end # .upload_with_put_policy
 
@@ -170,7 +170,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -186,13 +186,13 @@ module Qiniu
             nil,
             bucket: @bucket
           )
-          code.should == 200
+          expect(code).to eq(200)
           puts data.inspect
           puts raw_headers.inspect
 
           code, data = Qiniu::Storage.stat(@bucket, @key)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end # .upload_buffer_with_put_policy
 
@@ -205,7 +205,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_5m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -217,14 +217,14 @@ module Qiniu
             @bucket,
             @key_5m
           )
-          (code/100).should == 2
+          expect(code/100).to eq(2)
           puts data.inspect
           puts raw_headers.inspect
           puts "key_5m=#{@key_5m}"
 
           code, data = Qiniu::Storage.stat(@bucket, @key_5m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -236,7 +236,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_4m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -248,14 +248,14 @@ module Qiniu
             @bucket,
             @key_4m
           )
-          (code/100).should == 2
+          expect(code/100).to eq(2)
           puts data.inspect
           puts raw_headers.inspect
           puts "key_4m=#{@key_4m}"
 
           code, data = Qiniu::Storage.stat(@bucket, @key_4m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -267,7 +267,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_8m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -279,14 +279,14 @@ module Qiniu
             @bucket,
             @key_8m
           )
-          (code/100).should == 2
+          expect(code/100).to eq(2)
           puts data.inspect
           puts raw_headers.inspect
           puts "key_8m=#{@key_8m}"
 
           code, data = Qiniu::Storage.stat(@bucket, @key_8m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -298,7 +298,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_1m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -310,14 +310,14 @@ module Qiniu
             @bucket,
             @key_1m
           )
-          (code/100).should == 2
+          expect(code/100).to eq(2)
           puts data.inspect
           puts raw_headers.inspect
           puts "key_1m=#{@key_1m}"
 
           code, data = Qiniu::Storage.stat(@bucket, @key_1m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -329,7 +329,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_1m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -350,14 +350,14 @@ module Qiniu
             :v2,
             4 * 1024 * 1024
           )
-          (code/100).should == 2
+          expect(code/100).to eq(2)
           puts data.inspect
           puts raw_headers.inspect
           puts "key_1m=#{@key_1m}"
 
           code, data = Qiniu::Storage.stat(@bucket, @key_1m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -369,7 +369,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_4m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -389,14 +389,14 @@ module Qiniu
             :v2,
             4 * 1024 * 1024
           )
-          (code/100).should == 2
+          expect(code/100).to eq(2)
           puts data.inspect
           puts raw_headers.inspect
           puts "key_4m=#{@key_4m}"
 
           code, data = Qiniu::Storage.stat(@bucket, @key_4m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -408,7 +408,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_8m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -428,14 +428,14 @@ module Qiniu
             :v2,
             4 * 1024 * 1024
           )
-          (code/100).should == 2
+          expect(code/100).to eq(2)
           puts data.inspect
           puts raw_headers.inspect
           puts "key_8m=#{@key_8m}"
 
           code, data = Qiniu::Storage.stat(@bucket, @key_8m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
 
@@ -447,7 +447,7 @@ module Qiniu
         after do
           code, data = Qiniu::Storage.delete(@bucket, @key_5m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
 
         it "should works" do
@@ -466,14 +466,14 @@ module Qiniu
             nil,
             :v2
           )
-          (code/100).should == 2
+          expect(code/100).to eq(2)
           puts data.inspect
           puts raw_headers.inspect
           puts "key_5m=#{@key_5m}"
 
           code, data = Qiniu::Storage.stat(@bucket, @key_5m)
           puts data.inspect
-          code.should == 200
+          expect(code).to eq(200)
         end
       end
     end
