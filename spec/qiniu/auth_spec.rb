@@ -120,21 +120,25 @@ module Qiniu
         expect(Qiniu::Auth.authenticate_callback_request_v2('Qiniu ' + Config.settings[:access_key] + ':', :post, url, {}, body)).to be_falsey
         expect(Qiniu::Auth.authenticate_callback_request_v2('Qiniu ' + Config.settings[:access_key] + ':????', :post, url, {}, body)).to be_falsey
 
+        headers = {}
         acctoken = Qiniu::Auth.generate_qbox_token(url, body)
         auth_str = 'QBox ' + acctoken
 
-        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str + '  ', :post, url, {}, body)).to be_falsey
-        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, {}, body)).to be_truthy
-        expect(Qiniu::Auth.authenticate_callback_request_v2(acctoken, :post, url, {}, body)).to be_truthy
-        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, {'Content-Type' => 'application/x-www-form-urlencoded'}, body)).to be_truthy
-        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, {'Content-Type' => 'application/json'}, body)).to be_falsey
+        expect(headers).not_to include('X-Qiniu-Date')
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str + '  ', :post, url, headers, body)).to be_falsey
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, headers, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(acctoken, :post, url, headers, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, headers.merge({'Content-Type' => 'application/x-www-form-urlencoded'}), body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, headers.merge({'Content-Type' => 'application/json'}), body)).to be_falsey
 
         headers = {}
         acctoken = Qiniu::Auth.generate_qiniu_token(:post, url, headers, body)
         auth_str = 'Qiniu ' + acctoken
 
+        expect(headers).to include('X-Qiniu-Date')
         expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str + '  ', :post, url, headers, body)).to be_falsey
         expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, headers, body)).to be_truthy
+        expect(Qiniu::Auth.authenticate_callback_request_v2(auth_str, :post, url, {}, body)).to be_falsey
         expect(Qiniu::Auth.authenticate_callback_request_v2(acctoken, :post, url, headers, body)).to be_falsey
       end
     end
